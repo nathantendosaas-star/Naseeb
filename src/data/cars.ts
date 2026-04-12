@@ -76,7 +76,7 @@ export const cars: Car[] = [
     price: '$300,000',
     status: 'Available',
     watermarkText: 'BENTLEY',
-    image: '/assets/Bentley Continental GT/main.jpg',
+    image: '/assets/Bentley Continental GT/Main.jpg',
     gallery: [
       '/assets/Bentley Continental GT/pexels-nikita-volodko-1234519-29527991.jpg',
       '/assets/Bentley Continental GT/pexels-tima-miroshnichenko-6872163.jpg',
@@ -93,7 +93,7 @@ export const cars: Car[] = [
     price: '$120,000',
     status: 'Available',
     watermarkText: 'BMW7',
-    image: '/assets/BMW 7 Series/main.jpg',
+    image: '/assets/BMW 7 Series/Main.jpg',
     gallery: [
       '/assets/BMW 7 Series/SaveClip.App_482475277_610615665287399_8107601930896040158_n.jpg',
       '/assets/BMW 7 Series/SaveClip.App_653853820_18048902738708314_1714450360385024689_n.jpg',
@@ -216,7 +216,7 @@ export const cars: Car[] = [
     price: '$60,000',
     status: 'Available',
     watermarkText: 'FUGA',
-    image: '/assets/Nissan Fuga/main.jpg',
+    image: '/assets/Nissan Fuga/Main.jpg',
     gallery: [
       '/assets/Nissan Fuga/SaveClip.App_581357439_17928295095140792_5926582982365786262_n.jpg',
       '/assets/Nissan Fuga/SaveClip.App_581519482_17928295080140792_2455856967220625991_n.jpg',

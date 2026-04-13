@@ -276,7 +276,7 @@ export default function ContactPage() {
               </MapContainer>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
               <div>
                 <h3 className="font-bold tracking-widest uppercase mb-2 text-[#dc2626]">Grid Motors</h3>
                 <p className="text-sm opacity-70 leading-relaxed">
@@ -293,6 +293,14 @@ export default function ContactPage() {
                   +256 750 508 658
                 </p>
               </div>
+            </div>
+
+            <div className="p-8 border border-white/10 bg-white/5 rounded">
+                <h3 className="text-xs font-black tracking-[0.4em] uppercase mb-4 text-[#d4af37]">Our Vision</h3>
+                <p className="text-sm opacity-80 leading-relaxed italic">
+                    "Uganda’s land isn't growing, but our economy is. Every square meter of Ugandan soil must contribute to the nation's wealth and the well-being of its citizens."
+                </p>
+                <p className="text-[10px] font-bold tracking-widest uppercase mt-4 opacity-50">— Masembe Group of Companies</p>
             </div>
           </motion.div>
         </div>

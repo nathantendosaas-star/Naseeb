@@ -190,17 +190,17 @@ export default function ZeroPage() {
   const DEFAULT_RE_SECTIONS = [
     {
       title: "Smart Density",
-      desc: "Innovating urban density through vertical integration. We transform limited land into high-efficiency ecosystems, maximizing value while minimizing footprint.",
+      desc: "Redefining Uganda's landscape through vertical integration. We maximize small plots (e.g. 100x100) with 4-story commercial hubs and 12-unit apartment blocks to increase people-per-acre efficiency.",
       accent: "#d4af37"
     },
     {
       title: "Eco-Density",
-      desc: "Sustainable infrastructure meets green urbanism. Our developments integrate renewable energy, water harvesting, and biophilic design for enduring resilience.",
+      desc: "Sustainable infrastructure meets green urbanism. We integrate LED lighting and modern glass holdings into high-density designs, ensuring our vertical cities remain breathable and aesthetic.",
       accent: "#d4af37"
     },
     {
-      title: "The Advantage",
-      desc: "The Masembe method delivers 3x-5x traditional ROI through intelligent planning, premium materials, and community-centric mixed-use architecture.",
+      title: "The Strategy",
+      desc: "Uganda's land isn't growing, but our economy is. We utilize precision engineering to turn underutilized parcels into profitable hospitality and commercial hubs with 3x-5x traditional ROI.",
       accent: "#d4af37"
     }
   ];

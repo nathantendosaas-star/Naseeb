@@ -86,6 +86,53 @@ export default function PropertyLandingPage() {
         </div>
       </section>
 
+      {/* The Masembe Standard */}
+      <section className="py-24 px-6 md:px-12 bg-white/5 border-y border-white/10 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-16 items-center">
+            <div className="w-full md:w-1/2">
+              <span className="text-xs font-black uppercase tracking-[0.4em] text-[#d4af37] mb-8 block">The Masembe Standard</span>
+              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-none">Smart Density <br />Development</h2>
+              <p className="text-lg text-gray-400 leading-relaxed mb-12">
+                By recognizing that land is a finite resource while the economy continues to expand, we focus on maximizing the utility of small land parcels (e.g., 100x100) to create high-value, sustainable urban environments.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="text-[#d4af37] font-bold uppercase tracking-widest text-xs mb-4">Vertical Integration</h4>
+                  <p className="text-sm text-gray-500 leading-relaxed">Utilizing multi-story designs like 4-story commercial hubs and 12-unit apartment blocks to increase density without sacrificing quality.</p>
+                </div>
+                <div>
+                  <h4 className="text-[#d4af37] font-bold uppercase tracking-widest text-xs mb-4">Eco-Density</h4>
+                  <p className="text-sm text-gray-500 leading-relaxed">Integrating LED lighting, modern glass holdings, and green urbanism to ensure high-density areas remain breathable and aesthetic.</p>
+                </div>
+                <div>
+                  <h4 className="text-[#d4af37] font-bold uppercase tracking-widest text-xs mb-4">Precision Engineering</h4>
+                  <p className="text-sm text-gray-500 leading-relaxed">Maximizing foundation strength and structural integrity to support vertical growth on smaller footprints.</p>
+                </div>
+                <div>
+                  <h4 className="text-[#d4af37] font-bold uppercase tracking-widest text-xs mb-4">Economic Catalyst</h4>
+                  <p className="text-sm text-gray-500 leading-relaxed">Turning underutilized small plots into profitable commercial centers directly supporting Uganda’s economic trajectory.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="w-full md:w-1/2 relative">
+                <div className="aspect-[4/5] bg-white/10 rounded-sm overflow-hidden relative">
+                    <img 
+                        src="/assets/new_re/IMG-20260408-WA0011.jpg" 
+                        alt="Smart Density" 
+                        className="w-full h-full object-cover grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent opacity-60" />
+                </div>
+                {/* Decorative element */}
+                <div className="absolute -bottom-8 -right-8 w-48 h-48 border border-[#d4af37]/30 -z-10" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Showcase Call to Action */}
       <section className="relative py-40 px-6 overflow-hidden">
         <div className="absolute inset-0 z-0">

@@ -34,27 +34,32 @@ export default function AboutPage() {
   const timelineSections = [
     {
       title: "The Legacy",
-      content: "Masembe Group of Companies is at the forefront of redefining Uganda's real estate landscape. By recognizing that land is a finite resource, we specialize in Innovating Urban Density.",
+      content: "Masembe Group of Companies is at the forefront of redefining Uganda's real estate landscape. By recognizing that land is a finite resource while the economy continues to expand, we focus on Smart Density Development—maximizing the utility of small land parcels to create high-value, sustainable urban environments.",
       image: '/assets/new_re/IMG-20260408-WA0010.jpg'
     },
     {
       title: "Smart Density",
-      content: "We maximize utility on small parcels (e.g., 100x100 plots) through vertical integration—creating multi-story commercial and residential environments that accommodate more people without sacrificing quality of life.",
+      content: "We increase the 'people-per-acre' ratio through vertical integration. Our designs, including 4-story commercial hubs and 12-unit apartment blocks, accommodate more people comfortably within smaller footprints without sacrificing quality of life.",
       image: '/assets/new_re/IMG-20260408-WA0011.jpg'
     },
     {
       title: "Eco-Density",
-      content: "We integrate environmental stewardship with high-density construction. Modern glass holdings, LED lighting, and biophilic design ensure our vertical cities remain breathable, aesthetic, and sustainable.",
+      content: "Integrating environmental stewardship with high-density construction. Through LED lighting systems, modern glass holdings, and green urbanism, we ensure high-density areas remain breathable, aesthetic, and environmentally responsible.",
       image: '/assets/new_re/IMG-20260408-WA0012.jpg'
     },
     {
       title: "Fixed Land Strategy",
-      content: "Uganda’s land isn't growing, but our economy is. We provide the precision engineering needed to turn underutilized plots into high-yield hospitality and commercial hubs.",
+      content: "Uganda’s land isn't growing, but our economy is. We utilize precision engineering to maximize structural integrity on standard plots (e.g., 100x100), turning underutilized land into profitable commercial centers and hospitality hubs.",
       image: '/assets/new_re/IMG-20260408-WA0013.jpg'
     },
     {
       title: "The Masembe Advantage",
       isComparison: true
+    },
+    {
+      title: "Future Outlook",
+      content: "As Uganda moves toward further urbanization, Masembe Group remains committed to being the lead developer in 'Smart Cities' concepts—ensuring every square meter of Ugandan soil contributes to the nation's wealth and well-being.",
+      image: '/assets/new_re/IMG-20260408-WA0004.jpg'
     }
   ];
 
@@ -91,7 +96,7 @@ export default function AboutPage() {
 
         {/* Horizontal Timeline */}
         <div ref={containerRef} className="h-screen flex items-center">
-          <div ref={scrollRef} className="flex w-[500vw] h-full">
+          <div ref={scrollRef} className="flex w-[600vw] h-full">
             
             {timelineSections.map((section, idx) => (
               <div key={idx} className="timeline-section w-screen h-full flex flex-col md:flex-row items-center justify-center px-12 md:px-24 gap-12">

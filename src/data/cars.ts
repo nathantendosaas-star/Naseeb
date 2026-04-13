@@ -23,6 +23,7 @@ export const cars: Car[] = [
     watermarkText: 'CULLINAN',
     image: '/assets/Rolls-Royce Cullinan Black Badge/SaveClip.App_645644852_17885070462356166_1052982335959720841_n.jpg',
     gallery: [
+      '/assets/Rolls-Royce Cullinan Black Badge/main.jpg',
       '/assets/Rolls-Royce Cullinan Black Badge/SaveClip.App_645644852_17885070462356166_1052982335959720841_n.jpg',
       '/assets/Rolls-Royce Cullinan Black Badge/SaveClip.App_653674470_18026092805804079_2548394611182542092_n.jpg',
       '/assets/Rolls-Royce Cullinan Black Badge/SaveClip.App_655188402_18004693256887931_4057923087349680690_n.jpg',
@@ -46,7 +47,7 @@ export const cars: Car[] = [
     image: '/assets/Mercedes-Benz Sprinter/Luxury-Sprinter-Van-1.jpg',
     gallery: [
       '/assets/Mercedes-Benz Sprinter/Luxury-Sprinter-Van-1.jpg',
-      '/assets/Mercedes-Benz Sprinter/m1.webp'
+      '/assets/Mercedes-Benz Sprinter/main.webp'
     ]
   },
   {

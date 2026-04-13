@@ -111,7 +111,7 @@ export const cars: Car[] = [
     price: '$160,000',
     status: 'Available',
     watermarkText: 'MANSORY',
-    image: '/assets/BMW 7 Series-Mansory/SaveClip.App_472039352_918010490546729_7765610575373542732_n.jpg',
+    image: '/assets/BMW 7 Series-Mansory/main.jpg',
     gallery: [
       '/assets/BMW 7 Series-Mansory/SaveClip.App_472039352_918010490546729_7765610575373542732_n.jpg',
       '/assets/BMW 7 Series-Mansory/SaveClip.App_639827816_17917883241283578_3682488524676178915_n.jpg',
@@ -178,7 +178,7 @@ export const cars: Car[] = [
     price: '$210,000',
     status: 'Available',
     watermarkText: 'G-CLASS',
-    image: '/assets/Mercedes-Benz G-Class/SaveClip.App_461101510_903593615009908_7474727303419448655_n.jpg',
+    image: '/assets/Mercedes-Benz G-Class/main.jpg',
     gallery: [
       '/assets/Mercedes-Benz G-Class/SaveClip.App_461101510_903593615009908_7474727303419448655_n.jpg',
       '/assets/Mercedes-Benz G-Class/SaveClip.App_649241404_17893737930288558_8034514004760461336_n.jpg',

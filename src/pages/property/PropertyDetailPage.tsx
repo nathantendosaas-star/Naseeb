@@ -19,9 +19,10 @@ export default function PropertyDetailPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
     
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const fullName = formData.get('fullName') as string;
     const nameParts = fullName.trim().split(' ');
     const firstName = nameParts[0];
@@ -44,7 +45,7 @@ export default function PropertyDetailPage() {
       await submitInquiry(data);
       setSubmitSuccess(true);
 
-      e.currentTarget.reset();
+      form.reset();
     } catch (error) {
       console.error("Error submitting inquiry: ", error);
       alert(error instanceof Error ? error.message : "There was an error submitting your inquiry. Please try again.");

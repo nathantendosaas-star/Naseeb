@@ -68,6 +68,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     
     const newErrors = {
       name: validateField('name', formData.name),
@@ -104,7 +105,7 @@ export default function ContactPage() {
     try {
       await submitInquiry(data);
       setSubmitSuccess(true);
-      e.currentTarget.reset();
+      form.reset();
     } catch (error: any) {
       console.error("Error submitting inquiry: ", error);
       let errorMessage = "There was an error submitting your message. ";

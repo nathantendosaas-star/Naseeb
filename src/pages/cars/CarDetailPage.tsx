@@ -27,9 +27,10 @@ export default function CarDetailPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
     
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const data = {
       firstName: formData.get('firstName') as string,
       lastName: formData.get('lastName') as string,
@@ -47,7 +48,7 @@ export default function CarDetailPage() {
       await submitInquiry(data);
       setSubmitSuccess(true);
 
-      e.currentTarget.reset();
+      form.reset();
     } catch (error) {
       console.error("Error submitting inquiry: ", error);
       alert(error instanceof Error ? error.message : "There was an error submitting your inquiry. Please try again.");

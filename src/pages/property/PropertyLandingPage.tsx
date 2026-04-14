@@ -1,3 +1,6 @@
+import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
+import { Building2, MapPin, Key } from 'lucide-react';
 import OptimizedImage from '../../components/OptimizedImage';
 
 export default function PropertyLandingPage() {

@@ -2,6 +2,7 @@ import type { Property } from '@/data/properties';
 import { useState } from 'react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
 import { motion } from 'motion/react';
+import OptimizedImage from './OptimizedImage';
 
 export default function PropertyModalContent({ property }: { property: Property }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -112,7 +113,11 @@ export default function PropertyModalContent({ property }: { property: Property 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {property.gallery?.map((img: string, i: number) => (
               <div key={i} className="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
-                <img src={img} alt={`${property.name} gallery ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                <OptimizedImage 
+                  src={img} 
+                  alt={`${property.name} gallery ${i + 1}`} 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                />
               </div>
             ))}
           </motion.div>

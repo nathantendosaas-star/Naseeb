@@ -5,6 +5,8 @@ import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
+import OptimizedImage from './OptimizedImage';
+
 export default function GlobalHeader() {
   const location = useLocation();
   const isAuto = location.pathname.startsWith('/cars');
@@ -46,7 +48,13 @@ export default function GlobalHeader() {
           </Link>
           <Link to={isAuto ? "/cars" : "/property"} className="flex items-center">
             {isAuto ? (
-              <img src="/GRID_LOGO.jpg" alt="Grid Motors" className="h-8 md:h-10 object-contain" />
+              <OptimizedImage 
+                src="/GRID_LOGO.jpg" 
+                alt="Grid Motors" 
+                priority 
+                className="h-8 md:h-10 w-24 md:w-32 bg-transparent" 
+                style={{ objectFit: 'contain' }}
+              />
             ) : (
               <span className="text-xl md:text-2xl font-black tracking-tighter uppercase">Masembe Group</span>
             )}

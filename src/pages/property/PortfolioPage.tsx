@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards, Autoplay, Navigation } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
+import OptimizedImage from '../../components/OptimizedImage';
 
 // Dynamically import all images from new_re folder
 const allNewReImages = import.meta.glob('/public/assets/new_re/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
@@ -30,9 +31,10 @@ export default function PortfolioPage() {
         >
           {galleryImages.map((src, index) => (
             <SwiperSlide key={index} className="rounded-2xl overflow-hidden border border-white/10">
-              <img 
+              <OptimizedImage 
                 src={src} 
                 alt={`Portfolio slide ${index}`} 
+                priority={index < 3}
                 className="w-full h-full object-cover"
               />
             </SwiperSlide>

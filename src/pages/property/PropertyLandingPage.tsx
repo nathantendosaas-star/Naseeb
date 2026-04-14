@@ -1,6 +1,4 @@
-import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-import { Building2, MapPin, Key } from 'lucide-react';
+import OptimizedImage from '../../components/OptimizedImage';
 
 export default function PropertyLandingPage() {
   return (
@@ -14,6 +12,7 @@ export default function PropertyLandingPage() {
             loop 
             muted 
             playsInline
+            preload="auto"
             className="w-full h-full object-cover"
           />
         </div>
@@ -119,10 +118,10 @@ export default function PropertyLandingPage() {
             
             <div className="w-full md:w-1/2 relative">
                 <div className="aspect-[4/5] bg-white/10 rounded-sm overflow-hidden relative">
-                    <img 
+                    <OptimizedImage 
                         src="/assets/new_re/IMG-20260408-WA0011.jpg" 
                         alt="Smart Density" 
-                        className="w-full h-full object-cover grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+                        className="w-full h-full grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent opacity-60" />
                 </div>
@@ -136,7 +135,7 @@ export default function PropertyLandingPage() {
       {/* Showcase Call to Action */}
       <section className="relative py-40 px-6 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
+          <OptimizedImage 
             src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=2000" 
             alt="Luxury Interior" 
             className="w-full h-full object-cover opacity-20"

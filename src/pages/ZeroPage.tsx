@@ -293,7 +293,7 @@ export default function ZeroPage() {
           {/* Sticky Video Side */}
           <motion.div style={{ x: isMobile ? 0 : reVideoX }} className="w-full md:w-[40%] h-1/2 md:h-full relative overflow-hidden">
             <motion.div style={{ scale: reVideoScale, filter: reVideoFilter }} className="w-full h-full">
-          <video src={reVideoUrl} autoPlay loop muted playsInline preload="auto" onCanPlay={(e) => (e.target as HTMLVideoElement).play()} className="absolute inset-0 w-full h-full object-cover" />
+          <video src={reVideoUrl} autoPlay loop muted playsInline preload="metadata" onCanPlay={(e) => (e.target as HTMLVideoElement).play()} className="absolute inset-0 w-full h-full object-cover" />
             </motion.div>
             <div className="absolute inset-0 bg-black/10" />
             <div className="hidden md:block absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-[#F7F7F5] to-transparent z-10" />
@@ -309,7 +309,7 @@ export default function ZeroPage() {
           {/* Sticky Video Side */}
           <motion.div style={{ x: isMobile ? 0 : autoVideoX }} className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden">
             <motion.div style={{ scale: autoVideoScale, filter: autoVideoFilter }} className="w-full h-full">
-              <video src={autoVideoUrl} preload="auto" autoPlay loop muted playsInline onCanPlay={(e) => (e.target as HTMLVideoElement).play()} className="absolute inset-0 w-full h-full object-cover grayscale-[0.3]" />
+              <video src={autoVideoUrl} preload="metadata" autoPlay loop muted playsInline onCanPlay={(e) => (e.target as HTMLVideoElement).play()} className="absolute inset-0 w-full h-full object-cover grayscale-[0.3]" />
             </motion.div>
             <div className="absolute inset-0 bg-black/5" />
             <div className="hidden md:block absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10" />

@@ -1,0 +1,105 @@
+Goal:
+Reduce image loading latency across the app without changing the visual design. The page itself is already fast, so focus only on image delivery, image decoding, and visible-image priority.
+
+Primary objectives:
+1. Make above-the-fold images appear first.
+2. Delay offscreen images until needed.
+3. Reduce image file weight without making images look grainy.
+4. Serve the best image size for each viewport.
+5. Prevent layout shift while images load.
+
+Required behavior:
+
+A. Prioritize visible images
+- Any image that is immediately visible on page load must load first.
+- Mark the main hero / first visible image as high priority.
+- Preload the most important above-the-fold image when appropriate.
+- Do not lazy-load the first visible image.
+- Make sure the browser fetches the main visible image before lower-priority assets.
+
+B. Lazy-load everything below the fold
+- Any image not visible on initial load must be lazy-loaded.
+- Do not request offscreen images until they are near the viewport.
+- For long lists, grids, collections, galleries, and similar layouts, only load images when the user scrolls close enough to them.
+- Keep the first batch small enough that the screen does not request too many images at once.
+
+C. Avoid loading too many images at once
+- Do not trigger dozens of image downloads at the same time.
+- Use progressive loading for image-heavy pages.
+- Render only the visible items first, then load the rest gradually.
+- If virtualization or pagination is available, use it for large lists.
+- Keep network concurrency reasonable so the browser is not overwhelmed.
+
+D. Use modern image formats
+- Convert images to WebP or AVIF where supported.
+- Use a fallback only when needed.
+- Prefer smaller modern formats for photographs and normal UI images.
+- Keep icons, logos, and flat graphics sharp; do not over-compress them.
+
+E. Resize images before delivery
+- Never send an image larger than the maximum size it will actually display.
+- Generate responsive variants for different viewport widths and device densities.
+- Use the right source size instead of one huge original for every screen.
+- Do not upscale small images beyond their native quality.
+
+F. Compress intelligently
+- Compress images enough to reduce file size, but preserve visual quality.
+- Do not use overly aggressive compression that makes photos grainy or blurry.
+- Use stronger compression for large photographic images.
+- Use lighter compression for screenshots, UI graphics, logos, and text-heavy images.
+- If an image is already small and looks good, do not over-optimize it just for the sake of it.
+
+G. Add explicit dimensions
+- Every image must have width and height information or equivalent sizing metadata.
+- This prevents layout shift while the image is still loading.
+- Preserve aspect ratio so images do not jump around during render.
+
+H. Improve perceived loading speed
+- Show placeholders for images while they load.
+- Use a blurred preview, dominant-color placeholder, or skeleton effect.
+- Replace the placeholder with the final image once loaded.
+- Keep the UI stable while the image is downloading.
+
+I. Decode images efficiently
+- Use async decoding where supported.
+- Avoid blocking rendering on image decode if the browser can decode in the background.
+- Do not force synchronous rendering of large media assets.
+
+J. Use best-practice loading rules by image type
+- Above-the-fold hero image: high priority, preload if needed, no lazy loading.
+- Visible product / gallery images near the top: normal priority, but still optimized and responsive.
+- Below-the-fold images: lazy-loaded.
+- Decorative images: lowest priority.
+- Background images used in CSS should also be optimized and loaded only when needed.
+
+K. Preserve quality where it matters
+- If an image is visually sensitive, keep a higher quality setting.
+- Do not reduce quality blindly.
+- For any image that becomes visibly degraded after conversion, adjust compression upward or use a different format.
+- If the source is already near the correct size and quality, do not reprocess it unnecessarily.
+
+Implementation guidance:
+- Scan all image usage in the app.
+- Identify which images are initially visible and which are offscreen.
+- Apply high-priority loading only to the first visible image or small number of critical images.
+- Convert large raster images to WebP/AVIF.
+- Generate responsive sizes for images used in cards, galleries, thumbnails, and hero sections.
+- Add lazy loading to everything below the fold.
+- Add placeholders for every major image container.
+- Make sure images are not fetched in full resolution when a smaller version would do.
+- Verify that image-heavy pages no longer request everything at once.
+
+Acceptance criteria:
+- The first visible image appears quickly.
+- Scrolling pages do not freeze while many images are loading.
+- Gallery and collection pages feel smoother.
+- Image files are smaller without obvious quality loss.
+- No major layout jumps occur while images load.
+- Offscreen images do not block the initial render.
+
+Do not:
+- Do not load every image immediately.
+- Do not ship oversized originals to the browser.
+- Do not compress so aggressively that images look damaged.
+- Do not make the first visible image lazy-loaded.
+- Do not rely on one huge image size for all screens.

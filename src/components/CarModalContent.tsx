@@ -2,6 +2,7 @@ import type { Car } from '@/data/cars';
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
+import OptimizedImage from './OptimizedImage';
 
 export default function CarModalContent({ car }: { car: Car }) {
   const [activeTab, setActiveTab] = useState('gallery');
@@ -106,7 +107,12 @@ export default function CarModalContent({ car }: { car: Car }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {car.gallery?.map((img, i) => (
               <div key={i} className="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
-                <img src={img} alt={`${car.model} gallery ${i + 1}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                <OptimizedImage 
+                  src={img} 
+                  alt={`${car.model} gallery ${i + 1}`} 
+                  className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer" 
+                />
               </div>
             ))}
           </div>

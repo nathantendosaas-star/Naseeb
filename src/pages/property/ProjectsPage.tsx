@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef } from 'react';
 import { properties } from '../../data/properties';
+import OptimizedImage from '../../components/OptimizedImage';
 
 export default function ProjectsPage() {
   const pageRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,7 @@ export default function ProjectsPage() {
         </motion.p>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {properties.map((project) => (
+          {properties.map((project, index) => (
             <motion.div 
               key={project.id}
               initial={{ opacity: 0, y: 30 }}
@@ -41,9 +42,10 @@ export default function ProjectsPage() {
               className="group cursor-pointer"
             >
               <div className="aspect-[4/3] overflow-hidden mb-6">
-                <img 
+                <OptimizedImage 
                   src={project.image} 
                   alt={project.name} 
+                  priority={index < 2}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                 />
               </div>

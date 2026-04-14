@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import OptimizedImage from '../components/OptimizedImage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -102,7 +103,7 @@ export default function AboutPage() {
               <div key={idx} className="timeline-section w-screen h-full flex flex-col md:flex-row items-center justify-center px-12 md:px-24 gap-12">
                 {section.image && (
                     <div className="w-full md:w-1/2 h-[400px] overflow-hidden rounded-sm">
-                        <img src={section.image} alt={section.title} className="w-full h-full object-cover" />
+                        <OptimizedImage src={section.image} alt={section.title} priority={idx === 0} className="w-full h-full" />
                     </div>
                 )}
                 <div className="max-w-2xl w-full">

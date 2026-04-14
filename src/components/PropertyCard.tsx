@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 // Remove unused import
 
+import OptimizedImage from './OptimizedImage';
+
 interface PropertyCardProps {
   property: {
     id: string;
@@ -11,22 +13,25 @@ interface PropertyCardProps {
     images?: string[];
   };
   onClick: (id: string) => void;
+  priority?: boolean;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, onClick }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({ property, onClick, priority = false }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
       className="group relative h-[500px] overflow-hidden rounded-sm cursor-pointer"
       onClick={() => onClick(property.id)}
     >
-      <div className="absolute inset-0 bg-black/40 transition-colors duration-500 group-hover:bg-black/20" />
-      <img
+      <div className="absolute inset-0 bg-black/40 transition-colors duration-500 group-hover:bg-black/20 z-10" />
+      <OptimizedImage
         src={property.image}
         alt={`${property.name} – ${property.location}`}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        priority={priority}
+        aspectRatio="property"
+        className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105"
       />
-      <div className="absolute inset-0 p-8 flex flex-col justify-end z-10 text-white">
+      <div className="absolute inset-0 p-8 flex flex-col justify-end z-20 text-white">
         <p className="text-[#d4af37] text-sm font-bold uppercase mb-2">{property.location}</p>
         <h3 className="text-2xl font-bold">{property.name}</h3>
       </div>

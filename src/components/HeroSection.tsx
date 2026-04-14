@@ -20,6 +20,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ title, subtitle, videoSrc }) 
         loop
         muted
         playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-black/40" />

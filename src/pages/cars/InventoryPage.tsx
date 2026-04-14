@@ -6,6 +6,8 @@ import { useFirestoreCollection } from '../../hooks/useFirestore';
 import Modal from '../../components/Modal';
 import CarModalContent from '../../components/CarModalContent';
 
+import OptimizedImage from '../../components/OptimizedImage';
+
 export default function InventoryPage() {
   const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,10 +78,12 @@ export default function InventoryPage() {
 
               <div className="flex-grow flex items-center justify-center relative my-8">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-full blur-3xl scale-150" />
-                <img 
+                <OptimizedImage 
                   src={car.image} 
                   alt={car.model} 
-                  className="w-full h-full max-h-[280px] md:max-h-[340px] object-contain transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-2 drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
+                  priority={index < 3}
+                  className="w-full h-full max-h-[280px] md:max-h-[340px] transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-2 drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
+                  style={{ objectFit: 'contain' }}
                 />
               </div>
 

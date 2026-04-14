@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import StatNode from './StatNode';
 import { cn } from '@/lib/utils';
 import Modal from './Modal';
+import OptimizedImage from './OptimizedImage';
 
 export interface ShowroomItem {
   id: string;
@@ -149,12 +150,11 @@ export default function ParallaxShowroom({ items, theme }: ParallaxShowroomProps
                 className="w-full md:w-[80vw] max-w-7xl h-[65vh] md:h-[75vh] flex items-center justify-center pointer-events-auto cursor-pointer"
                 onClick={() => navigate(`/cars/inventory/${activeItem.id}`)}
               >
-                <img 
+                <OptimizedImage 
                   src={activeItem.image} 
                   alt={activeItem.title}
-                  className="w-full h-full object-contain drop-shadow-2xl"
-                  fetchPriority={activeIndex === 0 ? "high" : "auto"}
-                  loading={activeIndex === 0 ? "eager" : "lazy"}
+                  priority={activeIndex === 0}
+                  className="w-full h-full object-contain drop-shadow-2xl bg-transparent"
                 />
               </motion.div>
             </AnimatePresence>

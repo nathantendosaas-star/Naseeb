@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { useState, useRef } from 'react';
 import { useFirestoreDoc } from '../../hooks/useFirestore';
 import { submitInquiry } from '../../hooks/useRealtimeDB';
+import OptimizedImage from '../../components/OptimizedImage';
 
 export default function CarDetailPage() {
   const { id } = useParams();
@@ -59,16 +60,22 @@ export default function CarDetailPage() {
     <div className="min-h-screen bg-auto-bg text-auto-text pt-24">
       {/* Hero Pratap */}
       <div ref={heroRef} className="h-[60vh] relative flex items-center justify-center overflow-hidden">
-        <motion.img
-          src={car.image}
-          alt={car.model}
+        <motion.div
           initial={{ x: 300, opacity: 0, scale: 0.9 }}
           animate={{ x: 0, opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           style={{ y: yImage }}
-          className="relative z-10 w-full max-w-4xl object-contain drop-shadow-2xl"
-          referrerPolicy="no-referrer"
-        />
+          className="relative z-10 w-full max-w-4xl h-full"
+        >
+          <OptimizedImage 
+            src={car.image} 
+            alt={car.model} 
+            priority
+            className="w-full h-full bg-transparent"
+            style={{ objectFit: 'contain' }}
+            referrerPolicy="no-referrer"
+          />
+        </motion.div>
       </div>
 
       {/* Below-the-fold Content */}
@@ -133,7 +140,12 @@ export default function CarDetailPage() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {car.gallery?.map((img, i) => (
                 <div key={i} className="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
-                  <img src={img} alt={`${car.model} gallery ${i + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
+                  <OptimizedImage 
+                    src={img} 
+                    alt={`${car.model} gallery ${i + 1}`} 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                    referrerPolicy="no-referrer" 
+                  />
                 </div>
               ))}
             </motion.div>

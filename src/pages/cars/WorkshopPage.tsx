@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useState, useRef } from 'react';
+import OptimizedImage from '../../components/OptimizedImage';
 
 export default function WorkshopPage() {
   const [sliderPos, setSliderPos] = useState(50);
@@ -77,13 +78,14 @@ export default function WorkshopPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="group relative h-[300px] rounded-xl overflow-hidden">
-                <img 
-                  src={`https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?q=80&w=800&auto=format&fit=crop&sig=${i}`} 
+                <OptimizedImage 
+                  src={`https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?q=80&w=1000&auto=format&fit=crop&sig=${i}`} 
                   alt="Body Kit" 
+                  priority={i === 1}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 z-10">
                   <h3 className="text-xl font-bold uppercase">Aero Kit 0{i}</h3>
                 </div>
               </div>

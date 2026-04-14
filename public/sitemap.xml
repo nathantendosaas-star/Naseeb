@@ -1,63 +1,164 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Static Routes -->
   <url>
     <loc>https://masembe.vercel.app/</loc>
-    <priority>1.0</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/cars</loc>
-    <priority>0.9</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/cars/showroom</loc>
-    <priority>0.9</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/cars/inventory</loc>
-    <priority>0.9</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/cars/workshop</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/cars/import</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/property</loc>
-    <priority>0.9</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/property/showroom</loc>
-    <priority>0.9</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/property/portfolio</loc>
-    <priority>0.9</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/property/projects</loc>
-    <priority>0.9</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/about</loc>
-    <priority>0.8</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://masembe.vercel.app/contact</loc>
-    <priority>0.8</priority>
+    <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Dynamic Car Routes -->
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/rolls-royce-cullinan</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/mercedes-sprinter</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/gle-350d</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/bentley-gt</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/bmw-7-series</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/bmw-7-mansory</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/range-rover-vogue</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/gle-63-amg</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/mercedes-g-class</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/mercedes-gle</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/nissan-fuga</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/cars/inventory/toyota-lc300</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Dynamic Property Routes -->
+  <url>
+    <loc>https://masembe.vercel.app/property/portfolio/smart-tower-one</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://masembe.vercel.app/property/portfolio/green-residence</loc>
+    <lastmod>2026-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 </urlset>

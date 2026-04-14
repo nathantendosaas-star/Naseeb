@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 import { useFirestoreCollection } from '../../hooks/useFirestore';
 import Modal from '../../components/Modal';
 import CarModalContent from '../../components/CarModalContent';
+import SEO from '../../components/SEO';
 
 import OptimizedImage from '../../components/OptimizedImage';
 
@@ -36,6 +37,11 @@ export default function InventoryPage() {
 
   return (
     <div ref={pageRef} className="relative min-h-screen pt-32 pb-24 px-6 md:px-12 bg-auto-bg text-auto-text">
+      <SEO 
+        title="Vehicle Inventory | Grid Motors"
+        description="Browse our current stock of certified high-performance and luxury automobiles available for immediate purchase in Kampala."
+        canonical="/cars/inventory"
+      />
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         {selectedCar && <CarModalContent car={selectedCar} />}
       </Modal>

@@ -5,6 +5,7 @@ import { MessageSquare, X, Send, ChevronDown } from 'lucide-react';
 import { cn } from '../lib/utils';
 import IdentitySwitcher from '../components/IdentitySwitcher';
 import WatermarkLayer from '../components/WatermarkLayer';
+import SEO from '../components/SEO';
 import { useFirestoreDoc } from '../hooks/useFirestore';
 import { submitInquiry } from '../hooks/useRealtimeDB';
 
@@ -207,6 +208,11 @@ export default function ZeroPage() {
 
   return (
     <>
+      <SEO 
+        title="Collective Intelligence"
+        description="Masembe Group - Innovating Urban Density and Sustainable Growth in Uganda. Integrated platform for Real Estate and Automotive excellence."
+        canonical="/"
+      />
       <div ref={containerRef} className="relative w-full bg-[#F7F7F5] text-black min-h-[800vh] font-sans selection:bg-black selection:text-white">
         {/* ... navbar ... */}
         <nav className="fixed top-0 left-0 w-full z-[100] flex items-center justify-between p-6 md:px-12 mix-blend-difference">

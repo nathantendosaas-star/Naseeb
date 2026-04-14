@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { db, auth } from '@/lib/firebase';
+import { Helmet } from 'react-helmet-async';
 import { 
   doc, 
   updateDoc, 
@@ -167,6 +168,10 @@ export default function AdminPage() {
 
   return (
     <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 transition-colors duration-300 ${themeClasses}`}>
+      <Helmet>
+        <title>Admin Dashboard | Masembe Group</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className={`flex flex-col md:flex-row justify-between items-end mb-12 border-b pb-8 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>

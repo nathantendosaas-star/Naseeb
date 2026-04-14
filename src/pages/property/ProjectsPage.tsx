@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef } from 'react';
 import { properties } from '../../data/properties';
 import OptimizedImage from '../../components/OptimizedImage';
+import SEO from '../../components/SEO';
 
 export default function ProjectsPage() {
   const pageRef = useRef<HTMLDivElement>(null);
@@ -14,6 +15,11 @@ export default function ProjectsPage() {
 
   return (
     <div ref={pageRef} className="relative min-h-screen pt-32 pb-24 px-6 md:px-12 bg-re-bg text-re-text">
+      <SEO 
+        title="Our Projects | Masembe Real Estate"
+        description="Explore our current and upcoming real estate projects across Kampala's most prestigious locations."
+        canonical="/property/projects"
+      />
       <div className="max-w-6xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}

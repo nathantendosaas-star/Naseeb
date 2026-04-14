@@ -1,9 +1,5 @@
-# robots.txt - Masembe Group
-# https://www.robotstxt.org/
-
 User-agent: *
 Allow: /
 Disallow: /admin
 
-# Reference to sitemap
 Sitemap: https://masembe.vercel.app/sitemap.xml

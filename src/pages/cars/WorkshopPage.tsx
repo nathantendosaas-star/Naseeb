@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useState, useRef } from 'react';
 import OptimizedImage from '../../components/OptimizedImage';
+import SEO from '../../components/SEO';
 
 export default function WorkshopPage() {
   const [sliderPos, setSliderPos] = useState(50);
@@ -14,6 +15,11 @@ export default function WorkshopPage() {
 
   return (
     <div ref={pageRef} className="relative min-h-screen bg-[#111] text-white pt-32 pb-24 px-6 md:px-12">
+      <SEO 
+        title="Grid Workshop | Wraps & Tuning"
+        description="Premium vehicle wrapping, body kits, and performance tuning services at the Grid Workshop. Elevate your driving experience."
+        canonical="/cars/workshop"
+      />
       <div className="max-w-7xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}

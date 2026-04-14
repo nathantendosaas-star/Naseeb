@@ -4,6 +4,7 @@ import ParallaxShowroom from '../../components/ParallaxShowroom';
 import type { ShowroomItem } from '../../components/ParallaxShowroom';
 import CarModalContent from '../../components/CarModalContent';
 import { useFirestoreCollection } from '../../hooks/useFirestore';
+import SEO from '../../components/SEO';
 
 export default function ShowroomPage() {
   const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
@@ -24,5 +25,14 @@ export default function ShowroomPage() {
     detailComponent: <CarModalContent car={car} />
   }));
 
-  return <ParallaxShowroom items={items} theme="auto" />;
+  return (
+    <>
+      <SEO 
+        title="Luxury Showroom | Grid Motors"
+        description="Explore our exclusive collection of luxury vehicles, including Mercedes-Benz, BMW, and more at the Grid Motors showroom."
+        canonical="/cars/showroom"
+      />
+      <ParallaxShowroom items={items} theme="auto" />
+    </>
+  );
 }

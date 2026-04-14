@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import OptimizedImage from '../components/OptimizedImage';
+import SEO from '../components/SEO';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -66,6 +67,11 @@ export default function AboutPage() {
 
   return (
     <div className="relative bg-[#0C0C0C] text-[#f5f5dc] overflow-hidden">
+      <SEO 
+        title="Our Legacy"
+        description="Learn about Masembe Group's mission to redefine Uganda's real estate landscape through Smart Density Development and sustainable urban growth."
+        canonical="/about"
+      />
       {/* Noise Texture & Theme */}
       <div 
         className="fixed inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none z-0"

@@ -6,6 +6,7 @@ import { useState, useRef } from 'react';
 import { useFirestoreDoc } from '../../hooks/useFirestore';
 import { submitInquiry } from '../../hooks/useRealtimeDB';
 import OptimizedImage from '../../components/OptimizedImage';
+import SEO from '../../components/SEO';
 
 export default function CarDetailPage() {
   const { id } = useParams();
@@ -59,6 +60,12 @@ export default function CarDetailPage() {
 
   return (
     <div className="min-h-screen bg-auto-bg text-auto-text pt-24">
+      <SEO 
+        title={`${car.make} ${car.model} | Grid Motors`}
+        description={`Experience the ${car.make} ${car.model}. ${car.hp} HP of pure performance. Available at Grid Motors Kla.`}
+        canonical={`/cars/inventory/${car.id}`}
+        ogImage={car.image}
+      />
       {/* Hero Pratap */}
       <div ref={heroRef} className="h-[60vh] relative flex items-center justify-center overflow-hidden">
         <motion.div

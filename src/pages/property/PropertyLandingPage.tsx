@@ -2,10 +2,16 @@ import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Building2, MapPin, Key } from 'lucide-react';
 import OptimizedImage from '../../components/OptimizedImage';
+import SEO from '../../components/SEO';
 
 export default function PropertyLandingPage() {
   return (
     <div className="flex-grow flex flex-col bg-[#0a0a0a] text-white pt-24">
+      <SEO 
+        title="Masembe Real Estate | Luxury Living"
+        description="Visionary real estate development in Uganda. Specializing in Smart Density, vertical integration, and sustainable urban landmarks."
+        canonical="/property"
+      />
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden px-6">
         <div className="absolute inset-0 z-0 opacity-30">

@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
+import SEO from '../components/SEO';
 
 const gridIcon = L.divIcon({
   className: 'custom-icon',
@@ -122,6 +123,11 @@ export default function ContactPage() {
 
   return (
     <div ref={pageRef} className="relative min-h-screen pt-32 pb-24 px-6 md:px-12 bg-black text-[#f5f5dc]">
+      <SEO 
+        title="Contact Us"
+        description="Get in touch with Masembe Group for real estate inquiries or Grid Motors for luxury automotive services in Kampala, Uganda."
+        canonical="/contact"
+      />
       <div className="max-w-7xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}

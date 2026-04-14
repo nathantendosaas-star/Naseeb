@@ -3,6 +3,7 @@ import { properties } from '@/data/properties';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef, useState } from 'react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
+import SEO from '@/components/SEO';
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
@@ -56,6 +57,12 @@ export default function PropertyDetailPage() {
 
   return (
     <div className="min-h-screen bg-re-bg text-re-text pt-24">
+      <SEO 
+        title={`${property.name} | Masembe Real Estate`}
+        description={`${property.name} in ${property.location}. A masterpiece of modern architecture by Masembe Group.`}
+        canonical={`/property/portfolio/${property.id}`}
+        ogImage={property.image}
+      />
       {/* Hero Pratap */}
       <div ref={heroRef} className="h-[60vh] relative flex items-center justify-center overflow-hidden">
         <motion.img

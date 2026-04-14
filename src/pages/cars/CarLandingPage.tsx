@@ -2,10 +2,16 @@ import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Shield, Zap, Globe } from 'lucide-react';
 import ShowroomPage from './ShowroomPage';
+import SEO from '../../components/SEO';
 
 export default function CarLandingPage() {
   return (
     <div className="flex-grow flex flex-col bg-white text-black pt-24">
+      <SEO 
+        title="Grid Motors | Excellence in Motion"
+        description="Discover the finest luxury and high-performance vehicles at Grid Motors. Premium automotive dealership in Kampala, Uganda."
+        canonical="/cars"
+      />
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden px-6">
         <div className="absolute inset-0 z-0 opacity-20">

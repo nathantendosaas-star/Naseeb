@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards, Autoplay, Navigation } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
 import OptimizedImage from '../../components/OptimizedImage';
+import SEO from '../../components/SEO';
 
 // Dynamically import all images from new_re folder
 const allNewReImages = import.meta.glob('/public/assets/new_re/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
@@ -11,6 +12,11 @@ const galleryImages = Object.values(allNewReImages).filter(src => !src.toLowerCa
 export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white pt-24 pb-12">
+      <SEO 
+        title="Portfolio Lookbook | Masembe Real Estate"
+        description="View our portfolio of iconic residential and commercial developments redefining the Kampala skyline."
+        canonical="/property/portfolio"
+      />
       <div className="max-w-7xl mx-auto px-6">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}

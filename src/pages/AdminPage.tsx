@@ -10,6 +10,7 @@ import {
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { format } from 'date-fns';
+import OptimizedImage from '@/components/OptimizedImage';
 import { 
   Trash2, 
   CheckCircle, 
@@ -591,10 +592,15 @@ function InventoryTab({ theme }: { theme: Theme }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {(type === 'cars' ? cars : properties).map((item: any) => (
+        {(type === 'cars' ? cars : properties).map((item: any, index: number) => (
           <div key={item.id} className={`group border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800 hover:shadow-white/5' : 'bg-white border-black/5'}`}>
             <div className="aspect-[16/10] overflow-hidden bg-gray-100">
-              <img src={item.image} alt={item.model || item.name} className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
+              <OptimizedImage 
+                src={item.image} 
+                alt={item.model || item.name} 
+                className="w-full h-full grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+                priority={index < 3}
+              />
             </div>
             <div className="p-8">
               <div className="flex justify-between items-start mb-4">

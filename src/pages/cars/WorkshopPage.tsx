@@ -55,13 +55,25 @@ export default function WorkshopPage() {
             }}
           >
             {/* After Image (Bottom) */}
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center" />
+            <OptimizedImage 
+              src="https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=1000&auto=format&fit=crop" 
+              alt="After wrap" 
+              priority
+              className="absolute inset-0 w-full h-full"
+            />
             
             {/* Before Image (Top, Clipped) */}
             <div 
-              className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center grayscale"
+              className="absolute inset-0 z-10 grayscale"
               style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
-            />
+            >
+              <OptimizedImage 
+                src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop" 
+                alt="Before wrap" 
+                priority
+                className="w-full h-full"
+              />
+            </div>
 
             {/* Slider Line */}
             <div 

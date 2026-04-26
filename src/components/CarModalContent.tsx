@@ -112,6 +112,7 @@ export default function CarModalContent({ car }: { car: Car }) {
                   src={img} 
                   alt={`${car.model} gallery ${i + 1}`} 
                   className="w-full h-full object-cover" 
+                  priority={i < 3}
                   referrerPolicy="no-referrer" 
                 />
               </div>

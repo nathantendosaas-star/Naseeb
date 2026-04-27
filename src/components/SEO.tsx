@@ -8,6 +8,8 @@ interface SEOProps {
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
+  noindex?: boolean;
+  structuredData?: object;
 }
 
 const SEO = ({
@@ -18,6 +20,8 @@ const SEO = ({
   ogTitle,
   ogDescription,
   ogImage,
+  noindex = false,
+  structuredData,
 }: SEOProps) => {
   const siteTitle = 'Masembe Group Of Companies';
   const defaultDescription = 'Masembe Naseeb - Real estate development, automotive dealership, and property development services in Kampala, Uganda.';
@@ -25,7 +29,7 @@ const SEO = ({
 
   const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
   const metaDescription = description || defaultDescription;
-  const pageUrl = canonical ? `${siteUrl}${canonical}` : siteUrl;
+  const pageUrl = canonical ? (canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`) : siteUrl;
 
   return (
     <Helmet>
@@ -33,16 +37,25 @@ const SEO = ({
       <meta name="description" content={metaDescription} />
       <link rel="canonical" href={pageUrl} />
 
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {!noindex && <meta name="robots" content="index, follow" />}
+
       <meta property="og:title" content={ogTitle || fullTitle} />
       <meta property="og:description" content={ogDescription || metaDescription} />
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={pageUrl} />
-      {ogImage && <meta property="og:image" content={ogImage} />}
+      {ogImage && <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />}
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={ogTitle || fullTitle} />
       <meta name="twitter:description" content={ogDescription || metaDescription} />
-      {ogImage && <meta name="twitter:image" content={ogImage} />}
+      {ogImage && <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />}
+
+      {structuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      )}
     </Helmet>
   );
 };

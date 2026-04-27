@@ -9,7 +9,9 @@ import SEO from '../components/SEO';
 import { useFirestoreDoc } from '../hooks/useFirestore';
 import { submitInquiry } from '../hooks/useRealtimeDB';
 
-const ProgressDot = ({ progress, start, end, color }: { progress: any, start: number, end: number, color: string }) => {
+import { MotionValue } from 'motion/react';
+
+const ProgressDot = ({ progress, start, end, color }: { progress: MotionValue<number>, start: number, end: number, color: string }) => {
   const height = useTransform(progress, [start, end], ["0%", "100%"]);
   return (
     <motion.div className="w-1 h-8 bg-black/5 rounded-full overflow-hidden">
@@ -18,7 +20,19 @@ const ProgressDot = ({ progress, start, end, color }: { progress: any, start: nu
   );
 };
 
-const ContentSection = ({ progress, start, end, index, title, desc, linkText, linkTo, isAuto }: any) => {
+interface ContentSectionProps {
+  progress: MotionValue<number>;
+  start: number;
+  end: number;
+  index: number;
+  title: string;
+  desc: string;
+  linkText: string | null;
+  linkTo: string;
+  isAuto: boolean;
+}
+
+const ContentSection = ({ progress, start, end, index, title, desc, linkText, linkTo, isAuto }: ContentSectionProps) => {
   const opacity = useTransform(progress, [start - 0.05, start, end - 0.02, end], [0, 1, 1, 0]);
   const y = useTransform(progress, [start - 0.05, start, end - 0.02, end], [40, 0, 0, -40]);
 
@@ -140,13 +154,14 @@ export default function ZeroPage() {
         setSubmitSuccess(false);
         setShowInquiry(false);
       }, 3000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting inquiry: ", error);
       let errorMessage = "There was an error submitting your request. ";
-      if (error.code === 'permission-denied') {
+      const firebaseError = error as { code?: string; message?: string };
+      if (firebaseError.code === 'permission-denied') {
         errorMessage += "Access denied. Please ensure Firestore rules allow public submissions.";
       } else {
-        errorMessage += error.message || "Please try again.";
+        errorMessage += firebaseError.message || "Please try again.";
       }
       alert(errorMessage);
     } finally {
@@ -206,12 +221,33 @@ export default function ZeroPage() {
     }
   ];
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Masembe Group Of Companies",
+    "url": "https://masembe.vercel.app",
+    "logo": "https://masembe.vercel.app/assets/new_re/LOGO.jpg",
+    "description": "Innovating Urban Density and Sustainable Growth in Uganda. Integrated platform for Real Estate and Automotive excellence.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Plot 30 Jinja Road, Conrad House",
+      "addressLocality": "Kampala",
+      "addressCountry": "UG"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+256 750 508 658",
+      "contactType": "customer service"
+    }
+  };
+
   return (
     <>
       <SEO 
         title="Collective Intelligence"
         description="Masembe Group - Innovating Urban Density and Sustainable Growth in Uganda. Integrated platform for Real Estate and Automotive excellence."
         canonical="/"
+        structuredData={structuredData}
       />
       <div ref={containerRef} className="relative w-full bg-[#F7F7F5] text-black min-h-[800vh] font-sans selection:bg-black selection:text-white">
         {/* ... navbar ... */}

@@ -34,6 +34,13 @@ export default function ParallaxShowroom({ items, theme }: ParallaxShowroomProps
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartRef = useRef(0);
   
+  useEffect(() => {
+    const checkTouch = () => {
+      setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    };
+    checkTouch();
+  }, []);
+
   const activeItem = items[activeIndex];
 
   if (!items || items.length === 0) {
@@ -46,13 +53,6 @@ export default function ParallaxShowroom({ items, theme }: ParallaxShowroomProps
       </div>
     );
   }
-
-  useEffect(() => {
-    const checkTouch = () => {
-      setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
-    };
-    checkTouch();
-  }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isTouch || !containerRef.current) return;

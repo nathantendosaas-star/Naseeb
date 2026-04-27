@@ -12,8 +12,9 @@ export default function CarDetailPage() {
   const { id } = useParams();
   const { data: firestoreCar } = useFirestoreDoc<Car>('cars', id || '');
   
-  const car = firestoreCar || staticCars.find(c => c.id === id) || staticCars[0];
+  const car = firestoreCar || staticCars.find(c => c.id === id);
   const [activeTab, setActiveTab] = useState('overview');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,17 @@ export default function CarDetailPage() {
   });
 
   const yImage = useTransform(scrollYProgress, [0, 1], [0, 100]);
+
+  if (!car) {
+    return (
+      <div className="min-h-screen bg-auto-bg text-auto-text pt-48 text-center">
+        <SEO title="Car Not Found" noindex />
+        <h1 className="text-4xl font-black uppercase mb-4">Vehicle Not Found</h1>
+        <p className="mb-8">The vehicle you are looking for does not exist or has been removed.</p>
+        <a href="/cars/inventory" className="px-8 py-4 bg-auto-accent text-white font-bold uppercase tracking-widest">Back to Inventory</a>
+      </div>
+    );
+  }
 
   const tabs = ['overview', 'gallery', 'specs', 'tax & financing', 'inquire'];
 
@@ -68,6 +80,24 @@ export default function CarDetailPage() {
     );
   };
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${car.make} ${car.model}`,
+    "image": car.image,
+    "description": `Experience the ${car.make} ${car.model}. ${car.specs?.hp || car.hp} HP of pure performance.`,
+    "brand": {
+      "@type": "Brand",
+      "name": car.make
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": car.price.replace(/[$,]/g, ''),
+      "priceCurrency": "USD",
+      "availability": car.status === 'Available' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+    }
+  };
+
   return (
     <div className="min-h-screen bg-auto-bg text-auto-text pt-24">
       <SEO 
@@ -75,6 +105,7 @@ export default function CarDetailPage() {
         description={`Experience the ${car.make} ${car.model}. ${car.specs?.hp || car.hp} HP of pure performance. Available at Grid Motors Kla.`}
         canonical={`/cars/inventory/${car.id}`}
         ogImage={car.image}
+        structuredData={structuredData}
       />
       {/* Hero Pratap */}
       <div ref={heroRef} className="h-[60vh] relative flex items-center justify-center overflow-hidden">

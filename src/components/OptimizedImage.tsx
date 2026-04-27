@@ -41,7 +41,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
-        // @ts-ignore - fetchpriority is a valid attribute but might not be in all React types yet
+        // @ts-expect-error - fetchpriority is a valid attribute but might not be in all React types yet
         fetchpriority={priority ? 'high' : 'auto'}
         decoding="async"
         onLoad={() => setIsLoaded(true)}

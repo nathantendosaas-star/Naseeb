@@ -50,7 +50,6 @@ function AnimatedRoutes() {
   
   return (
     <AnimatePresence mode="wait">
-      {/* @ts-ignore */}
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><ZeroPage /></PageTransition>} />
         <Route path="/cars" element={<PageTransition><CarLandingPage /></PageTransition>} />
@@ -60,7 +59,6 @@ function AnimatedRoutes() {
         <Route path="/cars/workshop" element={<PageTransition><WorkshopPage /></PageTransition>} />
         <Route path="/cars/import" element={<PageTransition><ImportPage /></PageTransition>} />
         <Route path="/property" element={<PageTransition><PropertyLandingPage /></PageTransition>} />
-        <Route path="/property/showroom" element={<PageTransition><PortfolioPage /></PageTransition>} />
         <Route path="/property/portfolio" element={<PageTransition><PortfolioPage /></PageTransition>} />
         <Route path="/property/portfolio/:id" element={<PageTransition><PropertyDetailPage /></PageTransition>} />
         <Route path="/property/projects" element={<PageTransition><ProjectsPage /></PageTransition>} />

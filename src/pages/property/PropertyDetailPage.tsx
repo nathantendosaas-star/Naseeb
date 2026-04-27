@@ -7,7 +7,8 @@ import SEO from '@/components/SEO';
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
-  const property = properties.find(p => p.id === id) || properties[0];
+  const property = properties.find(p => p.id === id);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -17,6 +18,17 @@ export default function PropertyDetailPage() {
   });
 
   const yImage = useTransform(scrollYProgress, [0, 1], [0, 100]);
+
+  if (!property) {
+    return (
+      <div className="min-h-screen bg-re-bg text-re-text pt-48 text-center">
+        <SEO title="Property Not Found" noindex />
+        <h1 className="text-4xl font-black uppercase mb-4">Property Not Found</h1>
+        <p className="mb-8">The property you are looking for does not exist or has been removed.</p>
+        <a href="/property/portfolio" className="px-8 py-4 bg-re-accent text-black font-bold uppercase tracking-widest hover:bg-white transition-colors">Back to Portfolio</a>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,6 +67,19 @@ export default function PropertyDetailPage() {
     }
   };
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "name": property.name,
+    "image": property.image,
+    "description": `${property.name} in ${property.location}. A masterpiece of modern architecture by Masembe Group.`,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": property.location,
+      "addressCountry": "UG"
+    }
+  };
+
   return (
     <div className="min-h-screen bg-re-bg text-re-text pt-24">
       <SEO 
@@ -62,6 +87,7 @@ export default function PropertyDetailPage() {
         description={`${property.name} in ${property.location}. A masterpiece of modern architecture by Masembe Group.`}
         canonical={`/property/portfolio/${property.id}`}
         ogImage={property.image}
+        structuredData={structuredData}
       />
       {/* Hero Pratap */}
       <div ref={heroRef} className="h-[60vh] relative flex items-center justify-center overflow-hidden">

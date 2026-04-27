@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Shield, Zap, Globe } from 'lucide-react';
-import ShowroomPage from './ShowroomPage';
+import BrandShowroomSection from './BrandShowroomSection';
 import SEO from '../../components/SEO';
 
 export default function CarLandingPage() {
@@ -63,8 +63,8 @@ export default function CarLandingPage() {
         </div>
       </section>
 
-      {/* Showroom Integration */}
-      <ShowroomPage />
+      {/* Brand Filter (replaces slideshow) */}
+      <BrandShowroomSection />
 
       {/* Stats/Features */}
       <section className="py-24 px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto w-full">

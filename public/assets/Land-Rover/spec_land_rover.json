@@ -1,0 +1,29 @@
+{
+  "2023 Land Rover Range Rover Sport": {
+    "Engine/Motor": "3.0L Turbocharged Inline-6 MHEV (P400)",
+    "Horsepower": "395 hp",
+    "Torque": "550 Nm",
+    "0-100 km/h (Acceleration)": "5.7 seconds",
+    "Top Speed": "242 km/h",
+    "Transmission": "8-speed automatic",
+    "Drive Type": "All-Wheel Drive (AWD)"
+  },
+  "Land Rover Discovery": {
+    "Engine/Motor": "3.0L Turbocharged Inline-6 MHEV (P360)",
+    "Horsepower": "355 hp",
+    "Torque": "500 Nm",
+    "0-100 km/h (Acceleration)": "6.5 seconds",
+    "Top Speed": "209 km/h",
+    "Transmission": "8-speed automatic",
+    "Drive Type": "All-Wheel Drive (AWD)"
+  },
+  "Land Rover Range Rover Sport": {
+    "Engine/Motor": "3.0L Turbocharged Inline-6 MHEV (P400 SE Dynamic)",
+    "Horsepower": "395 hp",
+    "Torque": "550 Nm",
+    "0-100 km/h (Acceleration)": "5.7 seconds",
+    "Top Speed": "242 km/h",
+    "Transmission": "8-speed automatic",
+    "Drive Type": "All-Wheel Drive (AWD)"
+  }
+}

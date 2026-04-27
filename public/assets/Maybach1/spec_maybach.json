@@ -1,0 +1,11 @@
+{
+  "Mercedes-Maybach S-Class": {
+    "Engine/Motor": "4.0L V8 Biturbo with Mild Hybrid (S 580)",
+    "Horsepower": "496 hp",
+    "Torque": "700 Nm",
+    "0-100 km/h (Acceleration)": "4.8 seconds",
+    "Top Speed": "250 km/h",
+    "Transmission": "9G-TRONIC 9-speed automatic",
+    "Drive Type": "4MATIC All-Wheel Drive"
+  }
+}

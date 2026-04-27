@@ -1,0 +1,11 @@
+{
+  "Subaru Forester": {
+    "Engine/Motor": "2.5L 4-Cylinder SUBARU BOXER",
+    "Horsepower": "180 hp",
+    "Torque": "241 Nm",
+    "0-100 km/h (Acceleration)": "9.4 seconds",
+    "Top Speed": "190 km/h",
+    "Transmission": "Lineartronic CVT",
+    "Drive Type": "Symmetrical All-Wheel Drive (AWD)"
+  }
+}

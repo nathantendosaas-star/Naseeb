@@ -58,11 +58,21 @@ export default function CarDetailPage() {
     }
   };
 
+  const SpecRow = ({ label, value }: { label: string; value?: string | number }) => {
+    if (!value) return null;
+    return (
+      <div className="flex justify-between border-b border-gray-800 pb-2">
+        <span className="text-gray-500 uppercase tracking-widest text-xs font-bold">{label}</span>
+        <span className="font-mono text-auto-accent drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">{value}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-auto-bg text-auto-text pt-24">
       <SEO 
         title={`${car.make} ${car.model} | Grid Motors`}
-        description={`Experience the ${car.make} ${car.model}. ${car.hp} HP of pure performance. Available at Grid Motors Kla.`}
+        description={`Experience the ${car.make} ${car.model}. ${car.specs?.hp || car.hp} HP of pure performance. Available at Grid Motors Kla.`}
         canonical={`/cars/inventory/${car.id}`}
         ogImage={car.image}
       />
@@ -135,7 +145,7 @@ export default function CarDetailPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold tracking-widest text-auto-gray uppercase">Power</p>
-                  <p className="text-2xl font-mono font-bold">{car.hp} HP</p>
+                  <p className="text-2xl font-mono font-bold">{car.specs?.hp || car.hp} HP</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold tracking-widest text-auto-gray uppercase">Status</p>
@@ -146,7 +156,7 @@ export default function CarDetailPage() {
           )}
           {activeTab === 'gallery' && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {car.gallery?.map((img, i) => (
+              {car.gallery?.length > 0 ? car.gallery.map((img, i) => (
                 <div key={i} className="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
                   <OptimizedImage 
                     src={img} 
@@ -155,38 +165,30 @@ export default function CarDetailPage() {
                     referrerPolicy="no-referrer" 
                   />
                 </div>
-              ))}
+              )) : (
+                <div className="col-span-3 text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                  <p className="text-gray-400 font-bold uppercase tracking-widest">Images Coming Soon</p>
+                </div>
+              )}
             </motion.div>
           )}
           {activeTab === 'specs' && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#0a0a0a] p-8 rounded-xl border border-gray-800 shadow-[0_0_30px_rgba(220,38,38,0.1)]">
               <h3 className="text-2xl font-black mb-8 uppercase tracking-widest text-white">Technical Specifications</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                <div className="flex justify-between border-b border-gray-800 pb-2">
-                  <span className="text-gray-500 uppercase tracking-widest text-xs font-bold">Engine</span>
-                  <span className="font-mono text-auto-accent drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">V8 Twin-Turbo</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-800 pb-2">
-                  <span className="text-gray-500 uppercase tracking-widest text-xs font-bold">0-100 km/h</span>
-                  <span className="font-mono text-auto-accent drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">3.2s</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-800 pb-2">
-                  <span className="text-gray-500 uppercase tracking-widest text-xs font-bold">Top Speed</span>
-                  <span className="font-mono text-auto-accent drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">315 km/h</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-800 pb-2">
-                  <span className="text-gray-500 uppercase tracking-widest text-xs font-bold">Drivetrain</span>
-                  <span className="font-mono text-auto-accent drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">AWD</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-800 pb-2">
-                  <span className="text-gray-500 uppercase tracking-widest text-xs font-bold">Transmission</span>
-                  <span className="font-mono text-auto-accent drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">8-Speed Auto</span>
-                </div>
-                <div className="flex justify-between border-b border-gray-800 pb-2">
-                  <span className="text-gray-500 uppercase tracking-widest text-xs font-bold">Torque</span>
-                  <span className="font-mono text-auto-accent drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">850 Nm</span>
-                </div>
+                <SpecRow label="Engine" value={car.specs?.engine} />
+                <SpecRow label="0-100 km/h" value={car.specs?.acceleration} />
+                <SpecRow label="Top Speed" value={car.specs?.topSpeed} />
+                <SpecRow label="Drivetrain" value={car.specs?.driveType} />
+                <SpecRow label="Transmission" value={car.specs?.transmission} />
+                <SpecRow label="Torque" value={car.specs?.torque} />
+                <SpecRow label="Power" value={car.specs?.hp ? `${car.specs.hp} HP` : undefined} />
               </div>
+              {!car.specs && (
+                <div className="mt-4 text-center">
+                  <p className="text-gray-600 text-sm uppercase tracking-widest">Detailed specifications available upon request</p>
+                </div>
+              )}
             </motion.div>
           )}
           {activeTab === 'tax & financing' && (
@@ -200,25 +202,29 @@ export default function CarDetailPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-white p-4 rounded-md border border-gray-200">
                     <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Import Duty (25%)</p>
-                    <p className="font-mono font-bold text-lg">Est. $45,000</p>
+                    <p className="font-mono font-bold text-lg">Est. {car.price !== 'Contact for Price' ? `$${(parseFloat(car.price.replace(/[$,]/g, '')) * 0.25).toLocaleString()}` : '---'}</p>
                   </div>
                   <div className="bg-white p-4 rounded-md border border-gray-200">
                     <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">VAT (18%)</p>
-                    <p className="font-mono font-bold text-lg">Est. $32,400</p>
+                    <p className="font-mono font-bold text-lg">Est. {car.price !== 'Contact for Price' ? `$${(parseFloat(car.price.replace(/[$,]/g, '')) * 0.18).toLocaleString()}` : '---'}</p>
                   </div>
                   <div className="bg-white p-4 rounded-md border border-gray-200">
                     <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Withholding Tax (6%)</p>
-                    <p className="font-mono font-bold text-lg">Est. $10,800</p>
+                    <p className="font-mono font-bold text-lg">Est. {car.price !== 'Contact for Price' ? `$${(parseFloat(car.price.replace(/[$,]/g, '')) * 0.06).toLocaleString()}` : '---'}</p>
                   </div>
                   <div className="bg-white p-4 rounded-md border border-gray-200">
                     <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Infrastructure Levy (1.5%)</p>
-                    <p className="font-mono font-bold text-lg">Est. $2,700</p>
+                    <p className="font-mono font-bold text-lg">Est. {car.price !== 'Contact for Price' ? `$${(parseFloat(car.price.replace(/[$,]/g, '')) * 0.015).toLocaleString()}` : '---'}</p>
                   </div>
                 </div>
                 <div className="pt-6 border-t border-gray-200">
                   <div className="flex justify-between items-center">
                     <span className="font-bold uppercase tracking-widest">Estimated Total Landed Cost</span>
-                    <span className="font-mono text-2xl font-black text-auto-accent">Est. $340,900</span>
+                    <span className="font-mono text-2xl font-black text-auto-accent">
+                      {car.price !== 'Contact for Price' 
+                        ? `Est. $${(parseFloat(car.price.replace(/[$,]/g, '')) * 1.505).toLocaleString()}` 
+                        : 'Request Quote'}
+                    </span>
                   </div>
                   <p className="text-xs text-gray-400 mt-2">* Estimates are for illustrative purposes only. Contact us for an exact quote.</p>
                 </div>

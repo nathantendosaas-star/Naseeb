@@ -39,11 +39,11 @@ export default function GlobalHeader() {
   return (
     <>
       <header className={cn(
-        "fixed top-0 left-0 right-0 z-40 px-6 md:px-12 py-6 flex items-center justify-between",
+        "fixed top-0 left-0 right-0 z-40 px-4 md:px-12 py-4 md:py-6 flex items-center justify-between",
         isAuto ? "text-auto-text" : "text-re-text"
       )}>
         <div className="flex items-center z-50">
-          <Link to="/" className="text-3xl font-black tracking-tighter hover:scale-110 transition-transform mr-8 border-r border-current pr-6">
+          <Link to="/" className="text-2xl md:text-3xl font-black tracking-tighter hover:scale-110 transition-transform mr-4 md:mr-8 border-r border-current pr-4 md:pr-6">
             M
           </Link>
           <Link to={isAuto ? "/cars" : "/property"} className="flex items-center">
@@ -52,11 +52,11 @@ export default function GlobalHeader() {
                 src="/GRID_LOGO.jpg" 
                 alt="Grid Motors" 
                 priority 
-                className="h-8 md:h-10 w-24 md:w-32 bg-transparent" 
+                className="h-6 md:h-10 w-18 md:w-32 bg-transparent" 
                 style={{ objectFit: 'contain' }}
               />
             ) : (
-              <span className="text-xl md:text-2xl font-black tracking-tighter uppercase">Masembe Group</span>
+              <span className="text-lg md:text-2xl font-black tracking-tighter uppercase whitespace-nowrap">Masembe Group</span>
             )}
           </Link>
         </div>

@@ -1,105 +1,105 @@
-Goal:
-Reduce image loading latency across the app without changing the visual design. The page itself is already fast, so focus only on image delivery, image decoding, and visible-image priority.
+You are working inside an existing web app codebase. Your task is to add complete SEO indexing support for Google crawlability and search visibility, but only by creating/modifying files and code inside the project. Do not use any external services or dashboards. Do not assume the app’s existing route names, domain, framework, or file structure. Detect those from the codebase before making changes.
 
-Primary objectives:
-1. Make above-the-fold images appear first.
-2. Delay offscreen images until needed.
-3. Reduce image file weight without making images look grainy.
-4. Serve the best image size for each viewport.
-5. Prevent layout shift while images load.
+Goals:
+1. Make the site crawlable by search engines.
+2. Add a valid robots.txt.
+3. Add a valid sitemap.xml.
+4. Ensure the site exposes proper metadata for indexing and sharing.
+5. Keep the implementation framework-appropriate and compatible with deployment on a modern static or server-rendered hosting setup.
+6. Use placeholders anywhere real production values are unknown.
 
-Required behavior:
+Important constraints:
+- Do not assume any page names that are not already present in the app.
+- Do not assume the domain. Use a placeholder like https://YOUR_DOMAIN when a real domain is required.
+- Do not assume framework-specific file paths unless the codebase clearly indicates them.
+- Do not create fake pages. Only include URLs for pages actually discovered in the codebase.
+- Do not touch business logic unless needed for SEO.
+- Do not alter design or UI except where metadata or head tags are required.
+- Prefer a clean, minimal, reliable implementation over cleverness.
 
-A. Prioritize visible images
-- Any image that is immediately visible on page load must load first.
-- Mark the main hero / first visible image as high priority.
-- Preload the most important above-the-fold image when appropriate.
-- Do not lazy-load the first visible image.
-- Make sure the browser fetches the main visible image before lower-priority assets.
+What to inspect first:
+- Detect the framework and routing system used by the app.
+- Discover all publicly accessible indexable routes from the codebase.
+- Identify routes that should be excluded from indexing, such as:
+  - auth pages
+  - admin pages
+  - internal dashboards
+  - API routes
+  - preview/test routes
+  - error pages
+  - duplicate routes
+  - private or user-specific pages
+- Determine whether the app uses static routes, dynamic routes, SSR, SSG, or a mix.
+- Determine the best place in the project to expose static SEO files and metadata.
 
-B. Lazy-load everything below the fold
-- Any image not visible on initial load must be lazy-loaded.
-- Do not request offscreen images until they are near the viewport.
-- For long lists, grids, collections, galleries, and similar layouts, only load images when the user scrolls close enough to them.
-- Keep the first batch small enough that the screen does not request too many images at once.
+Required output/files:
+1. robots.txt
+   - Allow crawling of public pages.
+   - Block non-indexable or private sections discovered in the app.
+   - Point to the sitemap location using the placeholder domain if needed.
+   - Keep it valid plain text.
+   - Do not block the whole site.
+   - Do not accidentally block CSS, JS, or image assets needed for rendering unless the codebase already requires it.
 
-C. Avoid loading too many images at once
-- Do not trigger dozens of image downloads at the same time.
-- Use progressive loading for image-heavy pages.
-- Render only the visible items first, then load the rest gradually.
-- If virtualization or pagination is available, use it for large lists.
-- Keep network concurrency reasonable so the browser is not overwhelmed.
+2. sitemap.xml
+   - Generate a valid XML sitemap.
+   - Include only public indexable routes discovered in the codebase.
+   - Use canonical absolute URLs.
+   - Use placeholders where the real domain is unknown.
+   - Add lastmod values when possible.
+   - Exclude private, duplicate, irrelevant, or non-indexable URLs.
+   - Keep the XML standards-compliant.
+   - If the app has many routes or dynamic routes, generate the sitemap dynamically or at build time if that is the cleanest fit for the framework.
 
-D. Use modern image formats
-- Convert images to WebP or AVIF where supported.
-- Use a fallback only when needed.
-- Prefer smaller modern formats for photographs and normal UI images.
-- Keep icons, logos, and flat graphics sharp; do not over-compress them.
+3. SEO metadata in the app
+   - Add or improve the default page metadata used across the site:
+     - title
+     - description
+     - canonical URL
+     - robots meta directives
+     - Open Graph tags
+     - Twitter card tags
+   - Ensure each discovered important page can have its own metadata if the framework supports it.
+   - Use safe placeholder values when page-specific copy is unknown.
+   - Keep metadata consistent with the site’s actual purpose.
 
-E. Resize images before delivery
-- Never send an image larger than the maximum size it will actually display.
-- Generate responsive variants for different viewport widths and device densities.
-- Use the right source size instead of one huge original for every screen.
-- Do not upscale small images beyond their native quality.
+4. Structured data where appropriate
+   - Add JSON-LD only if it fits naturally and does not require guessing facts.
+   - Use placeholders for organization/site details if the real values are unknown.
+   - Avoid adding speculative structured data.
 
-F. Compress intelligently
-- Compress images enough to reduce file size, but preserve visual quality.
-- Do not use overly aggressive compression that makes photos grainy or blurry.
-- Use stronger compression for large photographic images.
-- Use lighter compression for screenshots, UI graphics, logos, and text-heavy images.
-- If an image is already small and looks good, do not over-optimize it just for the sake of it.
+Implementation requirements:
+- Produce code that works with the app’s existing framework and routing conventions.
+- If the framework supports a native sitemap/metadata API, use that.
+- If not, create a simple reliable implementation that serves the correct files.
+- If the app uses build-time generation, make sure sitemap generation is automated during build or deployment.
+- If the app uses dynamic routes, include only valid canonical routes and make sure generated URLs are correct.
+- Make sure the sitemap updates when routes change.
+- Make sure robots.txt and sitemap.xml are reachable at their standard locations.
 
-G. Add explicit dimensions
-- Every image must have width and height information or equivalent sizing metadata.
-- This prevents layout shift while the image is still loading.
-- Preserve aspect ratio so images do not jump around during render.
+Quality requirements:
+- Validate the XML syntax.
+- Validate the robots.txt syntax.
+- Do not create duplicate URLs in the sitemap.
+- Ensure all sitemap URLs are absolute.
+- Ensure metadata does not contain placeholder text in production-facing copy unless a real value is unknown.
+- Do not break existing navigation or rendering.
+- Keep code clean, readable, and documented.
 
-H. Improve perceived loading speed
-- Show placeholders for images while they load.
-- Use a blurred preview, dominant-color placeholder, or skeleton effect.
-- Replace the placeholder with the final image once loaded.
-- Keep the UI stable while the image is downloading.
+Suggested behavior for route discovery:
+- Scan the project for route definitions and page files.
+- Build a list of publicly accessible routes.
+- Convert those routes into canonical sitemap entries.
+- Exclude routes that are clearly private, internal, or non-indexable.
+- For dynamic routes, include only actual public canonical paths that are known from the codebase or generated content sources.
 
-I. Decode images efficiently
-- Use async decoding where supported.
-- Avoid blocking rendering on image decode if the browser can decode in the background.
-- Do not force synchronous rendering of large media assets.
+Suggested acceptance criteria:
+- robots.txt is accessible and valid.
+- sitemap.xml is accessible and valid.
+- Public pages are included in the sitemap.
+- Private/internal pages are excluded.
+- The app has sensible default SEO metadata.
+- Search engines can crawl the rendered pages cleanly.
+- Nothing in the app depends on manual post-deployment editing.
 
-J. Use best-practice loading rules by image type
-- Above-the-fold hero image: high priority, preload if needed, no lazy loading.
-- Visible product / gallery images near the top: normal priority, but still optimized and responsive.
-- Below-the-fold images: lazy-loaded.
-- Decorative images: lowest priority.
-- Background images used in CSS should also be optimized and loaded only when needed.
-
-K. Preserve quality where it matters
-- If an image is visually sensitive, keep a higher quality setting.
-- Do not reduce quality blindly.
-- For any image that becomes visibly degraded after conversion, adjust compression upward or use a different format.
-- If the source is already near the correct size and quality, do not reprocess it unnecessarily.
-
-Implementation guidance:
-- Scan all image usage in the app.
-- Identify which images are initially visible and which are offscreen.
-- Apply high-priority loading only to the first visible image or small number of critical images.
-- Convert large raster images to WebP/AVIF.
-- Generate responsive sizes for images used in cards, galleries, thumbnails, and hero sections.
-- Add lazy loading to everything below the fold.
-- Add placeholders for every major image container.
-- Make sure images are not fetched in full resolution when a smaller version would do.
-- Verify that image-heavy pages no longer request everything at once.
-
-Acceptance criteria:
-- The first visible image appears quickly.
-- Scrolling pages do not freeze while many images are loading.
-- Gallery and collection pages feel smoother.
-- Image files are smaller without obvious quality loss.
-- No major layout jumps occur while images load.
-- Offscreen images do not block the initial render.
-
-Do not:
-- Do not load every image immediately.
-- Do not ship oversized originals to the browser.
-- Do not compress so aggressively that images look damaged.
-- Do not make the first visible image lazy-loaded.
-- Do not rely on one huge image size for all screens.
+Deliver the implementation directly in the codebase. Use placeholder values wherever real deployment values are unknown. Do not assume anything that is not supported by the existing project structure.

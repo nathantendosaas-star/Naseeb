@@ -1,0 +1,11 @@
+{
+  "Toyota Land Cruiser Prado": {
+    "Engine/Motor": "2.4L Turbo Hybrid (i-FORCE MAX)",
+    "Horsepower": "326 hp",
+    "Torque": "630 Nm",
+    "0-100 km/h (Acceleration)": "8.0 seconds",
+    "Top Speed": "185 km/h",
+    "Transmission": "8-speed automatic",
+    "Drive Type": "Full-Time 4WD"
+  }
+}

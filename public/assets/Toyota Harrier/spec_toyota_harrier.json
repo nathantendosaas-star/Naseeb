@@ -1,0 +1,11 @@
+{
+  "Toyota Harrier": {
+    "Engine/Motor": "2.5L Hybrid Crossover",
+    "Horsepower": "222 hp (Combined)",
+    "Torque": "221 Nm (Engine Only)",
+    "0-100 km/h (Acceleration)": "8.1 seconds",
+    "Top Speed": "180 km/h",
+    "Transmission": "e-CVT",
+    "Drive Type": "E-Four All-Wheel Drive (AWD)"
+  }
+}

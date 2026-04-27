@@ -1,0 +1,29 @@
+{
+  "2013 Porsche Cayenne": {
+    "Engine/Motor": "3.6L V6 (Base)",
+    "Horsepower": "300 hp",
+    "Torque": "400 Nm",
+    "0-100 km/h (Acceleration)": "7.5 seconds",
+    "Top Speed": "230 km/h",
+    "Transmission": "8-speed Tiptronic S",
+    "Drive Type": "All-Wheel Drive (AWD)"
+  },
+  "Porsche Panamera": {
+    "Engine/Motor": "2.9L V6 Twin-Turbo (Base)",
+    "Horsepower": "348 hp",
+    "Torque": "500 Nm",
+    "0-100 km/h (Acceleration)": "5.1 seconds",
+    "Top Speed": "272 km/h",
+    "Transmission": "8-speed PDK",
+    "Drive Type": "Rear-Wheel Drive (RWD)"
+  },
+  "Porsche Cayenne S": {
+    "Engine/Motor": "4.0L V8 Twin-Turbo",
+    "Horsepower": "468 hp",
+    "Torque": "600 Nm",
+    "0-100 km/h (Acceleration)": "5.0 seconds",
+    "Top Speed": "273 km/h",
+    "Transmission": "8-speed Tiptronic S",
+    "Drive Type": "All-Wheel Drive (AWD)"
+  }
+}

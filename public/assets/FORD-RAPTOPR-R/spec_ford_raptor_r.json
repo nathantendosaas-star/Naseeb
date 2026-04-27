@@ -1,0 +1,11 @@
+{
+  "FORD RAPTOR R": {
+    "Engine/Motor": "5.2L Supercharged V8",
+    "Horsepower": "720 hp",
+    "Torque": "868 Nm",
+    "0-100 km/h (Acceleration)": "3.7 seconds",
+    "Top Speed": "180 km/h (Limited)",
+    "Transmission": "10-speed automatic",
+    "Drive Type": "4WD with Terrain Management"
+  }
+}

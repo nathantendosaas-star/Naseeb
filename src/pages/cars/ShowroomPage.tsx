@@ -9,7 +9,13 @@ import SEO from '../../components/SEO';
 export default function ShowroomPage() {
   const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
   
-  const carsList = firestoreCars.length > 0 ? firestoreCars : staticCars;
+  // Merge static and firestore cars, ensuring unique IDs (Firestore takes precedence)
+  const carsList = (() => {
+    const carMap = new Map<string, Car>();
+    staticCars.forEach(car => carMap.set(car.id, car));
+    firestoreCars.forEach(car => carMap.set(car.id, car));
+    return Array.from(carMap.values());
+  })();
 
   const items: ShowroomItem[] = carsList.map(car => ({
     id: car.id,

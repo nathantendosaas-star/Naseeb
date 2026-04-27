@@ -1,6 +1,6 @@
 import type { Car } from '@/data/cars';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
 import OptimizedImage from './OptimizedImage';
 import { ChevronLeft, ChevronRight } from 'lucide-react';

@@ -32,7 +32,7 @@ export default function StatNode({ label, value, suffix = '', index, isActive }:
       // Using requestAnimationFrame to defer state update avoids cascading render errors
       requestAnimationFrame(() => setDisplayValue(0));
     } else {
-      setDisplayValue(value);
+      requestAnimationFrame(() => setDisplayValue(value));
     }
   }, [isActive, value, index]);
 

@@ -47,7 +47,7 @@ export function useRealtimeDB<T>(path: string, limitCount: number = 50) {
       }
     }, (err) => {
       console.error(`Error fetching RTDB data from ${path}:`, err);
-      setError(err);
+      setError(err instanceof Error ? err : new Error(String(err)));
       setLoading(false);
     });
 
@@ -61,7 +61,7 @@ export function useRealtimeDB<T>(path: string, limitCount: number = 50) {
  * Utility to submit a new inquiry to Realtime Database
  * @param data The inquiry form data
  */
-export async function submitInquiry(data: any) {
+export async function submitInquiry(data: Record<string, unknown>) {
   const inquiriesRef = ref(rtdb, 'inquiries');
   const newInquiryRef = push(inquiriesRef);
   const inquiryData = {

@@ -107,13 +107,14 @@ export default function ContactPage() {
       await submitInquiry(data);
       setSubmitSuccess(true);
       form.reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting inquiry: ", error);
       let errorMessage = "There was an error submitting your message. ";
-      if (error.code === 'permission-denied') {
+      const firebaseError = error as { code?: string; message?: string };
+      if (firebaseError.code === 'permission-denied') {
         errorMessage += "Access denied. Please ensure Firestore rules allow public submissions.";
       } else {
-        errorMessage += error.message || "Please try again.";
+        errorMessage += firebaseError.message || "Please try again.";
       }
       alert(errorMessage);
     } finally {

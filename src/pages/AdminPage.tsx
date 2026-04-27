@@ -105,9 +105,10 @@ export default function AdminPage() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Login error:", error);
-      setAuthError(error.message || "An error occurred during sign in.");
+      const authError = error as { message?: string };
+      setAuthError(authError.message || "An error occurred during sign in.");
     }
   };
 
@@ -592,12 +593,12 @@ function InventoryTab({ theme }: { theme: Theme }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {(type === 'cars' ? cars : properties).map((item: any, index: number) => (
+        {(type === 'cars' ? cars : properties).map((item: CarType | PropertyType, index: number) => (
           <div key={item.id} className={`group border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800 hover:shadow-white/5' : 'bg-white border-black/5'}`}>
             <div className="aspect-[16/10] overflow-hidden bg-gray-100">
               <OptimizedImage 
                 src={item.image} 
-                alt={item.model || item.name} 
+                alt={('model' in item ? item.model : item.name)}
                 className="w-full h-full grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
                 priority={index < 3}
               />
@@ -605,8 +606,8 @@ function InventoryTab({ theme }: { theme: Theme }) {
             <div className="p-8">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-xl font-black uppercase tracking-tighter leading-none">{item.model || item.name}</h3>
-                  <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-2 transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{item.make || item.location}</p>
+                  <h3 className="text-xl font-black uppercase tracking-tighter leading-none">{('model' in item ? item.model : item.name)}</h3>
+                  <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-2 transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{('make' in item ? item.make : item.location)}</p>
                 </div>
                 <span className={`text-[10px] font-black tracking-widest ${theme === 'dark' ? 'text-zinc-400' : 'text-black'}`}>{item.price}</span>
               </div>
@@ -653,7 +654,7 @@ function InventoryTab({ theme }: { theme: Theme }) {
 }
 
 function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, item?: CarType | PropertyType | null, onClose: () => void, theme: Theme }) {
-  const [formData, setFormData] = useState<any>(item || {
+  const [formData, setFormData] = useState<Partial<CarType & PropertyType>>(item || {
     id: '',
     make: '',
     model: '',
@@ -681,17 +682,18 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
       // Ensure numeric values are numbers and handle NaN
       const finalData = { ...formData };
       if (type === 'cars') {
-        finalData.year = parseInt(formData.year.toString()) || new Date().getFullYear();
-        finalData.hp = parseInt(formData.hp.toString()) || 0;
+        finalData.year = parseInt((formData.year || 0).toString()) || new Date().getFullYear();
+        finalData.hp = parseInt((formData.hp || 0).toString()) || 0;
       } else {
-        finalData.bedrooms = parseInt(formData.bedrooms.toString()) || 0;
+        finalData.bedrooms = parseInt((formData.bedrooms || 0).toString()) || 0;
       }
 
       if (item) {
-        await updateDoc(doc(db, type, item.id), finalData);
+        await updateDoc(doc(db, type, item.id), finalData as any);
       } else {
-        const id = finalData.id || (finalData.model || finalData.name).toLowerCase().replace(/\s+/g, '-');
-        await setDoc(doc(db, type, id), { ...finalData, id });
+        const nameForId = formData.model || formData.name || 'item';
+        const id = finalData.id || nameForId.toLowerCase().replace(/\s+/g, '-');
+        await setDoc(doc(db, type, id), { ...finalData, id } as any);
       }
       onClose();
     } catch (error) {
@@ -728,14 +730,14 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
                 <FormField theme={theme} label="Identifier (slug)" value={formData.id} onChange={(v) => setFormData({...formData, id: v})} placeholder="e.g. kololo-mansion" disabled={!!item} />
                 <FormField theme={theme} label="Property Name" value={formData.name} onChange={(v) => setFormData({...formData, name: v})} />
                 <FormField theme={theme} label="Location" value={formData.location} onChange={(v) => setFormData({...formData, location: v})} />
-                <FormField theme={theme} label="Asset Type" value={formData.type} onChange={(v) => setFormData({...formData, type: v})} />
+                <FormField theme={theme} label="Asset Type" value={formData.type} onChange={(v) => setFormData({...formData, type: v as any})} />
                 <FormField theme={theme} label="Bedrooms" type="number" value={formData.bedrooms} onChange={(v) => setFormData({...formData, bedrooms: parseInt(v)})} />
                 <FormField theme={theme} label="Square Footage" value={formData.area} onChange={(v) => setFormData({...formData, area: v})} />
               </>
             )}
             
             <FormField theme={theme} label="Valuation" value={formData.price} onChange={(v) => setFormData({...formData, price: v})} placeholder="$ 000,000" />
-            <FormField theme={theme} label="Asset Status" value={formData.status || formData.completionDate} onChange={(v) => setFormData({...formData, [type === 'cars' ? 'status' : 'completionDate']: v})} />
+            <FormField theme={theme} label="Asset Status" value={formData.status || formData.completionDate} onChange={(v) => setFormData({...formData, [type === 'cars' ? 'status' : 'completionDate']: v} as any)} />
             <FormField theme={theme} label="Watermark Text" value={formData.watermarkText} onChange={(v) => setFormData({...formData, watermarkText: v})} />
             <div className="md:col-span-2">
               <FormField theme={theme} label="Primary Image URL" value={formData.image} onChange={(v) => setFormData({...formData, image: v})} />
@@ -781,7 +783,11 @@ interface FormFieldProps {
   theme: Theme;
 }
 
+/**
+ * FormField component for administrative inputs
+ */
 function FormField({ label, value, onChange, theme, type = 'text', multiline = false, placeholder = '', disabled = false }: FormFieldProps) {
+  const displayValue = value === undefined || value === null ? '' : value;
   const inputClasses = `w-full border p-5 text-lg font-medium outline-none transition-all shadow-sm ${
     theme === 'dark' 
       ? 'bg-zinc-950 border-zinc-800 text-white focus:border-white placeholder:text-zinc-700' 
@@ -793,7 +799,7 @@ function FormField({ label, value, onChange, theme, type = 'text', multiline = f
       <label className={`text-[10px] font-black uppercase tracking-[0.3em] transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{label}</label>
       {multiline ? (
         <textarea 
-          value={value} 
+          value={displayValue}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
@@ -802,7 +808,7 @@ function FormField({ label, value, onChange, theme, type = 'text', multiline = f
       ) : (
         <input 
           type={type} 
-          value={value} 
+          value={displayValue}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}

@@ -63,8 +63,9 @@ export const cars: Car[] = [
     price: '$180,000',
     status: 'Available',
     watermarkText: 'SPRINTER',
-    image: '/assets/Mercedes-Benz Sprinter/Luxury-Sprinter-Van-1.jpg',
+    image: '/assets/Mercedes-Benz Sprinter/main.webp',
     gallery: [
+      '/assets/Mercedes-Benz Sprinter/main.webp',
       '/assets/Mercedes-Benz Sprinter/Luxury-Sprinter-Van-1.jpg'
     ]
   },
@@ -77,8 +78,9 @@ export const cars: Car[] = [
     price: '$28,000',
     status: 'Available',
     watermarkText: 'GLE350D',
-    image: '/assets/2018 Mercedes-Benz GLE 350d 4MATIC/SaveClip.App_586669133_17929842048140792_6919276109600389216_n.jpg',
+    image: '/assets/2018 Mercedes-Benz GLE 350d 4MATIC/main.jpg',
     gallery: [
+      '/assets/2018 Mercedes-Benz GLE 350d 4MATIC/main.jpg',
       '/assets/2018 Mercedes-Benz GLE 350d 4MATIC/SaveClip.App_586669133_17929842048140792_6919276109600389216_n.jpg',
       '/assets/2018 Mercedes-Benz GLE 350d 4MATIC/SaveClip.App_587278268_17929842060140792_8169053905024284709_n.jpg',
       '/assets/2018 Mercedes-Benz GLE 350d 4MATIC/SaveClip.App_587289336_17929842015140792_1573921457145670117_n.jpg',
@@ -104,8 +106,9 @@ export const cars: Car[] = [
     price: '$300,000',
     status: 'Available',
     watermarkText: 'BENTLEY',
-    image: '/assets/Bentley Continental GT/pexels-nikita-volodko-1234519-29527991.jpg',
+    image: '/assets/Bentley Continental GT/main.jpg',
     gallery: [
+      '/assets/Bentley Continental GT/main.jpg',
       '/assets/Bentley Continental GT/pexels-nikita-volodko-1234519-29527991.jpg',
       '/assets/Bentley Continental GT/pexels-tima-miroshnichenko-6872163.jpg',
       '/assets/Bentley Continental GT/pexels-tima-miroshnichenko-6872600.jpg',
@@ -130,8 +133,9 @@ export const cars: Car[] = [
     price: '$110,000',
     status: 'Available',
     watermarkText: 'BMW7',
-    image: '/assets/BMW 7 Series/SaveClip.App_482475277_610615665287399_8107601930896040158_n.jpg',
+    image: '/assets/BMW 7 Series/main.jpg',
     gallery: [
+      '/assets/BMW 7 Series/main.jpg',
       '/assets/BMW 7 Series/SaveClip.App_482475277_610615665287399_8107601930896040158_n.jpg',
       '/assets/BMW 7 Series/SaveClip.App_653853820_18048902738708314_1714450360385024689_n.jpg',
       '/assets/BMW 7 Series/SaveClip.App_655439246_18041629985538694_2443531512184741997_n.jpg',
@@ -157,8 +161,9 @@ export const cars: Car[] = [
     price: '$220,000',
     status: 'Available',
     watermarkText: 'MANSORY',
-    image: '/assets/BMW 7 Series-Mansory/SaveClip.App_472039352_918010490546729_7765610575373542732_n.jpg',
+    image: '/assets/BMW 7 Series-Mansory/main.jpg',
     gallery: [
+      '/assets/BMW 7 Series-Mansory/main.jpg',
       '/assets/BMW 7 Series-Mansory/SaveClip.App_472039352_918010490546729_7765610575373542732_n.jpg',
       '/assets/BMW 7 Series-Mansory/SaveClip.App_639827816_17917883241283578_3682488524676178915_n.jpg',
       '/assets/BMW 7 Series-Mansory/SaveClip.App_650302713_17923348851258760_2473498152113349915_n.jpg',
@@ -187,8 +192,9 @@ export const cars: Car[] = [
     price: '$160,000',
     status: 'Available',
     watermarkText: 'VOGUE',
-    image: '/assets/Land Rover Range Rover Vogue/SaveClip.App_491442984_17907033633140792_8107841793494064125_n.jpg',
+    image: '/assets/Land Rover Range Rover Vogue/main.jpg',
     gallery: [
+      '/assets/Land Rover Range Rover Vogue/main.jpg',
       '/assets/Land Rover Range Rover Vogue/SaveClip.App_491442984_17907033633140792_8107841793494064125_n.jpg',
       '/assets/Land Rover Range Rover Vogue/SaveClip.App_496818511_17907033582140792_6362885496785652749_n.jpg',
       '/assets/Land Rover Range Rover Vogue/SaveClip.App_496820982_17907033594140792_1710835746530368193_n.jpg',
@@ -220,8 +226,9 @@ export const cars: Car[] = [
     price: '$132,000',
     status: 'Available',
     watermarkText: 'AMG',
-    image: '/assets/Mercedes-AMG GLE 63 S/SaveClip.App_490224008_17904264666140792_4356500675914956193_n.jpg',
+    image: '/assets/Mercedes-AMG GLE 63 S/main.jpg',
     gallery: [
+      '/assets/Mercedes-AMG GLE 63 S/main.jpg',
       '/assets/Mercedes-AMG GLE 63 S/SaveClip.App_490224008_17904264666140792_4356500675914956193_n.jpg',
       '/assets/Mercedes-AMG GLE 63 S/SaveClip.App_491146736_17904264675140792_2741043487482383629_n.jpg',
       '/assets/Mercedes-AMG GLE 63 S/SaveClip.App_491416996_17904264672140792_7565325808664484308_n.jpg',
@@ -251,8 +258,9 @@ export const cars: Car[] = [
     price: '$190,000',
     status: 'Available',
     watermarkText: 'G-CLASS',
-    image: '/assets/Mercedes-Benz G-Class/SaveClip.App_461101510_903593615009908_7474727303419448655_n.jpg',
+    image: '/assets/Mercedes-Benz G-Class/main.jpg',
     gallery: [
+      '/assets/Mercedes-Benz G-Class/main.jpg',
       '/assets/Mercedes-Benz G-Class/SaveClip.App_461101510_903593615009908_7474727303419448655_n.jpg',
       '/assets/Mercedes-Benz G-Class/SaveClip.App_649241404_17893737930288558_8034514004760461336_n.jpg',
       '/assets/Mercedes-Benz G-Class/SaveClip.App_655574848_18096905885297677_4421382158870647222_n.jpg',
@@ -279,8 +287,9 @@ export const cars: Car[] = [
     price: '$75,000',
     status: 'Available',
     watermarkText: 'GLE',
-    image: '/assets/Mercedes-Benz GLE-Class/SaveClip.App_586669196_17929842186140792_4594363106052402487_n.jpg',
+    image: '/assets/Mercedes-Benz GLE-Class/main.jpg',
     gallery: [
+      '/assets/Mercedes-Benz GLE-Class/main.jpg',
       '/assets/Mercedes-Benz GLE-Class/SaveClip.App_586669196_17929842186140792_4594363106052402487_n.jpg',
       '/assets/Mercedes-Benz GLE-Class/SaveClip.App_587269222_17929842195140792_7955917783270247023_n.jpg',
       '/assets/Mercedes-Benz GLE-Class/SaveClip.App_587284126_17929842213140792_7174517549680686246_n.jpg',
@@ -307,8 +316,9 @@ export const cars: Car[] = [
     price: '$25,000',
     status: 'Available',
     watermarkText: 'FUGA',
-    image: '/assets/Nissan Fuga/SaveClip.App_581357439_17928295095140792_5926582982365786262_n.jpg',
+    image: '/assets/Nissan Fuga/main.jpg',
     gallery: [
+      '/assets/Nissan Fuga/main.jpg',
       '/assets/Nissan Fuga/SaveClip.App_581357439_17928295095140792_5926582982365786262_n.jpg',
       '/assets/Nissan Fuga/SaveClip.App_581519482_17928295080140792_2455856967220625991_n.jpg',
       '/assets/Nissan Fuga/SaveClip.App_581542314_17928295068140792_1239144523338660405_n.jpg',
@@ -334,8 +344,9 @@ export const cars: Car[] = [
     price: '$85,000',
     status: 'Available',
     watermarkText: 'LC300',
-    image: '/assets/Toyota Land Cruiser 300 series/SaveClip.App_471836165_916065390591387_6726392414416639049_n.jpg',
+    image: '/assets/Toyota Land Cruiser 300 series/main.jpg',
     gallery: [
+      '/assets/Toyota Land Cruiser 300 series/main.jpg',
       '/assets/Toyota Land Cruiser 300 series/SaveClip.App_471836165_916065390591387_6726392414416639049_n.jpg',
       '/assets/Toyota Land Cruiser 300 series/SaveClip.App_649361166_17915190600331471_7932701867398656143_n.jpg',
       '/assets/Toyota Land Cruiser 300 series/SaveClip.App_650901366_17929995003215754_5890749422693484616_n.jpg',
@@ -391,8 +402,9 @@ export const cars: Car[] = [
     price: '$12,000',
     status: 'Available',
     watermarkText: 'ML350',
-    image: '/assets/Mercedes-Benz/Mercedes-Benz ML 350 BlueTEC 4Matic/TikVideo.App_7631952407940959496_2.jpeg',
+    image: '/assets/Mercedes-Benz/Mercedes-Benz ML 350 BlueTEC 4Matic/main.jpeg',
     gallery: [
+      '/assets/Mercedes-Benz/Mercedes-Benz ML 350 BlueTEC 4Matic/main.jpeg',
       '/assets/Mercedes-Benz/Mercedes-Benz ML 350 BlueTEC 4Matic/TikVideo.App_7631952407940959496_2.jpeg',
       '/assets/Mercedes-Benz/Mercedes-Benz ML 350 BlueTEC 4Matic/TikVideo.App_7631952407940959496_3.jpeg',
       '/assets/Mercedes-Benz/Mercedes-Benz ML 350 BlueTEC 4Matic/TikVideo.App_7631952407940959496_5.jpeg',
@@ -418,8 +430,9 @@ export const cars: Car[] = [
     price: '$52,000',
     status: 'Available',
     watermarkText: 'GLC',
-    image: '/assets/Mercedes-Benz/Mercedes-Benz-GLC/TikVideo.App_7627223774756195604_2.jpeg',
+    image: '/assets/Mercedes-Benz/Mercedes-Benz-GLC/main.jpeg',
     gallery: [
+      '/assets/Mercedes-Benz/Mercedes-Benz-GLC/main.jpeg',
       '/assets/Mercedes-Benz/Mercedes-Benz-GLC/TikVideo.App_7627223774756195604_2.jpeg',
       '/assets/Mercedes-Benz/Mercedes-Benz-GLC/TikVideo.App_7627223774756195604_4.jpeg',
       '/assets/Mercedes-Benz/Mercedes-Benz-GLC/TikVideo.App_7627223774756195604_6.jpeg',
@@ -445,8 +458,9 @@ export const cars: Car[] = [
     price: '$113,000',
     status: 'Available',
     watermarkText: 'RAPTOR-R',
-    image: '/assets/FORD-RAPTOPR-R/pexels-chaiya-saleethong-497043682-16033912.jpg',
+    image: '/assets/FORD-RAPTOPR-R/main.jpg',
     gallery: [
+      '/assets/FORD-RAPTOPR-R/main.jpg',
       '/assets/FORD-RAPTOPR-R/pexels-chaiya-saleethong-497043682-16033912.jpg',
       '/assets/FORD-RAPTOPR-R/pexels-garret-shields-1929773013-29043803.jpg',
       '/assets/FORD-RAPTOPR-R/pexels-redyar-rzgar-1257188192-31905071.jpg'
@@ -470,8 +484,9 @@ export const cars: Car[] = [
     price: '$17,000',
     status: 'Available',
     watermarkText: 'CX-5',
-    image: '/assets/2017 Mazda CX-5/TikVideo.App_7622303994978815240_1.jpeg',
+    image: '/assets/2017 Mazda CX-5/main.jpeg',
     gallery: [
+      '/assets/2017 Mazda CX-5/main.jpeg',
       '/assets/2017 Mazda CX-5/TikVideo.App_7622303994978815240_1.jpeg',
       '/assets/2017 Mazda CX-5/TikVideo.App_7622303994978815240_2.jpeg',
       '/assets/2017 Mazda CX-5/TikVideo.App_7622303994978815240_3.jpeg'
@@ -495,8 +510,9 @@ export const cars: Car[] = [
     price: '$16,000',
     status: 'Available',
     watermarkText: 'IS250',
-    image: '/assets/Lexus/TikVideo.App_7628399067437239573_2.jpeg',
+    image: '/assets/Lexus/main.jpg',
     gallery: [
+      '/assets/Lexus/main.jpg',
       '/assets/Lexus/TikVideo.App_7628399067437239573_2.jpeg'
     ],
     specs: {
@@ -518,8 +534,9 @@ export const cars: Car[] = [
     price: '$75,000',
     status: 'Available',
     watermarkText: 'LX570',
-    image: '/assets/Lexus/Lexus LX 570/TikVideo.App_7629123008992464148_2.jpeg',
+    image: '/assets/Lexus/Lexus LX 570/main.jpeg',
     gallery: [
+      '/assets/Lexus/Lexus LX 570/main.jpeg',
       '/assets/Lexus/Lexus LX 570/TikVideo.App_7629123008992464148_2.jpeg',
       '/assets/Lexus/Lexus LX 570/TikVideo.App_7629123008992464148_3.jpeg',
       '/assets/Lexus/Lexus LX 570/TikVideo.App_7629123008992464148_4.jpeg'
@@ -543,8 +560,9 @@ export const cars: Car[] = [
     price: '$15,000',
     status: 'Available',
     watermarkText: 'CAYENNE',
-    image: '/assets/Porsche/TikVideo.App_7620782752723438866_1.jpeg',
+    image: '/assets/Porsche/main.jpeg',
     gallery: [
+      '/assets/Porsche/main.jpeg',
       '/assets/Porsche/TikVideo.App_7620782752723438866_1.jpeg',
       '/assets/Porsche/TikVideo.App_7620782752723438866_2.jpeg',
       '/assets/Porsche/TikVideo.App_7620782752723438866_3.jpeg'
@@ -568,8 +586,9 @@ export const cars: Car[] = [
     price: '$103,000',
     status: 'Available',
     watermarkText: 'PANAMERA',
-    image: '/assets/Porsche/Porsche Panamera/TikVideo.App_7623007832279125256_2.jpeg',
+    image: '/assets/Porsche/Porsche Panamera/main.jpeg',
     gallery: [
+      '/assets/Porsche/Porsche Panamera/main.jpeg',
       '/assets/Porsche/Porsche Panamera/TikVideo.App_7623007832279125256_2.jpeg',
       '/assets/Porsche/Porsche Panamera/TikVideo.App_7623007832279125256_3.jpeg',
       '/assets/Porsche/Porsche Panamera/TikVideo.App_7623007832279125256_5.jpeg'
@@ -593,8 +612,9 @@ export const cars: Car[] = [
     price: '$32,000',
     status: 'Available',
     watermarkText: 'FORESTER',
-    image: '/assets/Subaru Forester/TikVideo.App_7630244670198566165_2.jpeg',
+    image: '/assets/Subaru Forester/main.jpeg',
     gallery: [
+      '/assets/Subaru Forester/main.jpeg',
       '/assets/Subaru Forester/TikVideo.App_7630244670198566165_2.jpeg',
       '/assets/Subaru Forester/TikVideo.App_7630244670198566165_3.jpeg',
       '/assets/Subaru Forester/TikVideo.App_7630244670198566165_4.jpeg',
@@ -620,8 +640,9 @@ export const cars: Car[] = [
     price: '$38,000',
     status: 'Available',
     watermarkText: 'HARRIER',
-    image: '/assets/Toyota Harrier/TikVideo.App_7624299119695105288_2.jpeg',
+    image: '/assets/Toyota Harrier/main.jpeg',
     gallery: [
+      '/assets/Toyota Harrier/main.jpeg',
       '/assets/Toyota Harrier/TikVideo.App_7624299119695105288_2.jpeg',
       '/assets/Toyota Harrier/TikVideo.App_7624299119695105288_4.jpeg',
       '/assets/Toyota Harrier/TikVideo.App_7624299119695105288_5.jpeg',
@@ -647,8 +668,9 @@ export const cars: Car[] = [
     price: '$65,000',
     status: 'In Transit',
     watermarkText: 'PRADO',
-    image: '/assets/Toyota Land Cruiser Prado/TikVideo.App_7630244151736487189_2.jpeg',
+    image: '/assets/Toyota Land Cruiser Prado/main.jpeg',
     gallery: [
+      '/assets/Toyota Land Cruiser Prado/main.jpeg',
       '/assets/Toyota Land Cruiser Prado/TikVideo.App_7630244151736487189_2.jpeg',
       '/assets/Toyota Land Cruiser Prado/TikVideo.App_7630244151736487189_3.jpeg',
       '/assets/Toyota Land Cruiser Prado/TikVideo.App_7630244151736487189_4.jpeg',
@@ -674,8 +696,9 @@ export const cars: Car[] = [
     price: '$95,000',
     status: 'Available',
     watermarkText: 'VELLFIRE',
-    image: '/assets/Toyota Vellfire/TikVideo.App_7629762113262685461_2.jpeg',
+    image: '/assets/Toyota Vellfire/main.jpg',
     gallery: [
+      '/assets/Toyota Vellfire/main.jpg',
       '/assets/Toyota Vellfire/TikVideo.App_7629762113262685461_2.jpeg',
       '/assets/Toyota Vellfire/TikVideo.App_7629762113262685461_3.jpeg',
       '/assets/Toyota Vellfire/TikVideo.App_7629762113262685461_4.jpeg',

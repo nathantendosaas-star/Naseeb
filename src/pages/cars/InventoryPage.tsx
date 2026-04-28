@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'motion/react';
 import { cars as staticCars } from '../../data/cars';
 import type { Car } from '../../data/cars';
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo, useEffect } from 'react';
 import { useFirestoreCollection } from '../../hooks/useFirestore';
 import Modal from '../../components/Modal';
 import CarModalContent from '../../components/CarModalContent';
@@ -19,12 +19,12 @@ export default function InventoryPage() {
   const pageRef = useRef<HTMLDivElement>(null);
 
   // Merge static and firestore cars, ensuring unique IDs (Firestore takes precedence)
-  const cars = (() => {
+  const cars = useMemo(() => {
     const carMap = new Map<string, Car>();
     staticCars.forEach(car => carMap.set(car.id, car));
     firestoreCars.forEach(car => carMap.set(car.id, car));
     return Array.from(carMap.values());
-  })();
+  }, [firestoreCars]);
 
   const brands = useMemo(() => {
     const uniqueBrands = Array.from(new Set(cars.map(car => car.make)));
@@ -32,13 +32,14 @@ export default function InventoryPage() {
   }, [cars]);
 
   const absoluteMaxHp = useMemo(() => {
-    return Math.max(...cars.map(car => car.hp), 1000);
+    const max = Math.max(...cars.map(car => car.hp || 0), 0);
+    return max > 0 ? max : 1000;
   }, [cars]);
 
   // Update maxHp filter limit when cars load
-  useState(() => {
+  useEffect(() => {
     setMaxHp(absoluteMaxHp);
-  });
+  }, [absoluteMaxHp]);
 
   const { scrollYProgress } = useScroll({
     target: pageRef,

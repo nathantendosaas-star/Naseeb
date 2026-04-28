@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'motion/react';
-import { Car } from '@/data/cars';
+import type { Car } from '@/data/cars';
 import OptimizedImage from './OptimizedImage';
 import { cn } from '@/lib/utils';
 

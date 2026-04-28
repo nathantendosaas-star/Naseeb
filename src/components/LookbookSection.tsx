@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useMemo } from 'react';
 import { X } from 'lucide-react';
-import { cars as staticCars, Car } from '@/data/cars';
+import { cars as staticCars } from '@/data/cars';
+import type { Car } from '@/data/cars';
 import { useFirestoreCollection } from '@/hooks/useFirestore';
 import LookbookItem from './LookbookItem';
 import CarModalContent from './CarModalContent';

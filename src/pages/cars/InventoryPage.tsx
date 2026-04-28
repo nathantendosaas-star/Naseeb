@@ -12,6 +12,8 @@ import OptimizedImage from '../../components/OptimizedImage';
 export default function InventoryPage() {
   const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('All Brands');
+  const [maxHp, setMaxHp] = useState<number>(1000);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -24,6 +26,20 @@ export default function InventoryPage() {
     return Array.from(carMap.values());
   })();
 
+  const brands = useMemo(() => {
+    const uniqueBrands = Array.from(new Set(cars.map(car => car.make)));
+    return ['All Brands', ...uniqueBrands.sort()];
+  }, [cars]);
+
+  const absoluteMaxHp = useMemo(() => {
+    return Math.max(...cars.map(car => car.hp), 1000);
+  }, [cars]);
+
+  // Update maxHp filter limit when cars load
+  useState(() => {
+    setMaxHp(absoluteMaxHp);
+  });
+
   const { scrollYProgress } = useScroll({
     target: pageRef,
     offset: ["start start", "end start"]
@@ -31,10 +47,14 @@ export default function InventoryPage() {
 
   const yTitle = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
-  const filteredCars = cars.filter(car =>
-    car.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    car.model.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCars = cars.filter(car => {
+    const matchesSearch = car.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         car.model.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesBrand = selectedBrand === 'All Brands' || car.make === selectedBrand;
+    const matchesHp = car.hp <= maxHp;
+    
+    return matchesSearch && matchesBrand && matchesHp;
+  });
 
   const handleCarClick = (car: Car) => {
     setSelectedCar(car);
@@ -82,14 +102,61 @@ export default function InventoryPage() {
           Inventory
         </motion.h1>
 
-        <div className="mb-12">
-          <input
-            type="text"
-            placeholder="Search by make or model..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full md:w-96 bg-transparent border-b border-auto-text/20 pb-2 focus:outline-none focus:border-auto-accent transition-colors text-auto-text placeholder-gray-500 text-sm"
-          />
+        {/* Filters Section */}
+        <div className="mb-12 flex flex-col md:flex-row gap-8 items-end">
+          {/* Search */}
+          <div className="w-full md:w-80">
+            <p className="text-[10px] uppercase tracking-widest font-black mb-2 opacity-40">Search</p>
+            <input
+              type="text"
+              placeholder="Model name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-transparent border-b border-auto-text/20 pb-2 focus:outline-none focus:border-auto-accent transition-colors text-auto-text placeholder-gray-500 text-sm"
+            />
+          </div>
+
+          {/* Brand Filter */}
+          <div className="w-full md:w-60">
+            <p className="text-[10px] uppercase tracking-widest font-black mb-2 opacity-40">Manufacturer</p>
+            <select 
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+              className="w-full bg-transparent border-b border-auto-text/20 pb-2 focus:outline-none focus:border-auto-accent transition-colors text-auto-text text-sm cursor-pointer appearance-none"
+            >
+              {brands.map(brand => (
+                <option key={brand} value={brand} className="bg-white text-black">{brand}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* HP Filter */}
+          <div className="w-full md:w-60">
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-[10px] uppercase tracking-widest font-black opacity-40">Max Power</p>
+              <p className="text-[10px] font-black">{maxHp} HP</p>
+            </div>
+            <input 
+              type="range"
+              min="0"
+              max={absoluteMaxHp}
+              value={maxHp}
+              onChange={(e) => setMaxHp(parseInt(e.target.value))}
+              className="w-full h-1 bg-black/10 rounded-lg appearance-none cursor-pointer accent-red-600"
+            />
+          </div>
+
+          {/* Reset Filters */}
+          <button 
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedBrand('All Brands');
+              setMaxHp(absoluteMaxHp);
+            }}
+            className="text-[10px] uppercase tracking-widest font-black text-red-600 hover:text-black transition-colors pb-2"
+          >
+            Reset
+          </button>
         </div>
 
         {/* Updated grid with better spacing and vertical stack on mobile */}

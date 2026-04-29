@@ -99,28 +99,35 @@ export default function FloatingControls({
                 </button>
               </div>
 
-              {/* Brands Grid */}
-              <div className="mb-12 overflow-y-auto pr-2 custom-scrollbar">
+              {/* Brands List (Amazon-style) */}
+              <div className="mb-12 overflow-y-auto pr-2 custom-scrollbar flex-grow">
                 <p className="text-[10px] uppercase tracking-[0.3em] font-black mb-6 opacity-60">Manufacturers</p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-3">
                   {availableBrands.map((brand) => (
-                    <button
+                    <label
                       key={brand}
-                      onClick={() => toggleBrand(brand)}
-                      className={cn(
-                        "relative flex items-center justify-center p-4 rounded-xl border transition-all duration-300 group",
-                        selectedBrands.includes(brand)
-                          ? "bg-white border-white text-black"
-                          : "bg-white/5 border-white/10 hover:border-white/40 text-white"
-                      )}
+                      className="group flex items-center gap-4 cursor-pointer py-1 select-none"
                     >
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-center">{brand}</span>
-                      {selectedBrands.includes(brand) && (
-                        <div className="absolute top-1 right-1">
-                          <Check size={10} className="text-black" />
-                        </div>
-                      )}
-                    </button>
+                      <div className="relative flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedBrands.includes(brand)}
+                          onChange={() => toggleBrand(brand)}
+                          className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-white/5 checked:bg-white checked:border-white transition-all cursor-pointer"
+                        />
+                        <Check 
+                          size={14} 
+                          strokeWidth={4}
+                          className="absolute text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" 
+                        />
+                      </div>
+                      <span className={cn(
+                        "text-[11px] font-black uppercase tracking-[0.15em] transition-colors",
+                        selectedBrands.includes(brand) ? "text-white" : "text-white/40 group-hover:text-white"
+                      )}>
+                        {brand}
+                      </span>
+                    </label>
                   ))}
                 </div>
               </div>

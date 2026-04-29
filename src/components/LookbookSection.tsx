@@ -134,32 +134,3 @@ export default function LookbookSection() {
     </section>
   );
 }
-
-
-      {/* Expansion Overlay (Integrated Modal) */}
-      <Modal 
-        isOpen={!!selectedCarId} 
-        onClose={() => setSelectedCarId(null)}
-      >
-        {selectedCar && (
-          <div className="relative">
-            <button 
-              onClick={() => setSelectedCarId(null)}
-              className="absolute top-4 right-4 z-50 p-2 bg-black/5 hover:bg-black/10 rounded-full transition-colors"
-            >
-              <X size={24} />
-            </button>
-            <CarModalContent car={selectedCar} />
-          </div>
-        )}
-      </Modal>
-
-      {/* Decorative Bottom Text */}
-      <div className="mt-32 text-center opacity-5 select-none pointer-events-none">
-        <h3 className="text-[15vw] font-black uppercase tracking-tighter">
-          Grid Motors
-        </h3>
-      </div>
-    </section>
-  );
-}

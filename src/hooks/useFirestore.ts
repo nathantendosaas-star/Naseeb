@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  onSnapshot, 
-  query, 
-  doc
+import {
+  collection,
+  onSnapshot,
+  query,
+  doc,
+  limit as firestoreLimit
 } from 'firebase/firestore';
-import type { 
+import type {
   DocumentData,
   QueryConstraint
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 export function useFirestoreCollection<T = DocumentData>(
-  collectionName: string, 
-  queryConstraints: QueryConstraint[] = []
+  collectionName: string,
+  queryConstraints: QueryConstraint[] = [],
+  maxResults: number = 100  // Default cap — override per use case
 ) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,9 +23,13 @@ export function useFirestoreCollection<T = DocumentData>(
 
   useEffect(() => {
     try {
-      const q = query(collection(db, collectionName), ...queryConstraints);
-      
-      const unsubscribe = onSnapshot(q, 
+      const q = query(
+        collection(db, collectionName),
+        ...queryConstraints,
+        firestoreLimit(maxResults)
+      );
+
+      const unsubscribe = onSnapshot(q,
         (snapshot) => {
           const items: T[] = [];
           snapshot.forEach((doc) => {
@@ -43,19 +49,19 @@ export function useFirestoreCollection<T = DocumentData>(
       return () => unsubscribe();
     } catch (err) {
       console.error(`Error setting up query for ${collectionName}:`, err);
-      // Defer state update
       setTimeout(() => {
         setError(err as Error);
         setLoading(false);
       }, 0);
     }
-  }, [collectionName, ...queryConstraints]); // Spread to avoid dependency warning
+  }, [collectionName, maxResults]);
 
   return { data, loading, error };
 }
 
+// useFirestoreDoc remains unchanged
 export function useFirestoreDoc<T = DocumentData>(
-  collectionName: string, 
+  collectionName: string,
   docId: string
 ) {
   const [data, setData] = useState<T | null>(null);
@@ -68,7 +74,7 @@ export function useFirestoreDoc<T = DocumentData>(
       return;
     }
 
-    const unsubscribe = onSnapshot(doc(db, collectionName, docId), 
+    const unsubscribe = onSnapshot(doc(db, collectionName, docId),
       (docSnap) => {
         if (docSnap.exists()) {
           setData({ id: docSnap.id, ...docSnap.data() } as T);

@@ -1,13 +1,29 @@
 import { useParams } from 'react-router-dom';
 import { properties } from '@/data/properties';
+import type { Property } from '@/data/properties';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef, useState } from 'react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
+import { useFirestoreDoc } from '@/hooks/useFirestore';
 import SEO from '@/components/SEO';
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
-  const property = properties.find(p => p.id === id) || properties[0];
+  const { data: firestoreProperty, loading } = useFirestoreDoc<Property>('properties', id || '');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-re-bg text-re-text pt-24 flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-8 w-full max-w-4xl px-6">
+          <div className="w-full h-[40vh] bg-white/10 rounded-2xl" />
+          <div className="w-3/4 h-8 bg-white/10 rounded" />
+          <div className="w-1/2 h-6 bg-white/10 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  const property = firestoreProperty || properties.find(p => p.id === id) || properties[0];
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -21,6 +37,14 @@ export default function PropertyDetailPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
+
+    const honeypot = (form.elements.namedItem('website') as HTMLInputElement)?.value;
+    if (honeypot) {
+      // Bot filled in the hidden field — silently reject
+      setSubmitSuccess(true);
+      return;
+    }
+
     setIsSubmitting(true);
     
     const formData = new FormData(form);
@@ -147,6 +171,15 @@ export default function PropertyDetailPage() {
                 </div>
               ) : (
                 <form className="space-y-6" onSubmit={handleSubmit}>
+                  {/* Honeypot — hidden from real users, bots fill it in */}
+                  <input
+                    type="text"
+                    name="website"
+                    autoComplete="off"
+                    tabIndex={-1}
+                    style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0 }}
+                    aria-hidden="true"
+                  />
                   <div>
                     <label className="block text-xs font-bold tracking-widest uppercase mb-2 text-re-gray">Full Name</label>
                     <input type="text" name="fullName" required className="w-full bg-transparent border-b border-white/20 pb-2 focus:outline-none focus:border-re-accent transition-colors text-white" />

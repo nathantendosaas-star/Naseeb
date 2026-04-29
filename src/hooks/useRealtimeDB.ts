@@ -10,6 +10,7 @@ import {
   limitToLast
 } from 'firebase/database';
 import { rtdb } from '../lib/firebase';
+import { isAllowed } from '../lib/rateLimiter';
 
 /**
  * Hook to subscribe to a Realtime Database path
@@ -62,6 +63,10 @@ export function useRealtimeDB<T>(path: string, limitCount: number = 50) {
  * @param data The inquiry form data
  */
 export async function submitInquiry(data: any) {
+  if (!isAllowed('inquiry-submit', 60000)) {
+    throw new Error('Please wait at least 1 minute before submitting another inquiry.');
+  }
+
   const inquiriesRef = ref(rtdb, 'inquiries');
   const newInquiryRef = push(inquiriesRef);
   const inquiryData = {

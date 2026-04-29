@@ -20,6 +20,14 @@ export default function CarModalContent({ car, onNext, onPrev }: CarModalContent
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
+
+    const honeypot = (form.elements.namedItem('website') as HTMLInputElement)?.value;
+    if (honeypot) {
+      // Bot filled in the hidden field — silently reject
+      setSubmitSuccess(true);
+      return;
+    }
+
     setIsSubmitting(true);
     
     const formData = new FormData(form);
@@ -230,6 +238,15 @@ export default function CarModalContent({ car, onNext, onPrev }: CarModalContent
               </div>
             ) : (
               <form className="space-y-6" onSubmit={handleSubmit}>
+                {/* Honeypot — hidden from real users, bots fill it in */}
+                <input
+                  type="text"
+                  name="website"
+                  autoComplete="off"
+                  tabIndex={-1}
+                  style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0 }}
+                  aria-hidden="true"
+                />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-bold tracking-widest uppercase mb-2 text-gray-400">First Name</label>

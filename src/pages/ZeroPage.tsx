@@ -108,6 +108,18 @@ export default function ZeroPage() {
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const honeypot = (e.currentTarget as HTMLFormElement).elements.namedItem('website') as HTMLInputElement;
+    if (honeypot?.value) {
+      // Bot filled in the hidden field — silently reject
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        setSubmitSuccess(false);
+        setShowInquiry(false);
+      }, 3000);
+      return;
+    }
+
     if (!inquiryForm.name || !inquiryForm.email || !inquiryForm.message) {
       alert("Please fill in all fields.");
       return;
@@ -394,6 +406,15 @@ export default function ZeroPage() {
                 </motion.div>
               ) : (
                 <form onSubmit={handleInquirySubmit} className="space-y-4">
+                  {/* Honeypot — hidden from real users, bots fill it in */}
+                  <input
+                    type="text"
+                    name="website"
+                    autoComplete="off"
+                    tabIndex={-1}
+                    style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0 }}
+                    aria-hidden="true"
+                  />
                   <input 
                     type="text" 
                     placeholder="Name" 

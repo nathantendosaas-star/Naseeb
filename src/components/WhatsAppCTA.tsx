@@ -3,6 +3,23 @@ import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 
+function getWhatsAppUrl(message: string): string {
+  const encodedMessage = encodeURIComponent(message);
+  const phone = '256750508658';
+
+  // Detect mobile via user agent for the deep link vs web decision
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+
+  if (isMobile) {
+    // Deep link opens the WhatsApp app directly on mobile
+    return `whatsapp://send?phone=${phone}&text=${encodedMessage}`;
+  }
+  // WhatsApp Web for desktop — no login required if the universal link is used
+  return `https://web.whatsapp.com/send?phone=${phone}&text=${encodedMessage}`;
+}
+
 export default function WhatsAppCTA() {
   const location = useLocation();
   const isAuto = location.pathname.startsWith('/cars');
@@ -10,15 +27,13 @@ export default function WhatsAppCTA() {
 
   if (isHome) return null;
 
-  const message = isAuto 
+  const message = isAuto
     ? "Hi Grid Motors, I'm interested in your luxury fleet."
     : "Hi Masembe Group, I'm interested in your real estate portfolio.";
 
-  const whatsappUrl = `https://wa.me/256750508658?text=${encodeURIComponent(message)}`;
-
   return (
     <motion.a
-      href={whatsappUrl}
+      href={getWhatsAppUrl(message)}
       target="_blank"
       rel="noopener noreferrer"
       initial={{ scale: 0, opacity: 0 }}

@@ -40,10 +40,14 @@ import ProjectsPage from './pages/property/ProjectsPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import AdminPage from './pages/AdminPage';
+import NotFoundPage from './pages/NotFoundPage';
+
 import GlobalHeader from './components/GlobalHeader';
 import WhatsAppCTA from './components/WhatsAppCTA';
 import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
+import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -66,7 +70,15 @@ function AnimatedRoutes() {
         <Route path="/property/projects" element={<PageTransition><ProjectsPage /></PageTransition>} />
         <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
-        <Route path="/admin" element={<PageTransition><AdminPage /></PageTransition>} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <PageTransition><AdminPage /></PageTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<PageTransition><NotFoundPage /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );
@@ -130,7 +142,7 @@ function AppContent() {
   }, []);
 
   return (
-    <>
+    <ErrorBoundary>
       <ScrollToTop lenisRef={lenisRef} />
       <GlobalHeader />
       <div className="min-h-screen flex flex-col">
@@ -140,7 +152,7 @@ function AppContent() {
         <Footer />
       </div>
       <WhatsAppCTA />
-    </>
+    </ErrorBoundary>
   );
 }
 

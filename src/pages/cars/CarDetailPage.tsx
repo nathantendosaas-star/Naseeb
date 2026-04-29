@@ -10,8 +10,21 @@ import SEO from '../../components/SEO';
 
 export default function CarDetailPage() {
   const { id } = useParams();
-  const { data: firestoreCar } = useFirestoreDoc<Car>('cars', id || '');
-  
+  const { data: firestoreCar, loading } = useFirestoreDoc<Car>('cars', id || '');
+
+  // Show a minimal skeleton while Firestore resolves
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-auto-bg text-auto-text pt-24 flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-8 w-full max-w-4xl px-6">
+          <div className="w-full h-[40vh] bg-black/10 rounded-2xl" />
+          <div className="w-3/4 h-8 bg-black/10 rounded" />
+          <div className="w-1/2 h-6 bg-black/10 rounded" />
+        </div>
+      </div>
+    );
+  }
+
   const car = firestoreCar || staticCars.find(c => c.id === id) || staticCars[0];
   const [activeTab, setActiveTab] = useState('overview');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,6 +42,14 @@ export default function CarDetailPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
+
+    const honeypot = (form.elements.namedItem('website') as HTMLInputElement)?.value;
+    if (honeypot) {
+      // Bot filled in the hidden field — silently reject
+      setSubmitSuccess(true);
+      return;
+    }
+
     setIsSubmitting(true);
     
     const formData = new FormData(form);
@@ -247,6 +268,15 @@ export default function CarDetailPage() {
                 </div>
               ) : (
                 <form className="space-y-6" onSubmit={handleSubmit}>
+                  {/* Honeypot — hidden from real users, bots fill it in */}
+                  <input
+                    type="text"
+                    name="website"
+                    autoComplete="off"
+                    tabIndex={-1}
+                    style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0 }}
+                    aria-hidden="true"
+                  />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-xs font-bold tracking-widest uppercase mb-2 text-auto-gray">First Name</label>

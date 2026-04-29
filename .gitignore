@@ -30,3 +30,17 @@ coverage
 # Project specific
 tsconfig.tsbuildinfo
 Recycle/
+
+# Gemini CLI / AI Agent artifacts
+fix*.txt
+*.prompt.txt
+.gemini/
+gemini-output/
+agent-session/
+GEMINI_*.md
+CLAUDE_*.md
+
+# General temporary files
+*.tmp
+*.bak
+*.swp

@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "inquiries": {
+      ".read": "auth != null",
+      ".write": true,
+      "$inquiryId": {
+        ".validate": "newData.hasChildren(['firstName', 'lastName', 'email', 'message', 'createdAt', 'status']) && newData.child('email').isString() && newData.child('email').val().length > 5 && newData.child('firstName').isString() && newData.child('firstName').val().length > 0 && newData.child('message').isString() && newData.child('message').val().length >= 5"
+      }
+    }
+  }
+}

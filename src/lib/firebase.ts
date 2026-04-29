@@ -2,19 +2,27 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDzMQtejKfKhOeX_30hEWOLcjTBWfIPvEE",
-  authDomain: "naseeb-b4377.firebaseapp.com",
-  projectId: "naseeb-b4377",
-  storageBucket: "naseeb-b4377.firebasestorage.app",
-  messagingSenderId: "268013548985",
-  appId: "1:268013548985:web:2fcea1ae7777d7a4aeb268",
-  measurementId: "G-XXKKG5FNNM"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
 };
 
-// Initialize Firebase SDK
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const rtdb = getDatabase(app);
 export const auth = getAuth(app);
+
+// Initialize Analytics only in browser environments where it is supported
+isSupported().then((supported) => {
+  if (supported) {
+    getAnalytics(app);
+  }
+});

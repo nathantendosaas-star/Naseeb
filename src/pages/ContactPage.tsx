@@ -25,9 +25,9 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [errors, setErrors] = useState({ name: '', email: '', message: '' });
-  const [touched, setTouched] = useState({ name: false, email: false, message: false });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [errors, setErrors] = useState({ name: '', email: '', phone: '', message: '' });
+  const [touched, setTouched] = useState({ name: false, email: false, phone: false, message: false });
 
   const pageRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -48,6 +48,11 @@ export default function ContactPage() {
     } else if (name === 'message') {
       if (!value.trim()) error = 'Message is required';
       else if (value.trim().length < 10) error = 'Message must be at least 10 characters';
+    } else if (name === 'phone') {
+      // Phone is optional but if provided must be a plausible phone number
+      if (value.trim() && !/^[+\d\s\-().]{7,20}$/.test(value.trim())) {
+        error = 'Please enter a valid phone number';
+      }
     }
     return error;
   };
@@ -55,7 +60,7 @@ export default function ContactPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (touched[name as keyof typeof touched]) {
       setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
     }
@@ -70,22 +75,30 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    
+
+    const honeypot = (e.currentTarget.elements.namedItem('website') as HTMLInputElement)?.value;
+    if (honeypot) {
+      // Bot filled in the hidden field — silently reject
+      setSubmitSuccess(true);
+      return;
+    }
+
     const newErrors = {
       name: validateField('name', formData.name),
       email: validateField('email', formData.email),
+      phone: validateField('phone', formData.phone),
       message: validateField('message', formData.message)
     };
-    
+
     setErrors(newErrors);
-    setTouched({ name: true, email: true, message: true });
-    
+    setTouched({ name: true, email: true, phone: true, message: true });
+
     if (Object.values(newErrors).some(err => err !== '')) {
       return;
     }
 
     setIsSubmitting(true);
-    
+
     const nameParts = formData.name.trim().split(' ');
     const firstName = nameParts[0] || 'Unknown';
     const lastName = nameParts.slice(1).join(' ') || 'Unknown';
@@ -94,7 +107,7 @@ export default function ContactPage() {
       firstName,
       lastName,
       email: formData.email,
-      phone: '',
+      phone: formData.phone,
       message: formData.message,
       itemType: department === 'auto' ? 'car' : 'property',
       itemId: 'general-contact',
@@ -102,7 +115,6 @@ export default function ContactPage() {
       createdAt: new Date().toISOString(),
       status: 'new'
     };
-
     try {
       await submitInquiry(data);
       setSubmitSuccess(true);
@@ -171,8 +183,8 @@ export default function ContactPage() {
                 <button 
                   onClick={() => {
                     setSubmitSuccess(false);
-                    setFormData({ name: '', email: '', message: '' });
-                    setTouched({ name: false, email: false, message: false });
+                    setFormData({ name: '', email: '', phone: '', message: '' });
+                    setTouched({ name: false, email: false, phone: false, message: false });
                   }}
                   className="text-sm font-bold tracking-widest uppercase hover:underline"
                 >
@@ -181,6 +193,15 @@ export default function ContactPage() {
               </div>
             ) : (
               <form className="space-y-8" onSubmit={handleSubmit} noValidate>
+                {/* Honeypot — hidden from real users, bots fill it in */}
+                <input
+                  type="text"
+                  name="website"
+                  autoComplete="off"
+                  tabIndex={-1}
+                  style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0 }}
+                  aria-hidden="true"
+                />
                 <div>
                   <label className="block text-xs font-bold tracking-widest uppercase mb-2 opacity-70">Name</label>
                   <input 
@@ -207,6 +228,20 @@ export default function ContactPage() {
                   />
                   {errors.email && touched.email && (
                     <p className="text-red-500 text-xs mt-2">{errors.email}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs font-bold tracking-widest uppercase mb-2 opacity-70">Phone (Optional)</label>
+                  <input 
+                    type="tel" 
+                    name="phone" 
+                    value={formData.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={`w-full bg-transparent border-b pb-2 focus:outline-none transition-colors ${errors.phone && touched.phone ? 'border-red-500 focus:border-red-500' : 'border-white/20 focus:border-[#f5f5dc]'}`} 
+                  />
+                  {errors.phone && touched.phone && (
+                    <p className="text-red-500 text-xs mt-2">{errors.phone}</p>
                   )}
                 </div>
                 <div>

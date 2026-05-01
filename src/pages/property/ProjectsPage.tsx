@@ -61,7 +61,7 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
   return (
     <section 
       ref={containerRef} 
-      className="relative h-[400vh] w-full bg-[#0a0a0a]"
+      className="relative h-[250vh] w-full bg-[#0a0a0a]"
     >
       {/* Sticky Content Container */}
       <div 

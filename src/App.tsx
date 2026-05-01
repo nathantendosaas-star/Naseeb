@@ -7,6 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import Lenis from 'lenis';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Scroll to Top behavior for React Router + Lenis
 function ScrollToTop({ lenisRef }: { lenisRef: React.MutableRefObject<Lenis | null> }) {
@@ -157,6 +158,7 @@ function AppContent() {
         <Footer />
       </div>
       <WhatsAppCTA />
+      <SpeedInsights />
     </ErrorBoundary>
   );
 }

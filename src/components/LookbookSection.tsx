@@ -8,11 +8,17 @@ import CarModalContent from './CarModalContent';
 import Modal from './Modal';
 import FloatingControls from './FloatingControls';
 
+const parsePrice = (priceStr: string) => {
+  const numeric = priceStr.replace(/[^0-9]/g, '');
+  return parseInt(numeric) || 0;
+};
+
 export default function LookbookSection() {
   const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [maxPrice, setMaxPrice] = useState<number>(1000000);
   const [maxHp, setMaxHp] = useState<number>(1000);
 
   // Merge static and firestore cars
@@ -28,17 +34,21 @@ export default function LookbookSection() {
     return uniqueBrands.sort();
   }, [allCars]);
 
+  const absoluteMaxPrice = useMemo(() => {
+    const max = Math.max(...allCars.map(car => parsePrice(car.price)), 0);
+    return max > 0 ? max : 1000000;
+  }, [allCars]);
+
   const absoluteMaxHp = useMemo(() => {
     const max = Math.max(...allCars.map(car => car.hp || 0), 0);
     return max > 0 ? max : 1000;
   }, [allCars]);
 
-  // Sync maxHp with absoluteMaxHp on initial load
+  // Sync limits on load
   useEffect(() => {
-    if (absoluteMaxHp > 0) {
-      setMaxHp(absoluteMaxHp);
-    }
-  }, [absoluteMaxHp]);
+    setMaxPrice(absoluteMaxPrice);
+    setMaxHp(absoluteMaxHp);
+  }, [absoluteMaxPrice, absoluteMaxHp]);
 
   const filteredCars = useMemo(() => {
     return allCars.filter(car => {
@@ -46,10 +56,11 @@ export default function LookbookSection() {
         car.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
         car.model.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(car.make);
+      const matchesPrice = parsePrice(car.price) <= maxPrice;
       const matchesHp = (car.hp || 0) <= maxHp;
-      return matchesSearch && matchesBrand && matchesHp;
+      return matchesSearch && matchesBrand && matchesPrice && matchesHp;
     });
-  }, [allCars, searchQuery, selectedBrands, maxHp]);
+  }, [allCars, searchQuery, selectedBrands, maxPrice, maxHp]);
 
   const selectedCar = useMemo(() => 
     allCars.find(car => car.id === selectedCarId), 
@@ -61,9 +72,13 @@ export default function LookbookSection() {
       <FloatingControls 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        selectedBrands={selectedBrands}
-        setSelectedBrands={setSelectedBrands}
-        availableBrands={availableBrands}
+        selectedCategories={selectedBrands}
+        setSelectedCategories={setSelectedBrands}
+        availableCategories={availableBrands}
+        categoryLabel="Manufacturers"
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        absoluteMaxPrice={absoluteMaxPrice}
         maxHp={maxHp}
         setMaxHp={setMaxHp}
         absoluteMaxHp={absoluteMaxHp}

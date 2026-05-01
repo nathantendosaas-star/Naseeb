@@ -27,16 +27,6 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
 
   const images = useMemo(() => project.gallery.slice(0, 4), [project.gallery]);
 
-  // Preload all images in this section's gallery
-  useEffect(() => {
-    images.forEach(src => {
-      if (!src.endsWith('.mp4')) {
-        const img = new Image();
-        img.src = src;
-      }
-    });
-  }, [images]);
-
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (!containerRef.current) return;
@@ -47,7 +37,6 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
         end: "bottom bottom",
         scrub: true,
         onUpdate: (self) => {
-          // Map scroll progress (0 to 1) to image index (0 to 3)
           const progress = self.progress;
           const idx = Math.min(Math.floor(progress * images.length), images.length - 1);
           setCurrentIdx(idx);
@@ -63,12 +52,10 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
       ref={containerRef} 
       className="relative h-[250vh] w-full bg-[#0a0a0a]"
     >
-      {/* Sticky Content Container */}
       <div 
         ref={stickyRef}
         className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden px-6 md:px-12"
       >
-        {/* Background Watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
           <h2 className="text-[22vw] font-black uppercase tracking-tighter text-white opacity-[0.03] leading-none whitespace-nowrap">
             {project.watermarkText}
@@ -79,7 +66,6 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
           "relative z-10 w-full max-w-7xl flex flex-col md:flex-row items-center gap-12 lg:gap-24",
           isEven ? "md:flex-row" : "md:flex-row-reverse"
         )}>
-          {/* Content Info */}
           <div className={cn(
             "w-full md:w-1/3 flex flex-col",
             isEven ? "text-left items-start" : "text-right items-end"
@@ -105,7 +91,6 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
             </div>
           </div>
 
-          {/* Visual Showcase (The Pinned Card) */}
           <div className="w-full md:w-2/3 group relative">
             <div 
                 onClick={() => setShowButton(!showButton)}
@@ -129,7 +114,6 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
                 </motion.div>
               </AnimatePresence>
 
-              {/* Click-to-show "See More" Button Overlay */}
               <AnimatePresence>
                 {showButton && (
                     <motion.div 
@@ -157,7 +141,6 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
                 )}
               </AnimatePresence>
 
-              {/* Hint Overlay (First Image Only) */}
               {!showButton && currentIdx === 0 && (
                   <motion.div 
                     initial={{ opacity: 0 }}
@@ -168,7 +151,6 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
                   </motion.div>
               )}
 
-              {/* Progress Indicators */}
               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 z-30">
                   {images.map((_, i) => (
                       <div 
@@ -201,7 +183,38 @@ export default function ProjectsPage() {
         const prop = staticProperties.find(p => p.id === cat.id);
         return prop ? { ...prop, path: cat.path } : null;
     }).filter(Boolean) as (Property & { path: string })[];
-  }, []);
+  }, [staticProperties]);
+
+  // Global Sequential Preloader
+  useEffect(() => {
+    const allGalleryImages = displayProjects.flatMap(p => p.gallery.slice(0, 4))
+      .filter(src => !src.endsWith('.mp4'));
+    
+    // Remove duplicates
+    const uniqueImages = Array.from(new Set(allGalleryImages));
+
+    let isCancelled = false;
+
+    const preloadSequential = async () => {
+      for (const src of uniqueImages) {
+        if (isCancelled) break;
+        
+        await new Promise((resolve) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = resolve;
+          img.onerror = resolve; // Continue even if one fails
+        });
+        
+        // Very short delay to ensure browser handles the next one efficiently
+        await new Promise(r => setTimeout(r, 20));
+      }
+    };
+
+    preloadSequential();
+
+    return () => { isCancelled = true; };
+  }, [displayProjects]);
 
   return (
     <div className="relative bg-[#0a0a0a] text-white">
@@ -211,7 +224,6 @@ export default function ProjectsPage() {
         canonical="/property/projects"
       />
 
-      {/* Intro Hero - Simple & Bold */}
       <section className="h-[70vh] flex flex-col items-center justify-center text-center px-6 border-b border-white/5">
         <motion.span
             initial={{ opacity: 0 }}
@@ -229,7 +241,6 @@ export default function ProjectsPage() {
         </motion.h1>
       </section>
 
-      {/* Zigzag Content with Pinning */}
       <div className="relative">
         {displayProjects.map((project, index) => (
           <ProjectSection 
@@ -241,7 +252,6 @@ export default function ProjectsPage() {
         ))}
       </div>
 
-      {/* Footer-like CTA */}
       <section className="h-screen flex flex-col items-center justify-center text-center px-6 bg-white text-black">
           <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-12">
             Build Your <br /> Future Today

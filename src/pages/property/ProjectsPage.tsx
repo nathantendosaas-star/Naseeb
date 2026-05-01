@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useRef, useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';

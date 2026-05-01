@@ -24,13 +24,13 @@ export default function IdentitySwitcher() {
 
   return (
     <>
-      <div className="flex items-center bg-black/90 backdrop-blur-2xl rounded-full p-1.5 border border-white/10 relative z-50 shadow-2xl opacity-20 hover:opacity-100 transition-opacity">
+      <div className="flex items-center bg-black/20 hover:bg-black/90 backdrop-blur-2xl rounded-full p-1.5 border border-white/10 relative z-50 shadow-2xl transition-all duration-300">
         <div className="relative flex">
           <button
             onClick={() => handleSwitch('auto')}
             className={cn(
               "relative px-6 py-3 flex items-center justify-center transition-colors z-10 min-w-[140px]",
-              isAuto ? "text-white" : "text-white/40 hover:text-white"
+              isAuto ? "text-white" : "text-white/60 hover:text-white"
             )}
           >
             <span className="text-[10px] font-black tracking-[0.2em] uppercase">Grid Motors</span>
@@ -39,7 +39,7 @@ export default function IdentitySwitcher() {
             onClick={() => handleSwitch('re')}
             className={cn(
               "relative px-6 py-3 flex items-center justify-center transition-colors z-10 min-w-[140px]",
-              isRe ? "text-black" : "text-white/40 hover:text-white"
+              isRe ? "text-black" : "text-white/60 hover:text-white"
             )}
           >
             <span className="text-[10px] font-black tracking-[0.2em] uppercase">Real Estate</span>

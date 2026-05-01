@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
 import OptimizedImage from './OptimizedImage';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import MediaGallery from './MediaGallery';
 
 interface CarModalContentProps {
   car: Car;
@@ -154,22 +155,11 @@ export default function CarModalContent({ car, onNext, onPrev }: CarModalContent
           </div>
         )}
         {activeTab === 'gallery' && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
-            {car.gallery?.length > 0 ? car.gallery.map((img, i) => (
-              <div key={i} className="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
-                <OptimizedImage 
-                  src={img} 
-                  alt={`${car.model} gallery ${i + 1}`} 
-                  className="w-full h-full object-cover" 
-                  priority={i < 3}
-                  referrerPolicy="no-referrer" 
-                />
-              </div>
-            )) : (
-              <div className="col-span-2 md:col-span-3 text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Images Coming Soon</p>
-              </div>
-            )}
+          <div className="w-full">
+            <MediaGallery 
+              images={car.gallery?.length > 0 ? car.gallery : [car.image]} 
+              alt={`${car.make} ${car.model}`}
+            />
           </div>
         )}
         {activeTab === 'specs' && (

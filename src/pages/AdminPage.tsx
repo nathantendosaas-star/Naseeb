@@ -757,6 +757,16 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
             <div className="md:col-span-2">
               <FormField theme={theme} label="Primary Image URL" value={formData.image} onChange={(v) => setFormData({...formData, image: v})} />
             </div>
+            <div className="md:col-span-2">
+              <FormField 
+                theme={theme} 
+                label="Gallery Image URLs (Comma separated)" 
+                value={formData.gallery ? formData.gallery.join(', ') : ''} 
+                onChange={(v) => setFormData({...formData, gallery: v.split(',').map(s => s.trim()).filter(s => s !== '')})} 
+                multiline
+                placeholder="https://image1.jpg, https://image2.jpg, ..."
+              />
+            </div>
           </div>
 
           <div className={`flex justify-end gap-6 pt-8 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>

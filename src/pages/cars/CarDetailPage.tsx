@@ -7,6 +7,7 @@ import { useFirestoreDoc } from '../../hooks/useFirestore';
 import { submitInquiry } from '../../hooks/useRealtimeDB';
 import OptimizedImage from '../../components/OptimizedImage';
 import SEO from '../../components/SEO';
+import MediaGallery from '../../components/MediaGallery';
 
 export default function CarDetailPage() {
   const { id } = useParams();
@@ -176,21 +177,11 @@ export default function CarDetailPage() {
             </motion.div>
           )}
           {activeTab === 'gallery' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {car.gallery?.length > 0 ? car.gallery.map((img, i) => (
-                <div key={i} className="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100">
-                  <OptimizedImage 
-                    src={img} 
-                    alt={`${car.model} gallery ${i + 1}`} 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
-                    referrerPolicy="no-referrer" 
-                  />
-                </div>
-              )) : (
-                <div className="col-span-3 text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                  <p className="text-gray-400 font-bold uppercase tracking-widest">Images Coming Soon</p>
-                </div>
-              )}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <MediaGallery 
+                images={car.gallery?.length > 0 ? car.gallery : [car.image]} 
+                alt={`${car.make} ${car.model}`}
+              />
             </motion.div>
           )}
           {activeTab === 'specs' && (

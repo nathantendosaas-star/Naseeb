@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { properties } from '@/data/properties';
+import { properties as staticProperties } from '@/data/properties';
 import type { Property } from '@/data/properties';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef, useState } from 'react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
 import { useFirestoreDoc } from '@/hooks/useFirestore';
 import SEO from '@/components/SEO';
+import MediaGallery from '@/components/MediaGallery';
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
@@ -23,7 +24,7 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const property = firestoreProperty || properties.find(p => p.id === id) || properties[0];
+  const property = firestoreProperty || staticProperties.find(p => p.id === id) || staticProperties[0];
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -117,6 +118,13 @@ export default function PropertyDetailPage() {
         <div className="grid md:grid-cols-3 gap-12">
           {/* Left Col: Details */}
           <div className="md:col-span-2">
+            <div className="mb-16">
+              <MediaGallery 
+                images={property.gallery?.length > 0 ? property.gallery : [property.image]} 
+                alt={property.name}
+              />
+            </div>
+            
             <h2 className="text-2xl font-bold uppercase tracking-widest mb-6">Overview</h2>
             <p className="text-gray-400 leading-relaxed mb-12 text-lg">
               A masterpiece of modern architecture located in the prestigious {property.location}. 

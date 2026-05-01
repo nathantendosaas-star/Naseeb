@@ -1,146 +1,220 @@
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useRef, useMemo, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { properties as staticProperties } from '../../data/properties';
 import type { Property } from '../../data/properties';
-import { useFirestoreCollection } from '../../hooks/useFirestore';
 import OptimizedImage from '../../components/OptimizedImage';
 import SEO from '../../components/SEO';
-import FloatingControls from '../../components/FloatingControls';
+import { cn } from '@/lib/utils';
+import { ArrowRight } from 'lucide-react';
 
-const parsePrice = (priceStr: string) => {
-  const numeric = priceStr.replace(/[^0-9]/g, '');
-  return parseInt(numeric) || 0;
-};
+interface ProjectSectionProps {
+  project: Property;
+  index: number;
+  dedicatedPath: string;
+}
 
-export default function ProjectsPage() {
-  const { data: firestoreProperties } = useFirestoreCollection<Property>('properties');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState<number>(5000000);
-  const pageRef = useRef<HTMLDivElement>(null);
-
-  // Merge static and firestore properties, ensuring unique IDs (Firestore takes precedence)
-  const properties = useMemo(() => {
-    const propertyMap = new Map<string, Property>();
-    staticProperties.forEach(prop => propertyMap.set(prop.id, prop));
-    firestoreProperties.forEach(prop => propertyMap.set(prop.id, prop));
-    return Array.from(propertyMap.values());
-  }, [firestoreProperties]);
-
-  const availableLocations = useMemo(() => {
-    const uniqueLocations = Array.from(new Set(properties.map(p => p.location)));
-    return uniqueLocations.sort();
-  }, [properties]);
-
-  const absoluteMaxPrice = useMemo(() => {
-    const max = Math.max(...properties.map(p => parsePrice(p.price)), 0);
-    return max > 0 ? max : 5000000;
-  }, [properties]);
-
-  // Update filter limits when properties load
-  useEffect(() => {
-    setMaxPrice(absoluteMaxPrice);
-  }, [absoluteMaxPrice]);
-
+function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isEven = index % 2 === 0;
+  
   const { scrollYProgress } = useScroll({
-    target: pageRef,
-    offset: ["start start", "end start"]
+    target: sectionRef,
+    offset: ["start end", "end start"]
   });
 
-  const yTitle = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  // Map scroll progress to image index (0 to 3)
+  // We use a tighter range in the middle of the scroll for the swiping effect
+  const imageIndex = useTransform(
+    scrollYProgress,
+    [0.3, 0.45, 0.6, 0.75],
+    [0, 1, 2, 3],
+    { clamp: true }
+  );
 
-  const filteredProperties = properties.filter(prop => {
-    const matchesSearch = prop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         prop.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLocation = selectedLocations.length === 0 || selectedLocations.includes(prop.location);
-    const matchesPrice = parsePrice(prop.price) <= maxPrice;
-    
-    return matchesSearch && matchesLocation && matchesPrice;
-  });
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  useEffect(() => {
+    return imageIndex.onChange((v) => {
+      const rounded = Math.round(v);
+      if (rounded !== currentIdx) {
+        setCurrentIdx(rounded);
+      }
+    });
+  }, [imageIndex, currentIdx]);
+
+  // Opacity for the "See More" button - only visible when centered
+  const buttonOpacity = useTransform(
+    scrollYProgress,
+    [0.35, 0.4, 0.6, 0.65],
+    [0, 1, 1, 0]
+  );
+
+  const images = project.gallery.slice(0, 4);
 
   return (
-    <div ref={pageRef} className="relative min-h-screen pt-32 pb-48 px-6 md:px-12 bg-re-bg text-re-text overflow-x-hidden">
+    <div ref={sectionRef} className="relative h-[150vh] flex items-center justify-center">
+      {/* Watermark background */}
+      <motion.div 
+        style={{ 
+            x: isEven ? 100 : -100,
+            opacity: useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.1, 0])
+        }}
+        className={cn(
+            "absolute text-[20vw] font-black uppercase tracking-tighter pointer-events-none select-none",
+            isEven ? "right-0 text-right" : "left-0 text-left"
+        )}
+      >
+        {project.watermarkText}
+      </motion.div>
+
+      <div className={cn(
+        "container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-12 md:gap-24",
+        isEven ? "md:flex-row" : "md:flex-row-reverse"
+      )}>
+        {/* Content Side */}
+        <motion.div 
+          initial={{ opacity: 0, x: isEven ? 50 : -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          className="w-full md:w-1/3 z-20"
+        >
+          <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
+            {project.name}
+          </h2>
+          <p className="text-xl text-re-gray mb-8 font-light italic tracking-widest uppercase">
+            {project.location}
+          </p>
+          <div className="flex items-center gap-4 text-sm font-bold tracking-[0.3em] uppercase opacity-50">
+            <span>0{index + 1}</span>
+            <div className="w-12 h-px bg-current" />
+            <span>04</span>
+          </div>
+        </motion.div>
+
+        {/* Visual Side (The Card) */}
+        <motion.div 
+          className="relative w-full md:w-2/3 aspect-[16/9] z-10"
+        >
+          <div className="relative w-full h-full overflow-hidden rounded-sm group">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${project.id}-${currentIdx}`}
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full h-full"
+              >
+                <OptimizedImage 
+                  src={images[currentIdx] || project.image} 
+                  alt={project.name} 
+                  className="w-full h-full object-cover" 
+                />
+              </motion.div>
+            </AnimatePresence>
+
+            {/* "See More" Button Overlay */}
+            <motion.div 
+              style={{ opacity: buttonOpacity }}
+              className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px] z-30 pointer-events-auto"
+            >
+              <Link 
+                to={dedicatedPath}
+                className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest text-sm hover:bg-re-accent hover:text-white transition-all flex items-center gap-3 group"
+              >
+                See More <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+              </Link>
+            </motion.div>
+
+            {/* Progress Indicators */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+                {images.map((_, i) => (
+                    <div 
+                        key={i} 
+                        className={cn(
+                            "w-12 h-1 transition-all duration-500",
+                            currentIdx === i ? "bg-white" : "bg-white/20"
+                        )} 
+                    />
+                ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+export default function ProjectsPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const categories = [
+    { id: 'luxury-apartments', path: '/property/luxury' },
+    { id: 'construction-portfolio', path: '/property/ongoing' },
+    { id: 'commercial-plaza', path: '/property/commercial' },
+    { id: 'innovation-plans', path: '/property/future' }
+  ];
+
+  const displayProjects = useMemo(() => {
+    return categories.map(cat => {
+        const prop = staticProperties.find(p => p.id === cat.id);
+        return prop ? { ...prop, path: cat.path } : null;
+    }).filter(Boolean) as (Property & { path: string })[];
+  }, []);
+
+  return (
+    <div ref={containerRef} className="relative bg-[#0a0a0a] text-white">
       <SEO 
         title="Our Projects | Masembe Real Estate"
-        description="Explore our current and upcoming real estate projects across Kampala's most prestigious locations."
+        description="A cinematic journey through our landmark developments in Kampala."
         canonical="/property/projects"
       />
-      
-      <FloatingControls 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedCategories={selectedLocations}
-        setSelectedCategories={setSelectedLocations}
-        availableCategories={availableLocations}
-        categoryLabel="Locations"
-        maxPrice={maxPrice}
-        setMaxPrice={setMaxPrice}
-        absoluteMaxPrice={absoluteMaxPrice}
-      />
 
-      <div className="max-w-6xl mx-auto">
+      {/* Hero Intro */}
+      <section className="h-screen flex flex-col items-center justify-center text-center px-6">
         <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ y: yTitle }}
-          className="text-4xl md:text-8xl font-black tracking-tighter uppercase mb-4 text-center"
+          className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-none"
         >
-          Our Projects
+          Our <span className="text-re-accent">Projects</span>
         </motion.h1>
+        <motion.div 
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="w-24 h-1 bg-re-accent mt-8 mb-8"
+        />
         <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-xl text-re-gray mb-16 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="text-xl md:text-2xl font-light tracking-[0.3em] uppercase opacity-50"
         >
-          Building landmarks across the skyline.
+            Vertical Innovation & Urban Density
         </motion.p>
+        
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, repeat: Infinity, duration: 2 }}
+            className="absolute bottom-12 text-xs font-black uppercase tracking-widest opacity-30"
+        >
+            Scroll to Explore
+        </motion.div>
+      </section>
 
-        <div className="grid md:grid-cols-2 gap-12">
-          {filteredProperties.map((project, index) => (
-            <motion.div 
-              key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="group cursor-pointer"
-            >
-              <div className="aspect-[4/3] overflow-hidden mb-6 rounded-sm">
-                <OptimizedImage 
-                  src={project.image} 
-                  alt={project.name} 
-                  priority={index < 2}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                />
-              </div>
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold uppercase tracking-tight mb-2">{project.name}</h2>
-                  <p className="text-re-gray">{project.location} • {project.completionDate}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xl font-mono font-bold text-white">{project.price}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {filteredProperties.length === 0 && (
-          <div className="text-center py-32 border border-dashed border-white/10">
-            <p className="text-white/20 text-xl uppercase tracking-widest font-black">No projects found.</p>
-            <button 
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedLocations([]);
-                setMaxPrice(absoluteMaxPrice);
-              }}
-              className="mt-6 text-re-accent font-black uppercase tracking-widest text-sm hover:underline"
-            >
-              Clear all filters
-            </button>
-          </div>
-        )}
+      {/* Zigzag Content */}
+      <div className="pb-48">
+        {displayProjects.map((project, index) => (
+          <ProjectSection 
+            key={project.id} 
+            project={project} 
+            index={index} 
+            dedicatedPath={project.path}
+          />
+        ))}
       </div>
     </div>
   );

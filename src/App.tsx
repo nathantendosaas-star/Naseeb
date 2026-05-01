@@ -34,9 +34,12 @@ import InventoryPage from './pages/cars/InventoryPage';
 import CarDetailPage from './pages/cars/CarDetailPage';
 import WorkshopPage from './pages/cars/WorkshopPage';
 import ImportPage from './pages/cars/ImportPage';
-import PortfolioPage from './pages/property/PortfolioPage';
-import PropertyDetailPage from './pages/property/PropertyDetailPage';
 import ProjectsPage from './pages/property/ProjectsPage';
+import PropertyDetailPage from './pages/property/PropertyDetailPage';
+import LuxuryResidentialPage from './pages/property/LuxuryResidentialPage';
+import OngoingDevelopmentsPage from './pages/property/OngoingDevelopmentsPage';
+import CommercialPlazaPage from './pages/property/CommercialPlazaPage';
+import FutureConceptsPage from './pages/property/FutureConceptsPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import AdminPage from './pages/AdminPage';
@@ -64,10 +67,12 @@ function AnimatedRoutes() {
         <Route path="/cars/workshop" element={<PageTransition><WorkshopPage /></PageTransition>} />
         <Route path="/cars/import" element={<PageTransition><ImportPage /></PageTransition>} />
         <Route path="/property" element={<PageTransition><PropertyLandingPage /></PageTransition>} />
-        <Route path="/property/showroom" element={<PageTransition><PortfolioPage /></PageTransition>} />
-        <Route path="/property/portfolio" element={<PageTransition><PortfolioPage /></PageTransition>} />
-        <Route path="/property/portfolio/:id" element={<PageTransition><PropertyDetailPage /></PageTransition>} />
         <Route path="/property/projects" element={<PageTransition><ProjectsPage /></PageTransition>} />
+        <Route path="/property/luxury" element={<PageTransition><LuxuryResidentialPage /></PageTransition>} />
+        <Route path="/property/ongoing" element={<PageTransition><OngoingDevelopmentsPage /></PageTransition>} />
+        <Route path="/property/commercial" element={<PageTransition><CommercialPlazaPage /></PageTransition>} />
+        <Route path="/property/future" element={<PageTransition><FutureConceptsPage /></PageTransition>} />
+        <Route path="/property/detail/:id" element={<PageTransition><PropertyDetailPage /></PageTransition>} />
         <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
         <Route

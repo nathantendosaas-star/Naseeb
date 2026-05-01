@@ -27,8 +27,6 @@ export default function GlobalHeader() {
 
   const reLinks = [
     { name: 'Home', path: '/property' },
-    { name: 'Showroom', path: '/property/showroom' },
-    { name: 'Portfolio', path: '/property/portfolio' },
     { name: 'Projects', path: '/property/projects' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },

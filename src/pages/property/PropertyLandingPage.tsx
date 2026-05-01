@@ -49,17 +49,12 @@ export default function PropertyLandingPage() {
             className="mt-12 flex flex-col md:flex-row items-center justify-center gap-6"
           >
             <Link
-              to="/property/portfolio"
-              className="px-12 py-5 border-2 border-[#d4af37] text-[#d4af37] text-sm font-black uppercase tracking-widest hover:bg-[#d4af37] hover:text-black transition-all"
-            >
-              Portfolio
-            </Link>
-            <Link
               to="/property/projects"
               className="px-12 py-5 border-2 border-[#d4af37] text-[#d4af37] text-sm font-black uppercase tracking-widest hover:bg-[#d4af37] hover:text-black transition-all"
             >
-              Projects
-            </Link>          </motion.div>
+              Explore Projects
+            </Link>
+          </motion.div>
         </div>
       </section>
 
@@ -155,7 +150,7 @@ export default function PropertyLandingPage() {
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-12 italic">"Architecture should speak of its time and place, but yearn for timelessness."</h2>
           <Link 
-            to="/property/portfolio"
+            to="/property/projects"
             className="inline-block px-16 py-6 bg-white text-black text-sm font-black uppercase tracking-widest hover:bg-[#d4af37] transition-colors"
           >
             Discover Your Next Investment

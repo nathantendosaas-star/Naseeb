@@ -6,31 +6,40 @@ import { cn } from '@/lib/utils';
 interface FloatingControlsProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  selectedBrands: string[];
-  setSelectedBrands: (brands: string[]) => void;
-  availableBrands: string[];
-  maxHp: number;
-  setMaxHp: (hp: number) => void;
-  absoluteMaxHp: number;
+  selectedCategories: string[];
+  setSelectedCategories: (categories: string[]) => void;
+  availableCategories: string[];
+  categoryLabel: string;
+  maxPrice: number;
+  setMaxPrice: (price: number) => void;
+  absoluteMaxPrice: number;
+  // Optional HP for cars
+  maxHp?: number;
+  setMaxHp?: (hp: number) => void;
+  absoluteMaxHp?: number;
 }
 
 export default function FloatingControls({
   searchQuery,
   setSearchQuery,
-  selectedBrands,
-  setSelectedBrands,
-  availableBrands,
+  selectedCategories,
+  setSelectedCategories,
+  availableCategories,
+  categoryLabel,
+  maxPrice,
+  setMaxPrice,
+  absoluteMaxPrice,
   maxHp,
   setMaxHp,
   absoluteMaxHp
 }: FloatingControlsProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const toggleBrand = (brand: string) => {
-    if (selectedBrands.includes(brand)) {
-      setSelectedBrands(selectedBrands.filter(b => b !== brand));
+  const toggleCategory = (category: string) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(selectedCategories.filter(c => c !== category));
     } else {
-      setSelectedBrands([...selectedBrands, brand]);
+      setSelectedCategories([...selectedCategories, category]);
     }
   };
 
@@ -59,9 +68,9 @@ export default function FloatingControls({
           >
             <SlidersHorizontal size={14} />
             Filters
-            {selectedBrands.length > 0 && (
+            {selectedCategories.length > 0 && (
               <span className="bg-red-600 text-white w-4 h-4 rounded-full flex items-center justify-center text-[8px]">
-                {selectedBrands.length}
+                {selectedCategories.length}
               </span>
             )}
           </button>
@@ -99,20 +108,20 @@ export default function FloatingControls({
                 </button>
               </div>
 
-              {/* Brands List */}
+              {/* Categories List */}
               <div className="mb-12 overflow-y-auto pr-2 custom-scrollbar flex-grow">
-                <p className="text-[10px] uppercase tracking-[0.3em] font-black mb-6 opacity-60">Manufacturers</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] font-black mb-6 opacity-60">{categoryLabel}</p>
                 <div className="space-y-3">
-                  {availableBrands.map((brand) => (
+                  {availableCategories.map((category) => (
                     <label
-                      key={brand}
+                      key={category}
                       className="group flex items-center gap-4 cursor-pointer py-1 select-none"
                     >
                       <div className="relative flex items-center justify-center">
                         <input
                           type="checkbox"
-                          checked={selectedBrands.includes(brand)}
-                          onChange={() => toggleBrand(brand)}
+                          checked={selectedCategories.includes(category)}
+                          onChange={() => toggleCategory(category)}
                           className="peer appearance-none w-5 h-5 border-2 border-white/20 rounded bg-white/5 checked:bg-white checked:border-white transition-all cursor-pointer"
                         />
                         <Check
@@ -123,46 +132,75 @@ export default function FloatingControls({
                       </div>
                       <span className={cn(
                         "text-[11px] font-black uppercase tracking-[0.15em] transition-colors",
-                        selectedBrands.includes(brand) ? "text-white" : "text-white/40 group-hover:text-white"
+                        selectedCategories.includes(category) ? "text-white" : "text-white/40 group-hover:text-white"
                       )}>
-                        {brand}
+                        {category}
                       </span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              {/* HP Slider */}
-              <div className="mt-auto">
+              {/* Price Slider */}
+              <div className="mb-12">
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.3em] font-black opacity-60">Performance</p>
-                    <h4 className="text-sm font-bold uppercase">Max Horsepower</h4>
+                    <p className="text-[10px] uppercase tracking-[0.3em] font-black opacity-60">Investment</p>
+                    <h4 className="text-sm font-bold uppercase">Max Price</h4>
                   </div>
-                  <span className="text-xl font-black text-red-500">{maxHp} HP</span>
+                  <span className="text-lg font-black text-white">$ {maxPrice.toLocaleString()}</span>
                 </div>
                 <div className="px-2">
                   <input
                     type="range"
                     min="0"
-                    max={absoluteMaxHp}
-                    value={maxHp}
-                    onChange={(e) => setMaxHp(parseInt(e.target.value))}
-                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-red-600 mb-4"
+                    max={absoluteMaxPrice}
+                    step={1000}
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-white mb-4"
                   />
                   <div className="flex justify-between text-[8px] font-black uppercase opacity-40">
-                    <span>0 HP</span>
-                    <span>{absoluteMaxHp} HP</span>
+                    <span>$ 0</span>
+                    <span>$ {absoluteMaxPrice.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
 
+              {/* HP Slider (Optional) */}
+              {maxHp !== undefined && setMaxHp && absoluteMaxHp !== undefined && (
+                <div className="mt-auto">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.3em] font-black opacity-60">Performance</p>
+                      <h4 className="text-sm font-bold uppercase">Max Horsepower</h4>
+                    </div>
+                    <span className="text-xl font-black text-red-500">{maxHp} HP</span>
+                  </div>
+                  <div className="px-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max={absoluteMaxHp}
+                      value={maxHp}
+                      onChange={(e) => setMaxHp(parseInt(e.target.value))}
+                      className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-red-600 mb-4"
+                    />
+                    <div className="flex justify-between text-[8px] font-black uppercase opacity-40">
+                      <span>0 HP</span>
+                      <span>{absoluteMaxHp} HP</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Reset Button */}
               <button
                 onClick={() => {
-                  setSelectedBrands([]);
+                  setSelectedCategories([]);
                   setSearchQuery('');
-                  setMaxHp(absoluteMaxHp);
+                  setMaxPrice(absoluteMaxPrice);
+                  if (setMaxHp && absoluteMaxHp !== undefined) setMaxHp(absoluteMaxHp);
                 }}
                 className="mt-12 w-full py-4 border border-white/20 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all"
               >

@@ -69,6 +69,13 @@ type Tab = 'inquiries' | 'homepage' | 'inventory';
 type InventoryType = 'cars' | 'properties';
 type Theme = 'light' | 'dark';
 
+// --- Constants ---
+
+const ALLOWED_EMAILS = [
+  'nathan@masembe.com',
+  'nathantendo.saas@gmail.com'
+];
+
 // --- Main Component ---
 
 export default function AdminPage() {
@@ -85,7 +92,17 @@ export default function AdminPage() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (currentUser && ALLOWED_EMAILS.includes(currentUser.email || '')) {
+        setUser(currentUser);
+        setAuthError(null);
+      } else if (currentUser) {
+        // Logged in but not authorized
+        signOut(auth);
+        setUser(null);
+        setAuthError("This account is not authorized to access the Masembe Admin Dashboard. Please contact the system administrator.");
+      } else {
+        setUser(null);
+      }
       setAuthLoading(false);
     });
     return () => unsubscribe();

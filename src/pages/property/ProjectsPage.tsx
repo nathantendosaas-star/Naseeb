@@ -1,11 +1,23 @@
 import { motion, useScroll, useTransform } from 'motion/react';
-import { useRef } from 'react';
-import { properties } from '../../data/properties';
+import { useRef, useMemo } from 'react';
+import { properties as staticProperties } from '../../data/properties';
+import type { Property } from '../../data/properties';
+import { useFirestoreCollection } from '../../hooks/useFirestore';
 import OptimizedImage from '../../components/OptimizedImage';
 import SEO from '../../components/SEO';
 
 export default function ProjectsPage() {
+  const { data: firestoreProperties } = useFirestoreCollection<Property>('properties');
   const pageRef = useRef<HTMLDivElement>(null);
+
+  // Merge static and firestore properties, ensuring unique IDs (Firestore takes precedence)
+  const properties = useMemo(() => {
+    const propertyMap = new Map<string, Property>();
+    staticProperties.forEach(prop => propertyMap.set(prop.id, prop));
+    firestoreProperties.forEach(prop => propertyMap.set(prop.id, prop));
+    return Array.from(propertyMap.values());
+  }, [firestoreProperties]);
+
   const { scrollYProgress } = useScroll({
     target: pageRef,
     offset: ["start start", "end start"]

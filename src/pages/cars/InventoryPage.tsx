@@ -9,10 +9,16 @@ import SEO from '../../components/SEO';
 import FloatingControls from '../../components/FloatingControls';
 import OptimizedImage from '../../components/OptimizedImage';
 
+const parsePrice = (priceStr: string) => {
+  const numeric = priceStr.replace(/[^0-9]/g, '');
+  return parseInt(numeric) || 0;
+};
+
 export default function InventoryPage() {
   const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [maxPrice, setMaxPrice] = useState<number>(1000000);
   const [maxHp, setMaxHp] = useState<number>(1000);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,15 +37,21 @@ export default function InventoryPage() {
     return uniqueBrands.sort();
   }, [cars]);
 
+  const absoluteMaxPrice = useMemo(() => {
+    const max = Math.max(...cars.map(car => parsePrice(car.price)), 0);
+    return max > 0 ? max : 1000000;
+  }, [cars]);
+
   const absoluteMaxHp = useMemo(() => {
     const max = Math.max(...cars.map(car => car.hp || 0), 0);
     return max > 0 ? max : 1000;
   }, [cars]);
 
-  // Update maxHp filter limit when cars load
+  // Update filter limits when cars load
   useEffect(() => {
+    setMaxPrice(absoluteMaxPrice);
     setMaxHp(absoluteMaxHp);
-  }, [absoluteMaxHp]);
+  }, [absoluteMaxPrice, absoluteMaxHp]);
 
   const { scrollYProgress } = useScroll({
     target: pageRef,
@@ -52,9 +64,10 @@ export default function InventoryPage() {
     const matchesSearch = car.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          car.model.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(car.make);
+    const matchesPrice = parsePrice(car.price) <= maxPrice;
     const matchesHp = (car.hp || 0) <= maxHp;
     
-    return matchesSearch && matchesBrand && matchesHp;
+    return matchesSearch && matchesBrand && matchesPrice && matchesHp;
   });
 
   const handleCarClick = (car: Car) => {
@@ -96,9 +109,13 @@ export default function InventoryPage() {
       <FloatingControls 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        selectedBrands={selectedBrands}
-        setSelectedBrands={setSelectedBrands}
-        availableBrands={availableBrands}
+        selectedCategories={selectedBrands}
+        setSelectedCategories={setSelectedBrands}
+        availableCategories={availableBrands}
+        categoryLabel="Manufacturers"
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        absoluteMaxPrice={absoluteMaxPrice}
         maxHp={maxHp}
         setMaxHp={setMaxHp}
         absoluteMaxHp={absoluteMaxHp}

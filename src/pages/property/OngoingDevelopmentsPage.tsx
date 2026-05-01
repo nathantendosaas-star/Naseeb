@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'motion/react';
 import { properties } from '../../data/properties';
 import OptimizedImage from '../../components/OptimizedImage';

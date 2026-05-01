@@ -24,7 +24,7 @@ export default function IdentitySwitcher() {
 
   return (
     <>
-      <div className="flex items-center bg-black/20 hover:bg-black/90 backdrop-blur-2xl rounded-full p-1.5 border border-white/10 relative z-50 shadow-2xl transition-all duration-300">
+      <div className="flex items-center bg-transparent relative z-50 transition-all duration-300">
         <div className="relative flex">
           <button
             onClick={() => handleSwitch('auto')}

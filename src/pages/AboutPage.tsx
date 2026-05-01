@@ -37,22 +37,22 @@ export default function AboutPage() {
     {
       title: "The Legacy",
       content: "Masembe Group of Companies is at the forefront of redefining Uganda's real estate landscape. By recognizing that land is a finite resource while the economy continues to expand, we focus on Smart Density Development—maximizing the utility of small land parcels to create high-value, sustainable urban environments.",
-      image: '/assets/new_re/IMG-20260408-WA0010.jpg'
+      image: '/assets/realestate/construction/IMG-20260408-WA0010 (1).jpg'
     },
     {
       title: "Smart Density",
       content: "We increase the 'people-per-acre' ratio through vertical integration. Our designs, including 4-story commercial hubs and 12-unit apartment blocks, accommodate more people comfortably within smaller footprints without sacrificing quality of life.",
-      image: '/assets/new_re/IMG-20260408-WA0011.jpg'
+      image: '/assets/realestate/construction/IMG-20260408-WA0011 (1).jpg'
     },
     {
       title: "Eco-Density",
       content: "Integrating environmental stewardship with high-density construction. Through LED lighting systems, modern glass holdings, and green urbanism, we ensure high-density areas remain breathable, aesthetic, and environmentally responsible.",
-      image: '/assets/new_re/IMG-20260408-WA0012.jpg'
+      image: '/assets/realestate/construction/IMG-20260408-WA0012 (1).jpg'
     },
     {
       title: "Fixed Land Strategy",
       content: "Uganda’s land isn't growing, but our economy is. We utilize precision engineering to maximize structural integrity on standard plots (e.g., 100x100), turning underutilized land into profitable commercial centers and hospitality hubs.",
-      image: '/assets/new_re/IMG-20260408-WA0013.jpg'
+      image: '/assets/realestate/construction/IMG-20260408-WA0013 (1).jpg'
     },
     {
       title: "The Masembe Advantage",
@@ -61,7 +61,7 @@ export default function AboutPage() {
     {
       title: "Future Outlook",
       content: "As Uganda moves toward further urbanization, Masembe Group remains committed to being the lead developer in 'Smart Cities' concepts—ensuring every square meter of Ugandan soil contributes to the nation's wealth and well-being.",
-      image: '/assets/new_re/IMG-20260408-WA0004.jpg'
+      image: '/assets/realestate/construction/IMG-20260408-WA0014 (1).jpg'
     }
   ];
 

@@ -6,7 +6,7 @@ import OptimizedImage from '../../components/OptimizedImage';
 import SEO from '../../components/SEO';
 
 // Dynamically import all images from new_re folder
-const allNewReImages = import.meta.glob('/public/assets/new_re/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const allNewReImages = import.meta.glob('/public/assets/realestate/**/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const galleryImages = Object.values(allNewReImages).filter(src => !src.toLowerCase().includes('logo'));
 
 export default function PortfolioPage() {

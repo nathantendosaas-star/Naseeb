@@ -128,7 +128,7 @@ export default function PropertyLandingPage() {
             <div className="w-full md:w-1/2 relative">
                 <div className="aspect-[4/5] bg-white/10 rounded-sm overflow-hidden relative">
                     <OptimizedImage 
-                        src="/assets/new_re/IMG-20260408-WA0011.jpg" 
+                        src="/assets/realestate/construction/IMG-20260408-WA0011 (1).jpg" 
                         alt="Smart Density" 
                         className="w-full h-full grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
                     />

@@ -5,7 +5,7 @@ import 'swiper/swiper-bundle.css';
 import OptimizedImage from './OptimizedImage';
 
 // Dynamically import all jpg images from the public assets folder, excluding any with "logo" in the name
-const importImages = import.meta.glob('/assets/new_re/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const importImages = import.meta.glob('/assets/realestate/**/*.jpg', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const images = Object.entries(importImages)
   .filter(([path]) => !/logo/i.test(path))
   .map(([, url]) => url);

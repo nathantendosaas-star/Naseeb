@@ -27,6 +27,16 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
 
   const images = useMemo(() => project.gallery.slice(0, 4), [project.gallery]);
 
+  // Preload all images in this section's gallery
+  useEffect(() => {
+    images.forEach(src => {
+      if (!src.endsWith('.mp4')) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+  }, [images]);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (!containerRef.current) return;
@@ -113,7 +123,7 @@ function ProjectSection({ project, index, dedicatedPath }: ProjectSectionProps) 
                   <OptimizedImage 
                     src={images[currentIdx] || project.image} 
                     alt={project.name} 
-                    priority={index === 0 && currentIdx === 0}
+                    priority={true}
                     className="w-full h-full object-cover" 
                   />
                 </motion.div>

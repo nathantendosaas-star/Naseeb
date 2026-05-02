@@ -77,11 +77,7 @@ function AnimatedRoutes() {
         <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
         <Route
           path="/admin"
-          element={
-            <ProtectedRoute>
-              <PageTransition><AdminPage /></PageTransition>
-            </ProtectedRoute>
-          }
+          element={<PageTransition><AdminPage /></PageTransition>}
         />
         <Route path="*" element={<PageTransition><NotFoundPage /></PageTransition>} />
       </Routes>

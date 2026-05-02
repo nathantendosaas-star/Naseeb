@@ -50,7 +50,6 @@ import WhatsAppCTA from './components/WhatsAppCTA';
 import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
 import ErrorBoundary from './components/ErrorBoundary';
-import ProtectedRoute from './components/ProtectedRoute';
 
 function AnimatedRoutes() {
   const location = useLocation();

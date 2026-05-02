@@ -184,7 +184,7 @@ export default function ContactPage() {
                 <button 
                   onClick={() => {
                     setSubmitSuccess(false);
-                    setFormData({ name: '', email: '', phone: '', message: '' });
+                    setFormData({ name: '', email: '', phone: '', message: '', preferredContact: 'whatsapp' });
                     setTouched({ name: false, email: false, phone: false, message: false });
                   }}
                   className="text-sm font-bold tracking-widest uppercase hover:underline"

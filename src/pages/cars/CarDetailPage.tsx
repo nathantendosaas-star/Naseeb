@@ -30,6 +30,7 @@ export default function CarDetailPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [preferredContact, setPreferredContact] = useState('whatsapp');
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -60,9 +61,10 @@ export default function CarDetailPage() {
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
       message: formData.get('message') as string,
+      preferredContact,
       itemType: 'car',
       itemId: car.id,
-      itemName: `${car.make} ${car.model}`,
+      itemName: `${car.year} ${car.make} ${car.model}`,
       createdAt: new Date().toISOString(),
       status: 'new'
     };
@@ -284,7 +286,26 @@ export default function CarDetailPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold tracking-widest uppercase mb-2 text-auto-gray">Phone Number</label>
-                    <input type="tel" name="phone" className="w-full bg-transparent border-b border-gray-600 pb-2 focus:outline-none focus:border-auto-accent transition-colors" />
+                    <input type="tel" name="phone" required className="w-full bg-transparent border-b border-gray-600 pb-2 focus:outline-none focus:border-auto-accent transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold tracking-widest uppercase mb-2 text-auto-gray">Preferred Contact Method</label>
+                    <div className="flex gap-4">
+                      {['whatsapp', 'phone', 'email'].map((method) => (
+                        <button
+                          key={method}
+                          type="button"
+                          onClick={() => setPreferredContact(method)}
+                          className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest border transition-all ${
+                            preferredContact === method 
+                              ? 'bg-auto-accent border-auto-accent text-white' 
+                              : 'border-gray-600 text-gray-400 hover:border-gray-400'
+                          }`}
+                        >
+                          {method}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs font-bold tracking-widest uppercase mb-2 text-auto-gray">Message</label>

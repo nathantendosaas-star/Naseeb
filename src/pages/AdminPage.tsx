@@ -27,7 +27,10 @@ import {
   X,
   Edit2,
   Moon,
-  Sun
+  Sun,
+  Search,
+  Phone,
+  MessageCircle
 } from 'lucide-react';
 import { useFirestoreCollection, useFirestoreDoc } from '@/hooks/useFirestore';
 import { useRealtimeDB, updateInquiryStatus, deleteInquiryFromRTDB } from '@/hooks/useRealtimeDB';
@@ -253,12 +256,33 @@ export default function AdminPage() {
 
 function InquiriesTab({ theme }: { theme: Theme }) {
   const [filter, setFilter] = useState<'all' | 'new' | 'read'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'car' | 'property' | 'general'>('all');
   
-  const { data: inquiries, loading, error } = useRealtimeDB<Inquiry>('inquiries', 50);
+  const { data: inquiries, loading, error } = useRealtimeDB<Inquiry>('inquiries', 100);
 
   const filteredInquiries = inquiries.filter(i => {
-    if (filter === 'all') return i.status !== 'archived';
-    return i.status === filter;
+    // Status filter
+    if (filter === 'all') {
+      if (i.status === 'archived') return false;
+    } else {
+      if (i.status !== filter) return false;
+    }
+
+    // Type filter
+    if (typeFilter !== 'all' && i.itemType !== typeFilter) return false;
+
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesName = `${i.firstName} ${i.lastName}`.toLowerCase().includes(searchLower);
+      const matchesEmail = i.email.toLowerCase().includes(searchLower);
+      const matchesPhone = i.phone?.toLowerCase().includes(searchLower);
+      const matchesItem = i.itemName.toLowerCase().includes(searchLower);
+      if (!matchesName && !matchesEmail && !matchesPhone && !matchesItem) return false;
+    }
+
+    return true;
   });
 
   const markAsRead = async (id: string, currentStatus: string) => {
@@ -297,38 +321,80 @@ function InquiriesTab({ theme }: { theme: Theme }) {
 
   return (
     <div className="space-y-8">
-      <div className={`flex gap-4 border-b pb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
-        {['all', 'new', 'read'].map((f) => (
-          <button 
-            key={f}
-            onClick={() => setFilter(f as any)}
-            className={`px-6 py-2 text-[10px] font-bold tracking-[0.3em] uppercase transition-all ${
-              filter === f 
-                ? (theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white') 
-                : (theme === 'dark' ? 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-600' : 'bg-white text-black border border-black/5 hover:border-black')
+      {/* Search & Filters */}
+      <div className={`p-6 border space-y-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900/30 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <div className="relative">
+          <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-zinc-500' : 'text-black/30'}`} size={18} />
+          <input 
+            type="text" 
+            placeholder="Search leads by name, email, phone or item..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={`w-full pl-12 pr-4 py-4 text-sm font-bold tracking-widest uppercase outline-none border-b transition-all ${
+              theme === 'dark' 
+                ? 'bg-transparent border-zinc-800 focus:border-white text-white' 
+                : 'bg-transparent border-black/5 focus:border-black text-black'
             }`}
-          >
-            {f}
-          </button>
-        ))}
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-8">
+          <div className="space-y-3">
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">Status</span>
+            <div className="flex gap-2">
+              {['all', 'new', 'read'].map((f) => (
+                <button 
+                  key={f}
+                  onClick={() => setFilter(f as any)}
+                  className={`px-4 py-2 text-[9px] font-bold tracking-[0.2em] uppercase transition-all border ${
+                    filter === f 
+                      ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') 
+                      : (theme === 'dark' ? 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600' : 'bg-white text-black border-black/5 hover:border-black')
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">Category</span>
+            <div className="flex gap-2">
+              {['all', 'car', 'property', 'general'].map((t) => (
+                <button 
+                  key={t}
+                  onClick={() => setTypeFilter(t as any)}
+                  className={`px-4 py-2 text-[9px] font-bold tracking-[0.2em] uppercase transition-all border ${
+                    typeFilter === t 
+                      ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') 
+                      : (theme === 'dark' ? 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600' : 'bg-white text-black border-black/5 hover:border-black')
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {filteredInquiries.length === 0 ? (
-        <EmptyState theme={theme} message="No inquiries matching your filter." />
+        <EmptyState theme={theme} message="No inquiries matching your search and filters." />
       ) : (
         <div className="grid gap-6">
-          {filteredInquiries.map((inquiry) => (
+          {filteredInquiries.map((inquiry: any) => (
             <div 
               key={inquiry.id} 
               className={`p-8 rounded-none border transition-all duration-300 ${
                 theme === 'dark' 
-                  ? `bg-zinc-900/50 border-zinc-800 ${inquiry.status === 'new' ? 'border-l-4 border-l-white bg-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.03)]' : 'opacity-50'}` 
-                  : `bg-white border-black/5 ${inquiry.status === 'new' ? 'border-l-4 border-l-black shadow-sm' : 'opacity-60'}`
+                  ? `bg-zinc-900/50 border-zinc-800 ${inquiry.status === 'new' ? 'border-l-4 border-l-white bg-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.03)]' : 'opacity-70'}` 
+                  : `bg-white border-black/5 ${inquiry.status === 'new' ? 'border-l-4 border-l-black shadow-sm' : 'opacity-80'}`
               }`}
             >
-              <div className="flex flex-col md:flex-row justify-between gap-8">
+              <div className="flex flex-col lg:flex-row justify-between gap-8">
                 <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex flex-wrap items-center gap-4 mb-6">
                     {inquiry.itemType === 'car' ? (
                       <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2 transition-colors`}><Car size={14} /></span>
                     ) : inquiry.itemType === 'property' ? (
@@ -338,15 +404,30 @@ function InquiriesTab({ theme }: { theme: Theme }) {
                     )}
                     <span className={`font-bold uppercase tracking-[0.2em] text-[10px] ${theme === 'dark' ? 'text-zinc-400' : 'text-black/60'}`}>{inquiry.itemName}</span>
                     {inquiry.status === 'new' && (
-                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.2em] transition-colors`}>New</span>
+                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.2em] transition-colors shadow-sm`}>New</span>
+                    )}
+                    {inquiry.preferredContact && (
+                      <span className={`text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.2em] border ${
+                        inquiry.preferredContact === 'whatsapp' ? 'text-green-500 border-green-500/30' : 
+                        inquiry.preferredContact === 'phone' ? 'text-blue-500 border-blue-500/30' : 'text-zinc-500 border-zinc-500/30'
+                      }`}>
+                        Prefer: {inquiry.preferredContact}
+                      </span>
                     )}
                   </div>
                   
-                  <h3 className="text-2xl font-black uppercase tracking-tight">{inquiry.firstName} {inquiry.lastName}</h3>
-                  <div className={`flex flex-wrap gap-x-8 gap-y-2 mt-2 text-[11px] font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>
-                    <a href={`mailto:${inquiry.email}`} className={`transition-colors ${theme === 'dark' ? 'hover:text-white' : 'hover:text-black'}`}>{inquiry.email}</a>
-                    {inquiry.phone && <a href={`tel:${inquiry.phone}`} className={`transition-colors ${theme === 'dark' ? 'hover:text-white' : 'hover:text-black'}`}>{inquiry.phone}</a>}
-                    <span>{format(new Date(inquiry.createdAt), 'MMM d, yyyy // HH:mm')}</span>
+                  <h3 className="text-3xl font-black uppercase tracking-tight mb-2">{inquiry.firstName} {inquiry.lastName}</h3>
+                  <div className={`flex flex-wrap items-center gap-x-8 gap-y-4 text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'text-zinc-400' : 'text-black/50'}`}>
+                    <a href={`mailto:${inquiry.email}`} className={`flex items-center gap-2 transition-colors ${theme === 'dark' ? 'hover:text-white' : 'hover:text-black'}`}>
+                      {inquiry.email}
+                    </a>
+                    {inquiry.phone && (
+                      <a href={`tel:${inquiry.phone}`} className={`flex items-center gap-2 text-lg font-mono tracking-tighter transition-colors ${theme === 'dark' ? 'text-white hover:text-white' : 'text-black hover:text-black'}`}>
+                        <Phone size={14} />
+                        {inquiry.phone}
+                      </a>
+                    )}
+                    <span className="opacity-40">{format(new Date(inquiry.createdAt), 'MMM d, yyyy // HH:mm')}</span>
                   </div>
                   
                   <div className={`mt-6 p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-950/50 border-zinc-800' : 'bg-[#F7F7F5] border-black/5'}`}>
@@ -354,7 +435,28 @@ function InquiriesTab({ theme }: { theme: Theme }) {
                   </div>
                 </div>
                 
-                <div className={`flex flex-row md:flex-col justify-end gap-3 md:pl-8 md:border-l transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+                <div className={`flex flex-row lg:flex-col justify-end gap-3 lg:pl-8 lg:border-l transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+                  {inquiry.phone && (
+                    <>
+                      <a 
+                        href={`https://wa.me/${inquiry.phone.replace(/\D/g, '')}?text=Hello ${inquiry.firstName}, this is from Masembe Group regarding your inquiry for ${inquiry.itemName}.`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] bg-green-600 text-white hover:bg-green-700 transition-all shadow-lg shadow-green-600/10"
+                      >
+                        <MessageCircle size={14} />
+                        WhatsApp
+                      </a>
+                      <a 
+                        href={`tel:${inquiry.phone}`}
+                        className="flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] border border-blue-500/30 text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
+                      >
+                        <Phone size={14} />
+                        Call Now
+                      </a>
+                    </>
+                  )}
+                  <div className="h-px w-full bg-zinc-800 my-2 hidden lg:block" />
                   <button 
                     onClick={() => markAsRead(inquiry.id, inquiry.status)}
                     disabled={inquiry.status === 'read'}

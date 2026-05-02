@@ -25,7 +25,7 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '', preferredContact: 'whatsapp' });
   const [errors, setErrors] = useState({ name: '', email: '', phone: '', message: '' });
   const [touched, setTouched] = useState({ name: false, email: false, phone: false, message: false });
 
@@ -49,8 +49,8 @@ export default function ContactPage() {
       if (!value.trim()) error = 'Message is required';
       else if (value.trim().length < 10) error = 'Message must be at least 10 characters';
     } else if (name === 'phone') {
-      // Phone is optional but if provided must be a plausible phone number
-      if (value.trim() && !/^[+\d\s\-().]{7,20}$/.test(value.trim())) {
+      if (!value.trim()) error = 'Phone number is required';
+      else if (!/^[+\d\s\-().]{7,20}$/.test(value.trim())) {
         error = 'Please enter a valid phone number';
       }
     }
@@ -109,6 +109,7 @@ export default function ContactPage() {
       email: formData.email,
       phone: formData.phone,
       message: formData.message,
+      preferredContact: formData.preferredContact,
       itemType: department === 'auto' ? 'car' : 'property',
       itemId: 'general-contact',
       itemName: `General Inquiry - ${department === 'auto' ? 'Grid Motors' : 'Masembe RE'}`,
@@ -231,7 +232,7 @@ export default function ContactPage() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-bold tracking-widest uppercase mb-2 opacity-70">Phone (Optional)</label>
+                  <label className="block text-xs font-bold tracking-widest uppercase mb-2 opacity-70">Phone</label>
                   <input 
                     type="tel" 
                     name="phone" 
@@ -243,6 +244,25 @@ export default function ContactPage() {
                   {errors.phone && touched.phone && (
                     <p className="text-red-500 text-xs mt-2">{errors.phone}</p>
                   )}
+                </div>
+                <div>
+                  <label className="block text-xs font-bold tracking-widest uppercase mb-2 opacity-70">Preferred Contact Method</label>
+                  <div className="flex gap-4">
+                    {['whatsapp', 'phone', 'email'].map((method) => (
+                      <button
+                        key={method}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, preferredContact: method })}
+                        className={`px-4 py-2 text-[10px] font-bold uppercase tracking-widest border transition-all ${
+                          formData.preferredContact === method 
+                            ? (department === 'auto' ? 'bg-[#dc2626] border-[#dc2626] text-white' : 'bg-[#d4af37] border-[#d4af37] text-black')
+                            : 'border-white/20 text-white/40 hover:border-white/50'
+                        }`}
+                      >
+                        {method}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-xs font-bold tracking-widest uppercase mb-2 opacity-70">Message</label>

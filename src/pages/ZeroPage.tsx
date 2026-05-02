@@ -97,7 +97,7 @@ export default function ZeroPage() {
   const { data: cmsContent } = useFirestoreDoc<HomepageContent>('content', 'homepage');
   const [isMobile, setIsMobile] = useState(false);
   const [showInquiry, setShowInquiry] = useState(false);
-  const [inquiryForm, setInquiryForm] = useState({ name: '', email: '', message: '' });
+  const [inquiryForm, setInquiryForm] = useState({ name: '', email: '', phone: '', message: '', preferredContact: 'whatsapp' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   // Use Firestore content or defaults
@@ -120,8 +120,14 @@ export default function ZeroPage() {
       return;
     }
 
-    if (!inquiryForm.name || !inquiryForm.email || !inquiryForm.message) {
-      alert("Please fill in all fields.");
+    if (!inquiryForm.name || !inquiryForm.email || !inquiryForm.phone || !inquiryForm.message) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    // Phone validation
+    if (!/^[+\d\s\-().]{7,20}$/.test(inquiryForm.phone.trim())) {
+      alert("Please enter a valid phone number.");
       return;
     }
 
@@ -135,8 +141,9 @@ export default function ZeroPage() {
       firstName,
       lastName,
       email: inquiryForm.email,
-      phone: '',
+      phone: inquiryForm.phone,
       message: inquiryForm.message,
+      preferredContact: inquiryForm.preferredContact,
       itemType: 'general',
       itemId: 'zero-page-inquiry',
       itemName: 'Zero Page Inquiry',
@@ -147,7 +154,7 @@ export default function ZeroPage() {
     try {
       await submitInquiry(data);
       setSubmitSuccess(true);
-      setInquiryForm({ name: '', email: '', message: '' });
+      setInquiryForm({ name: '', email: '', phone: '', message: '', preferredContact: 'whatsapp' });
       setTimeout(() => {
         setSubmitSuccess(false);
         setShowInquiry(false);
@@ -431,6 +438,34 @@ export default function ZeroPage() {
                     className="w-full bg-transparent border-b border-black/10 py-2 text-sm focus:border-black outline-none transition-colors" 
                     required
                   />
+                  <input 
+                    type="tel" 
+                    placeholder="Phone Number" 
+                    value={inquiryForm.phone}
+                    onChange={(e) => setInquiryForm({ ...inquiryForm, phone: e.target.value })}
+                    className="w-full bg-transparent border-b border-black/10 py-2 text-sm focus:border-black outline-none transition-colors" 
+                    required
+                  />
+                  <div>
+                    <label className="block text-[8px] font-bold tracking-widest uppercase mb-2 opacity-50">Preferred Contact</label>
+                    <div className="flex gap-4">
+                      {['whatsapp', 'phone', 'email'].map((method) => (
+                        <button
+                          key={method}
+                          type="button"
+                          onClick={() => setInquiryForm({ ...inquiryForm, preferredContact: method })}
+                          className={cn(
+                            "text-[8px] font-bold uppercase tracking-widest px-3 py-1 border transition-all",
+                            inquiryForm.preferredContact === method 
+                              ? "bg-black text-white border-black" 
+                              : "border-black/10 text-black/40 hover:border-black/30"
+                          )}
+                        >
+                          {method}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <textarea 
                     placeholder="Your request..." 
                     rows={3} 

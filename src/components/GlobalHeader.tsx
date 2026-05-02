@@ -2,18 +2,28 @@ import { Link, useLocation } from 'react-router-dom';
 import IdentitySwitcher from './IdentitySwitcher';
 import { cn } from '@/lib/utils';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll } from 'motion/react';
 
 import OptimizedImage from './OptimizedImage';
 
 export default function GlobalHeader() {
   const location = useLocation();
+  const { scrollY } = useScroll();
+  const [isScrolled, setIsScrolled] = useState(false);
   const isAuto = location.pathname.startsWith('/cars');
   const isHome = location.pathname === '/';
   const [menuOpen, setMenuOpen] = useState(false);
 
+  useEffect(() => {
+    return scrollY.onChange((latest) => {
+      setIsScrolled(latest > 100);
+    });
+  }, [scrollY]);
+
   if (isHome) return null;
+
+  const isDark = !isScrolled && isAuto;
 
   const autoLinks = [
     { name: 'Home', path: '/cars' },
@@ -37,10 +47,13 @@ export default function GlobalHeader() {
   return (
     <>
       <header className={cn(
-        "fixed top-0 left-0 right-0 z-40 px-4 md:px-12 py-4 md:py-6 flex items-center justify-between",
-        isAuto ? "text-auto-text" : "text-re-text"
+        "fixed top-0 left-0 right-0 z-40 px-4 md:px-12 py-4 md:py-6 flex items-center justify-between transition-colors duration-300",
+        isDark ? "text-white" : (isAuto ? "text-auto-text" : "text-re-text")
       )}>
-        <div className="flex items-center z-50">
+        <div className={cn(
+          "flex items-center z-50 p-2 md:p-3 rounded-2xl transition-all duration-300",
+          isDark ? "bg-white/10 backdrop-blur-md border border-white/20 shadow-xl" : ""
+        )}>
           <Link to="/" className="text-2xl md:text-3xl font-black tracking-tighter hover:scale-110 transition-transform mr-4 md:mr-8 border-r border-current pr-4 md:pr-6">
             M
           </Link>
@@ -50,7 +63,7 @@ export default function GlobalHeader() {
                 src="/GRID_LOGO.jpg" 
                 alt="Grid Motors" 
                 priority 
-                className="h-6 md:h-10 w-18 md:w-32 bg-transparent" 
+                className={cn("h-6 md:h-10 w-18 md:w-32 bg-transparent transition-all", isDark && "brightness-0 invert")} 
                 style={{ objectFit: 'contain' }}
               />
             ) : (
@@ -60,7 +73,7 @@ export default function GlobalHeader() {
         </div>
         
         <div className="hidden md:block absolute left-1/2 -translate-x-1/2 z-50">
-          <IdentitySwitcher />
+          <IdentitySwitcher isDark={isDark} />
         </div>
 
         <button 
@@ -101,7 +114,7 @@ export default function GlobalHeader() {
               ))}
             </nav>
             <div className="mt-12">
-              <IdentitySwitcher />
+              <IdentitySwitcher isDark={false} />
             </div>
           </motion.div>
         )}

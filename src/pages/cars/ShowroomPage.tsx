@@ -66,6 +66,7 @@ export default function ShowroomPage() {
     title: `${car.make} ${car.model}`,
     watermark: car.watermarkText,
     image: car.image,
+    rotation: car.rotation,
     stats: [
       { label: 'Make', value: car.make },
       { label: 'Model', value: car.model },

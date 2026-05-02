@@ -25,7 +25,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Column */}
           <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-xl self-start">
               <div className="text-5xl font-black tracking-tighter">M</div>
               <div>
                 <div className="font-bold uppercase tracking-widest text-sm">Masembe Group</div>

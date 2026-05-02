@@ -12,6 +12,7 @@ export interface ShowroomItem {
   title: string;
   watermark: string;
   image: string;
+  rotation?: number;
   stats: {
     label: string;
     value: string | number;
@@ -154,6 +155,7 @@ export default function ParallaxShowroom({ items, theme }: ParallaxShowroomProps
                   src={activeItem.image} 
                   alt={activeItem.title}
                   priority={activeIndex === 0}
+                  rotation={activeItem.rotation}
                   className="w-full h-full object-contain drop-shadow-2xl bg-transparent"
                 />
               </motion.div>

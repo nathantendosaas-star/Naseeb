@@ -5,6 +5,7 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   priority?: boolean;
   aspectRatio?: 'auto' | 'square' | 'video' | 'portrait' | 'wide' | 'property' | 'car';
   fallbackText?: string;
+  rotation?: number;
 }
 
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
@@ -14,10 +15,17 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   priority = false,
   aspectRatio = 'auto',
   fallbackText,
+  rotation,
+  style,
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  const combinedStyle: React.CSSProperties = {
+    ...style,
+    transform: rotation ? `${style?.transform || ''} rotate(${rotation}deg)`.trim() : style?.transform,
+  };
 
   const aspectRatioClasses = {
     auto: '',
@@ -84,6 +92,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           'w-full h-full object-cover transition-opacity duration-500',
           isLoaded ? 'opacity-100' : 'opacity-0'
         )}
+        style={combinedStyle}
         {...props}
       />
     </div>

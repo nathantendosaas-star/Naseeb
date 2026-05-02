@@ -126,9 +126,11 @@ function AppContent() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.1,
+      lerp: 0.07,
       smoothWheel: true,
       orientation: 'vertical',
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
     });
 
     lenisRef.current = lenis;

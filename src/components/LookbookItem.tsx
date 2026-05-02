@@ -29,9 +29,9 @@ export default function LookbookItem({ car, isReversed, onClick }: LookbookItemP
   const xRaw = useTransform(scrollYProgress, [0, 0.5, 1], [xOffset, 0, xOffset]);
 
   // Smooth out the motion
-  const scale = useSpring(scaleRaw, { stiffness: 100, damping: 30, restDelta: 0.001 });
-  const opacity = useSpring(opacityRaw, { stiffness: 100, damping: 30, restDelta: 0.001 });
-  const x = useSpring(xRaw, { stiffness: 100, damping: 30, restDelta: 0.001 });
+  const scale = useSpring(scaleRaw, { stiffness: 70, damping: 30, restDelta: 0.001 });
+  const opacity = useSpring(opacityRaw, { stiffness: 70, damping: 30, restDelta: 0.001 });
+  const x = useSpring(xRaw, { stiffness: 70, damping: 30, restDelta: 0.001 });
 
   // Facts visibility - appear when scale is near maximum
   const factsOpacity = useTransform(scale, [0.95, 1.0], [0, 1]);
@@ -71,6 +71,7 @@ export default function LookbookItem({ car, isReversed, onClick }: LookbookItemP
               <OptimizedImage 
                 src={car.image} 
                 alt={`${car.make} ${car.model}`}
+                rotation={car.rotation}
                 className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
               />
             </div>

@@ -20,6 +20,7 @@ export interface Car {
   image: string;
   gallery: string[];
   specs?: CarSpecs;
+  rotation?: number;
 }
 
 export const cars: Car[] = [
@@ -383,6 +384,7 @@ export const cars: Car[] = [
       '/assets/Mercedes-Benz/TikVideo.App_7622475838721625352_4.jpeg',
       '/assets/Mercedes-Benz/TikVideo.App_7622475838721625352_6.jpeg'
     ],
+    rotation: -90,
     specs: {
       engine: '3.0L Inline-6 Turbo with Mild Hybrid (E 450)',
       hp: 375,

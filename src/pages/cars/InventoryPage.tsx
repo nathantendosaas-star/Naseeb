@@ -153,6 +153,7 @@ export default function InventoryPage() {
                   src={car.image} 
                   alt={car.model} 
                   priority={index < 3}
+                  rotation={car.rotation}
                   className="w-full h-full max-h-[200px] md:max-h-[280px] transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-2 drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
                   style={{ objectFit: 'contain' }}
                 />

@@ -1110,10 +1110,6 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
           </ResponsiveContainer>
         </div>
       </div>
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
 
       {/* Popular Pages */}
       <div className={`p-12 rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>

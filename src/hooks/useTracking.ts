@@ -10,6 +10,10 @@ export function useTracking() {
   useEffect(() => {
     const logPageView = async () => {
       try {
+        // Prevent duplicate logs in the same session for the same path
+        const sessionKey = `tracked_${location.pathname}`;
+        if (sessionStorage.getItem(sessionKey)) return;
+
         const today = format(new Date(), 'yyyy-MM-dd');
         
         const visitRef = ref(rtdb, `analytics/visits/${today}`);
@@ -22,6 +26,7 @@ export function useTracking() {
           referrer: document.referrer || 'direct'
         });
 
+        sessionStorage.setItem(sessionKey, 'true');
       } catch (error) {
         console.error('Tracking error:', error);
       }

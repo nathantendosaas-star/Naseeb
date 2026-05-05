@@ -1017,12 +1017,16 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
 
           // Process data
           Object.entries(data).forEach(([date, visits]: [string, any]) => {
+            if (!visits || typeof visits !== 'object') return;
+            
             const visitArray = Object.values(visits);
-            dailyCounts[date] = visitArray.length;
+            dailyCounts[date] = (dailyCounts[date] || 0) + visitArray.length;
             total += visitArray.length;
 
             visitArray.forEach((visit: any) => {
-              pageCounts[visit.path] = (pageCounts[visit.path] || 0) + 1;
+              if (visit && visit.path) {
+                pageCounts[visit.path] = (pageCounts[visit.path] || 0) + 1;
+              }
             });
           });
 

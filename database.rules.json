@@ -6,6 +6,17 @@
       "$inquiryId": {
         ".validate": "newData.hasChildren(['firstName', 'lastName', 'email', 'phone', 'message', 'createdAt', 'status']) && newData.child('email').isString() && newData.child('email').val().length > 5 && newData.child('firstName').isString() && newData.child('firstName').val().length > 0 && newData.child('phone').isString() && newData.child('phone').val().length >= 7 && newData.child('message').isString() && newData.child('message').val().length >= 5"
       }
+    },
+    "analytics": {
+      ".read": "auth != null",
+      "visits": {
+        ".write": true,
+        "$date": {
+          "$visitId": {
+            ".validate": "newData.hasChildren(['path', 'timestamp', 'userAgent', 'referrer'])"
+          }
+        }
+      }
     }
   }
 }

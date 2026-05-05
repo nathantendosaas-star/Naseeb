@@ -30,10 +30,24 @@ import {
   Sun,
   Search,
   Phone,
-  MessageCircle
+  MessageCircle,
+  TrendingUp,
+  Users,
+  DollarSign
 } from 'lucide-react';
+import { 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
 import { useFirestoreCollection, useFirestoreDoc } from '@/hooks/useFirestore';
 import { useRealtimeDB, updateInquiryStatus, deleteInquiryFromRTDB } from '@/hooks/useRealtimeDB';
+import { ref, get } from 'firebase/database';
+import { rtdb } from '@/lib/firebase';
 import type { Car as CarType } from '@/data/cars';
 import type { Property as PropertyType } from '@/data/properties';
 
@@ -60,15 +74,14 @@ interface HomepageSection {
 }
 
 interface HomepageContent {
-  heroTitle: string;
-  heroSubtitle: string;
+  heroTitle: string; heroSubtitle: string;
   reSections: HomepageSection[];
   autoSections: HomepageSection[];
   reVideoUrl: string;
   autoVideoUrl: string;
 }
 
-type Tab = 'inquiries' | 'homepage' | 'inventory';
+type Tab = 'inquiries' | 'homepage' | 'inventory' | 'analytics' | 'customers' | 'sales';
 type InventoryType = 'cars' | 'properties';
 type Theme = 'light' | 'dark';
 
@@ -220,6 +233,27 @@ export default function AdminPage() {
                 <Database size={14} />
                 Inventory
               </button>
+              <button 
+                onClick={() => setActiveTab('analytics')}
+                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'analytics' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
+              >
+                <TrendingUp size={14} />
+                Analytics
+              </button>
+              <button 
+                onClick={() => setActiveTab('customers')}
+                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'customers' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
+              >
+                <Users size={14} />
+                CRM
+              </button>
+              <button 
+                onClick={() => setActiveTab('sales')}
+                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'sales' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
+              >
+                <DollarSign size={14} />
+                POS / Sales
+              </button>
             </div>
           </div>
           
@@ -246,6 +280,9 @@ export default function AdminPage() {
           {activeTab === 'inquiries' && <InquiriesTab theme={theme} />}
           {activeTab === 'homepage' && <HomepageTab theme={theme} />}
           {activeTab === 'inventory' && <InventoryTab theme={theme} />}
+          {activeTab === 'analytics' && <AnalyticsTab theme={theme} />}
+          {activeTab === 'customers' && <CustomersTab theme={theme} />}
+          {activeTab === 'sales' && <SalesTab theme={theme} />}
         </div>
       </div>
     </div>
@@ -954,6 +991,551 @@ function EmptyState({ message, theme }: { message: string, theme: Theme }) {
   return (
     <div className={`p-16 text-center border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
       <p className={`text-[10px] font-bold uppercase tracking-[0.4em] transition-colors ${theme === 'dark' ? 'text-zinc-600' : 'text-black/30'}`}>{message}</p>
+    </div>
+  );
+}
+
+// --- Analytics Tab ---
+
+function AnalyticsTab({ theme }: { theme: Theme }) {
+  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+  const [totalViews, setTotalViews] = useState(0);
+  const [topPages, setTopPages] = useState<{path: string, count: number}[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const analyticsRef = ref(rtdb, 'analytics/visits');
+        const snapshot = await get(analyticsRef);
+        
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const dailyCounts: { [key: string]: number } = {};
+          const pageCounts: { [key: string]: number } = {};
+          let total = 0;
+
+          // Process data
+          Object.entries(data).forEach(([date, visits]: [string, any]) => {
+            const visitArray = Object.values(visits);
+            dailyCounts[date] = visitArray.length;
+            total += visitArray.length;
+
+            visitArray.forEach((visit: any) => {
+              pageCounts[visit.path] = (pageCounts[visit.path] || 0) + 1;
+            });
+          });
+
+          // Format for Recharts
+          const chartData = Object.entries(dailyCounts)
+            .map(([date, count]) => ({ date, count }))
+            .sort((a, b) => a.date.localeCompare(b.date));
+
+          const sortedPages = Object.entries(pageCounts)
+            .map(([path, count]) => ({ path, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
+          setAnalyticsData(chartData);
+          setTotalViews(total);
+          setTopPages(sortedPages);
+        }
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  if (loading) return <LoadingSpinner theme={theme} />;
+
+  return (
+    <div className="space-y-12">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Total Page Views</span>
+          <h3 className="text-5xl font-black tracking-tighter">{totalViews}</h3>
+        </div>
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Active Sessions</span>
+          <h3 className="text-5xl font-black tracking-tighter">{analyticsData.length > 0 ? analyticsData[analyticsData.length - 1].count : 0}</h3>
+          <p className="text-[10px] font-bold uppercase tracking-widest mt-2 opacity-40">Today</p>
+        </div>
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Conversion Rate</span>
+          <h3 className="text-5xl font-black tracking-tighter">--</h3>
+        </div>
+      </div>
+
+      {/* Traffic Chart */}
+      <div className={`p-10 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <h2 className="text-xl font-black uppercase tracking-tighter mb-12">Traffic Overview</h2>
+        <div className="h-[400px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={analyticsData}>
+              <defs>
+                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={theme === 'dark' ? '#ffffff' : '#000000'} stopOpacity={0.1}/>
+                  <stop offset="95%" stopColor={theme === 'dark' ? '#ffffff' : '#000000'} stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#27272a' : '#e5e5e5'} vertical={false} />
+              <XAxis 
+                dataKey="date" 
+                stroke={theme === 'dark' ? '#71717a' : '#a3a3a3'} 
+                fontSize={10} 
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(val) => format(new Date(val), 'MMM d')}
+              />
+              <YAxis 
+                stroke={theme === 'dark' ? '#71717a' : '#a3a3a3'} 
+                fontSize={10} 
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff', 
+                  border: theme === 'dark' ? '1px solid #27272a' : '1px solid #e5e5e5',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase'
+                }} 
+              />
+              <Area 
+                type="monotone" 
+                dataKey="count" 
+                stroke={theme === 'dark' ? '#ffffff' : '#000000'} 
+                strokeWidth={2}
+                fillOpacity={1} 
+                fill="url(#colorCount)" 
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Popular Pages */}
+      <div className={`p-10 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <h2 className="text-xl font-black uppercase tracking-tighter mb-8">Popular Destinations</h2>
+        <div className="space-y-4">
+          {topPages.map((page, idx) => (
+            <div key={page.path} className="flex items-center justify-between py-4 border-b last:border-0 border-black/5 dark:border-zinc-800">
+              <div className="flex items-center gap-6">
+                <span className="text-[10px] font-black opacity-20">0{idx + 1}</span>
+                <span className="text-sm font-bold tracking-widest uppercase">{page.path}</span>
+              </div>
+              <span className="text-sm font-mono font-bold">{page.count} views</span>
+            </div>
+          ))}
+          {topPages.length === 0 && (
+            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-center py-12">Waiting for more visitor data...</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- CRM / Customers Tab ---
+
+function CustomersTab({ theme }: { theme: Theme }) {
+  const { data: customers, loading } = useFirestoreCollection<any>('customers');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<any>(null);
+
+  const filteredCustomers = customers.filter(c => 
+    c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.phone?.includes(searchTerm)
+  );
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Remove this customer from the database?')) {
+      try {
+        await deleteDoc(doc(db, 'customers', id));
+      } catch (error) {
+        console.error("Delete error:", error);
+      }
+    }
+  };
+
+  if (loading) return <LoadingSpinner theme={theme} />;
+
+  return (
+    <div className="space-y-8">
+      <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <h2 className="text-xl font-black uppercase tracking-tighter mb-4">Client Relations Management</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Manage your high-net-worth client database.</p>
+          </div>
+          <button 
+            onClick={() => setIsAdding(true)}
+            className={`px-8 py-4 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
+          >
+            New Client Profile
+          </button>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className={`p-6 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900/30 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <div className="relative">
+          <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-zinc-500' : 'text-black/30'}`} size={18} />
+          <input 
+            type="text" 
+            placeholder="Search clients by name, email or phone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={`w-full pl-12 pr-4 py-4 text-sm font-bold tracking-widest uppercase outline-none border-b transition-all ${
+              theme === 'dark' 
+                ? 'bg-transparent border-zinc-800 focus:border-white text-white' 
+                : 'bg-transparent border-black/5 focus:border-black text-black'
+            }`}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredCustomers.map((customer: any) => (
+          <div key={customer.id} className={`p-8 border transition-all duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+            <div className="flex justify-between items-start mb-6">
+              <div className={`w-12 h-12 flex items-center justify-center text-xl font-black transition-colors ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>
+                {customer.name?.charAt(0)}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setEditingCustomer(customer)} className={`p-2 transition-colors ${theme === 'dark' ? 'text-zinc-500 hover:text-white' : 'text-black/30 hover:text-black'}`}><Edit2 size={14} /></button>
+                <button onClick={() => handleDelete(customer.id)} className={`p-2 transition-colors ${theme === 'dark' ? 'text-red-900 hover:text-red-500' : 'text-red-200 hover:text-red-600'}`}><Trash2 size={14} /></button>
+              </div>
+            </div>
+            
+            <h3 className="text-xl font-black uppercase tracking-tighter mb-2">{customer.name}</h3>
+            <div className={`space-y-1 text-[10px] font-bold uppercase tracking-widest opacity-60 mb-6 ${theme === 'dark' ? 'text-zinc-400' : 'text-black'}`}>
+              <p>{customer.email}</p>
+              <p>{customer.phone}</p>
+            </div>
+
+            <div className={`pt-6 border-t ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-40 block mb-2">Lifetime Value</span>
+              <p className="text-lg font-mono font-bold">{customer.ltv || '$ 0.00'}</p>
+            </div>
+          </div>
+        ))}
+        {filteredCustomers.length === 0 && !loading && (
+          <div className="md:col-span-3">
+            <EmptyState theme={theme} message="No client profiles found." />
+          </div>
+        )}
+      </div>
+
+      {(isAdding || editingCustomer) && (
+        <CustomerModal 
+          theme={theme}
+          customer={editingCustomer} 
+          onClose={() => {
+            setIsAdding(false);
+            setEditingCustomer(null);
+          }} 
+        />
+      )}
+    </div>
+  );
+}
+
+function CustomerModal({ customer, onClose, theme }: { customer?: any, onClose: () => void, theme: Theme }) {
+  const [formData, setFormData] = useState(customer || {
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    notes: '',
+    ltv: '$ 0.00'
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      if (customer) {
+        await updateDoc(doc(db, 'customers', customer.id), formData);
+      } else {
+        const id = Date.now().toString();
+        await setDoc(doc(db, 'customers', id), { ...formData, id });
+      }
+      onClose();
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("Error saving client profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+      <div className={`w-full max-w-2xl p-12 relative shadow-2xl transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-white text-black'}`}>
+        <button onClick={onClose} className={`absolute top-8 right-8 transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
+          <X size={24} />
+        </button>
+        
+        <h2 className={`text-3xl font-black uppercase tracking-tighter mb-12 border-b pb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+          {customer ? 'Update Client' : 'New Client Profile'}
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <FormField theme={theme} label="Full Name" value={formData.name} onChange={(v) => setFormData({...formData, name: v})} />
+            <FormField theme={theme} label="Email Address" type="email" value={formData.email} onChange={(v) => setFormData({...formData, email: v})} />
+            <FormField theme={theme} label="Phone Number" value={formData.phone} onChange={(v) => setFormData({...formData, phone: v})} />
+            <FormField theme={theme} label="Initial LTV" value={formData.ltv} onChange={(v) => setFormData({...formData, ltv: v})} />
+            <div className="md:col-span-2">
+              <FormField theme={theme} label="Client Notes" value={formData.notes} onChange={(v) => setFormData({...formData, notes: v})} multiline />
+            </div>
+          </div>
+
+          <div className={`flex justify-end gap-6 pt-8 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+            <button type="button" onClick={onClose} className={`px-10 py-4 text-[10px] font-bold uppercase tracking-widest border transition-all ${theme === 'dark' ? 'border-zinc-800 text-zinc-400' : 'border-black/5 text-black hover:bg-gray-50'}`}>Cancel</button>
+            <button type="submit" disabled={isSaving} className={`px-12 py-4 text-[10px] font-bold uppercase tracking-[0.4em] transition-all disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>{isSaving ? 'Processing...' : 'Save Profile'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// --- POS / Sales Tab ---
+
+function SalesTab({ theme }: { theme: Theme }) {
+  const { data: sales, loading: salesLoading } = useFirestoreCollection<any>('sales');
+  const [isAdding, setIsAdding] = useState(false);
+
+  const totalRevenue = sales.reduce((sum, sale) => {
+    const priceStr = sale.salePrice || '0';
+    const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+    return sum + price;
+  }, 0);
+
+  if (salesLoading) return <LoadingSpinner theme={theme} />;
+
+  return (
+    <div className="space-y-8">
+      <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <h2 className="text-xl font-black uppercase tracking-tighter mb-4">Transaction Intelligence</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Monitor and log asset acquisitions.</p>
+          </div>
+          <button 
+            onClick={() => setIsAdding(true)}
+            className={`px-8 py-4 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
+          >
+            Record Transaction
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Total Revenue</span>
+          <h3 className="text-4xl font-black tracking-tighter">$ {totalRevenue.toLocaleString()}</h3>
+        </div>
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Transactions</span>
+          <h3 className="text-4xl font-black tracking-tighter">{sales.length}</h3>
+        </div>
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Average Sale</span>
+          <h3 className="text-4xl font-black tracking-tighter">
+            $ {sales.length > 0 ? (totalRevenue / sales.length).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '0'}
+          </h3>
+        </div>
+      </div>
+
+      {/* Recent Sales Table */}
+      <div className={`border overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <div className="p-8 border-b border-black/5 dark:border-zinc-800">
+          <h3 className="text-sm font-black uppercase tracking-widest">Recent Acquisitions</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className={`text-[10px] font-black uppercase tracking-[0.2em] opacity-40 border-b ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+                <th className="px-8 py-6">Date</th>
+                <th className="px-8 py-6">Asset</th>
+                <th className="px-8 py-6">Client</th>
+                <th className="px-8 py-6 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/5 dark:divide-zinc-800">
+              {sales.sort((a, b) => b.createdAt?.localeCompare(a.createdAt)).map((sale: any) => (
+                <tr key={sale.id} className={`text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'hover:bg-zinc-800/50' : 'hover:bg-gray-50'}`}>
+                  <td className="px-8 py-6 opacity-60">{format(new Date(sale.createdAt), 'MMM d, yyyy')}</td>
+                  <td className="px-8 py-6">{sale.itemName}</td>
+                  <td className="px-8 py-6">{sale.customerName}</td>
+                  <td className="px-8 py-6 text-right font-mono">{sale.salePrice}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {sales.length === 0 && (
+            <div className="p-12 text-center opacity-40 text-[10px] font-bold uppercase tracking-[0.3em]">No transaction history available.</div>
+          )}
+        </div>
+      </div>
+
+      {isAdding && (
+        <SaleModal 
+          theme={theme}
+          onClose={() => setIsAdding(false)} 
+        />
+      )}
+    </div>
+  );
+}
+
+function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
+  const { data: customers } = useFirestoreCollection<any>('customers');
+  const { data: cars } = useFirestoreCollection<any>('cars');
+  const { data: properties } = useFirestoreCollection<any>('properties');
+  
+  const [formData, setFormData] = useState({
+    customerId: '',
+    itemId: '',
+    itemType: 'cars' as 'cars' | 'properties',
+    salePrice: '',
+    notes: '',
+    status: 'Sold'
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.customerId || !formData.itemId) {
+      alert("Please select both a client and an asset.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const customer = customers.find(c => c.id === formData.customerId);
+      const items = formData.itemType === 'cars' ? cars : properties;
+      const item = items.find(i => i.id === formData.itemId);
+
+      const saleId = Date.now().toString();
+      const saleData = {
+        ...formData,
+        id: saleId,
+        customerName: customer?.name || 'Unknown Client',
+        itemName: item?.model || item?.name || 'Unknown Asset',
+        createdAt: new Date().toISOString()
+      };
+
+      // 1. Create Sale Document
+      await setDoc(doc(db, 'sales', saleId), saleData);
+
+      // 2. Update Asset Status
+      await updateDoc(doc(db, formData.itemType, formData.itemId), {
+        status: 'Sold'
+      });
+
+      // 3. Update Customer LTV
+      const currentLtv = parseFloat((customer?.ltv || '0').replace(/[^0-9.]/g, '')) || 0;
+      const saleAmt = parseFloat(formData.salePrice.replace(/[^0-9.]/g, '')) || 0;
+      const newLtv = currentLtv + saleAmt;
+      
+      await updateDoc(doc(db, 'customers', formData.customerId), {
+        ltv: `$ ${newLtv.toLocaleString()}`
+      });
+
+      onClose();
+    } catch (error) {
+      console.error("Sale recording error:", error);
+      alert("Error recording transaction.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const availableItems = (formData.itemType === 'cars' ? cars : properties).filter(i => i.status !== 'Sold');
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+      <div className={`w-full max-w-2xl p-12 relative shadow-2xl transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-white text-black'}`}>
+        <button onClick={onClose} className={`absolute top-8 right-8 transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
+          <X size={24} />
+        </button>
+        
+        <h2 className={`text-3xl font-black uppercase tracking-tighter mb-12 border-b pb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+          Record Transaction
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid gap-3">
+              <label className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40`}>Select Client</label>
+              <select 
+                value={formData.customerId} 
+                onChange={(e) => setFormData({...formData, customerId: e.target.value})}
+                className={`w-full border p-5 text-sm font-bold uppercase tracking-widest outline-none transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}
+              >
+                <option value="">Choose Client...</option>
+                {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+
+            <div className="grid gap-3">
+              <label className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40`}>Asset Category</label>
+              <div className="flex gap-2">
+                <button 
+                  type="button"
+                  onClick={() => setFormData({...formData, itemType: 'cars', itemId: ''})}
+                  className={`flex-1 py-4 text-[9px] font-bold uppercase tracking-widest border transition-all ${formData.itemType === 'cars' ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') : (theme === 'dark' ? 'border-zinc-800 text-zinc-500' : 'border-black/5 text-black')}`}
+                >
+                  Showroom
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setFormData({...formData, itemType: 'properties', itemId: ''})}
+                  className={`flex-1 py-4 text-[9px] font-bold uppercase tracking-widest border transition-all ${formData.itemType === 'properties' ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') : (theme === 'dark' ? 'border-zinc-800 text-zinc-500' : 'border-black/5 text-black')}`}
+                >
+                  Portfolio
+                </button>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              <label className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40`}>Select Asset</label>
+              <select 
+                value={formData.itemId} 
+                onChange={(e) => setFormData({...formData, itemId: e.target.value})}
+                className={`w-full border p-5 text-sm font-bold uppercase tracking-widest outline-none transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}
+              >
+                <option value="">Choose Asset...</option>
+                {availableItems.map(i => <option key={i.id} value={i.id}>{i.model || i.name}</option>)}
+              </select>
+            </div>
+
+            <FormField theme={theme} label="Final Sale Price" value={formData.salePrice} onChange={(v) => setFormData({...formData, salePrice: v})} placeholder="$ 000,000" />
+            
+            <div className="md:col-span-2">
+              <FormField theme={theme} label="Transaction Notes" value={formData.notes} onChange={(v) => setFormData({...formData, notes: v})} multiline />
+            </div>
+          </div>
+
+          <div className={`flex justify-end gap-6 pt-8 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+            <button type="button" onClick={onClose} className={`px-10 py-4 text-[10px] font-bold uppercase tracking-widest border transition-all ${theme === 'dark' ? 'border-zinc-800 text-zinc-400' : 'border-black/5 text-black hover:bg-gray-50'}`}>Cancel</button>
+            <button type="submit" disabled={isSaving} className={`px-12 py-4 text-[10px] font-bold uppercase tracking-[0.4em] transition-all disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>{isSaving ? 'Synchronizing...' : 'Log Transaction'}</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

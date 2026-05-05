@@ -166,28 +166,48 @@ export default function AdminPage() {
 
   if (!user) {
     return (
-      <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 flex justify-center items-center transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-950 text-white' : 'bg-gray-50 text-black'}`}>
-        <div className={`p-12 rounded-xl border text-center max-w-lg w-full shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'}`}>
-          <h1 className="text-3xl font-black uppercase mb-4 tracking-tighter">Admin Access</h1>
-          <p className={`mb-8 uppercase text-[10px] font-bold tracking-[0.2em] ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-500'}`}>Masembe Management System</p>
+      <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 flex justify-center items-center transition-all duration-700 ${
+        theme === 'dark' 
+          ? 'bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900 via-purple-950 to-slate-950 text-white' 
+          : 'bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-100 via-violet-50 to-fuchsia-100 text-slate-900'
+      }`}>
+        <div className={`p-12 rounded-3xl border text-center max-w-lg w-full shadow-2xl backdrop-blur-2xl transition-all duration-700 ${
+          theme === 'dark' 
+            ? 'bg-white/5 border-white/10 shadow-black/50' 
+            : 'bg-white/40 border-white/40 shadow-indigo-900/10'
+        }`}>
+          <h1 className="text-4xl font-black uppercase mb-4 tracking-tighter">Admin Access</h1>
+          <p className={`mb-10 uppercase text-[10px] font-bold tracking-[0.3em] ${theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600/60'}`}>Masembe Management System</p>
           
           {authError && (
-            <div className={`mb-6 p-4 border rounded-lg flex items-start gap-3 text-left ${theme === 'dark' ? 'bg-red-950/30 border-red-900 text-red-200' : 'bg-red-50 border-red-200 text-red-800'}`}>
-              <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} />
-              <p className="text-sm">{authError}</p>
+            <div className={`mb-8 p-5 border rounded-2xl flex items-start gap-4 text-left ${
+              theme === 'dark' 
+                ? 'bg-red-500/10 border-red-500/20 text-red-300' 
+                : 'bg-red-50/50 border-red-200 text-red-600'
+            }`}>
+              <AlertCircle className="shrink-0 mt-0.5" size={20} />
+              <p className="text-sm font-medium">{authError}</p>
             </div>
           )}
 
           <button 
             onClick={handleLogin}
-            className={`w-full py-4 font-bold uppercase tracking-[0.3em] text-[10px] transition-colors rounded-none ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
+            className={`w-full py-5 font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-300 rounded-2xl shadow-xl hover:-translate-y-1 ${
+              theme === 'dark' 
+                ? 'bg-white text-indigo-950 hover:shadow-white/20 hover:bg-indigo-50' 
+                : 'bg-indigo-600 text-white hover:shadow-indigo-600/20 hover:bg-indigo-700'
+            }`}
           >
             Authenticate via Google
           </button>
 
           <button 
             onClick={toggleTheme}
-            className={`mt-8 p-3 rounded-full border transition-colors ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800' : 'border-gray-200 hover:bg-gray-100'}`}
+            className={`mt-10 p-4 rounded-full border transition-all duration-300 hover:scale-110 ${
+              theme === 'dark' 
+                ? 'border-white/10 hover:bg-white/10 text-white' 
+                : 'border-indigo-900/10 hover:bg-white/50 text-indigo-900'
+            }`}
           >
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
           </button>
@@ -197,65 +217,107 @@ export default function AdminPage() {
   }
 
   const themeClasses = theme === 'dark' 
-    ? 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-white selection:bg-white selection:text-black' 
-    : 'bg-gradient-to-br from-[#F7F7F5] via-white to-[#EFEFE9] text-black selection:bg-black selection:text-white';
+    ? 'bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900 via-purple-950 to-slate-950 text-white selection:bg-white selection:text-indigo-900' 
+    : 'bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-100 via-violet-50 to-fuchsia-100 text-slate-900 selection:bg-indigo-600 selection:text-white';
 
   return (
-    <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 transition-all duration-700 ${themeClasses}`}>
+    <div className={`min-h-screen flex transition-all duration-700 ${themeClasses}`}>
       <Helmet>
         <title>Admin Dashboard | Masembe Group</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className={`flex flex-col md:flex-row justify-between items-end mb-12 border-b pb-8 transition-all duration-500 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
-          <div>
-            <h1 className={`text-4xl font-black uppercase tracking-tighter ${theme === 'dark' ? 'bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/30' : 'text-black'}`}>CMS Dashboard</h1>
-            <div className={`flex flex-wrap gap-2 mt-6 p-1 rounded-xl transition-colors duration-300 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-md' : 'bg-black/5'}`}>
-              {[
-                { id: 'inquiries', icon: <MessageSquare size={14} />, label: 'Inquiries' },
-                { id: 'homepage', icon: <LayoutDashboard size={14} />, label: 'Homepage' },
-                { id: 'inventory', icon: <Database size={14} />, label: 'Inventory' },
-                { id: 'analytics', icon: <TrendingUp size={14} />, label: 'Analytics' },
-                { id: 'customers', icon: <Users size={14} />, label: 'CRM' },
-                { id: 'sales', icon: <DollarSign size={14} />, label: 'POS / Sales' }
-              ].map((tab) => (
-                <button 
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as Tab)}
-                  className={`flex items-center gap-2 px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.2em] transition-all rounded-lg ${
-                    activeTab === tab.id 
-                      ? (theme === 'dark' ? 'bg-white text-black shadow-lg shadow-white/10' : 'bg-black text-white shadow-lg shadow-black/10') 
-                      : (theme === 'dark' ? 'text-zinc-500 hover:text-white hover:bg-white/5' : 'text-black/40 hover:text-black hover:bg-black/5')
-                  }`}
-                >
-                  {tab.icon}
-                  {tab.label}
-                </button>
-              ))}
+
+      {/* Sidebar Navigation */}
+      <aside className={`w-72 fixed inset-y-6 left-6 z-50 rounded-3xl border backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col ${
+        theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/60 border-white/60 shadow-indigo-900/10'
+      }`}>
+        <div className="p-8">
+          <div className="flex items-center gap-3 mb-10">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${theme === 'dark' ? 'bg-white text-indigo-900 shadow-white/10' : 'bg-indigo-600 text-white shadow-indigo-600/20'}`}>
+              <Database size={20} />
             </div>
+            <h1 className={`text-xl font-black uppercase tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Masembe.</h1>
           </div>
-          
-          <div className="flex items-center gap-6 mt-6 md:mt-0">
-            <button 
-              onClick={toggleTheme}
-              className={`p-2.5 rounded-xl border transition-all ${theme === 'dark' ? 'border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white' : 'border-black/5 bg-black/5 hover:bg-black/10 text-black'}`}
-              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-            >
-              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
-            </button>
-            <button 
-              onClick={handleLogout}
-              className={`flex items-center gap-2 text-[9px] font-bold tracking-[0.3em] uppercase transition-all px-4 py-2.5 rounded-xl border ${theme === 'dark' ? 'border-red-500/20 text-red-400 hover:bg-red-500/10' : 'border-red-200 text-red-600 hover:bg-red-50'}`}
-            >
-              <LogOut size={14} />
-              Secure Exit
-            </button>
-          </div>
+
+          <nav className="space-y-2">
+            {[
+              { id: 'inquiries', icon: <MessageSquare size={18} />, label: 'Inquiries' },
+              { id: 'analytics', icon: <TrendingUp size={18} />, label: 'Analytics' },
+              { id: 'inventory', icon: <Database size={18} />, label: 'Inventory' },
+              { id: 'homepage', icon: <LayoutDashboard size={18} />, label: 'Content' },
+              { id: 'customers', icon: <Users size={18} />, label: 'CRM' },
+              { id: 'sales', icon: <DollarSign size={18} />, label: 'Revenue' }
+            ].map((tab) => (
+              <button 
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as Tab)}
+                className={`w-full flex items-center gap-4 px-5 py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl ${
+                  activeTab === tab.id 
+                    ? (theme === 'dark' ? 'bg-white text-indigo-950 shadow-xl shadow-white/10' : 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20') 
+                    : (theme === 'dark' ? 'text-white/40 hover:text-white hover:bg-white/5' : 'text-slate-500 hover:text-indigo-600 hover:bg-indigo-50')
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* Tab Content */}
-        <div className="mt-8">
+        <div className="mt-auto p-8 border-t border-white/5">
+          <div className="flex items-center gap-4 mb-6">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${theme === 'dark' ? 'bg-white/10 text-white' : 'bg-indigo-50 text-indigo-600'}`}>
+              {user.displayName?.charAt(0) || 'A'}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-[10px] font-black uppercase truncate">{user.displayName || 'Admin'}</p>
+              <p className="text-[9px] font-bold text-white/40 truncate opacity-60">Operations Manager</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className={`w-full flex items-center justify-center gap-3 px-6 py-4 text-[10px] font-black tracking-[0.3em] uppercase transition-all rounded-2xl border ${
+              theme === 'dark' ? 'border-red-500/20 text-red-400 hover:bg-red-500/10' : 'border-red-200 text-red-600 hover:bg-red-50'
+            }`}
+          >
+            <LogOut size={14} />
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 ml-80 mr-6 my-6 flex flex-col gap-6 h-[calc(100vh-3rem)]">
+        {/* Top Floating Bar */}
+        <header className={`p-6 rounded-3xl border backdrop-blur-2xl transition-all duration-500 shadow-2xl flex justify-between items-center ${
+          theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/60 border-white/60 shadow-indigo-900/10'
+        }`}>
+          <div className="flex items-center gap-4">
+            <h2 className="text-sm font-black uppercase tracking-widest opacity-40">Dashboard /</h2>
+            <span className="text-sm font-black uppercase tracking-widest">{activeTab}</span>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={toggleTheme}
+              className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                theme === 'dark' ? 'border-white/10 bg-white/5 text-white hover:bg-white/10' : 'border-indigo-900/10 bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+              }`}
+            >
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+            <div className={`h-10 w-px ${theme === 'dark' ? 'bg-white/10' : 'bg-indigo-900/10'}`} />
+            <div className="text-right hidden md:block">
+              <p className="text-[10px] font-black uppercase">{format(new Date(), 'EEEE, MMMM do')}</p>
+              <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest">System Status: Optimal</p>
+            </div>
+          </div>
+        </header>
+
+        {/* Tab Content Panel */}
+        <div className={`flex-1 overflow-y-auto p-10 rounded-3xl border backdrop-blur-2xl transition-all duration-500 shadow-2xl custom-scrollbar ${
+          theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/40 border-white/40 shadow-indigo-900/10'
+        }`}>
           {activeTab === 'inquiries' && <InquiriesTab theme={theme} />}
           {activeTab === 'homepage' && <HomepageTab theme={theme} />}
           {activeTab === 'inventory' && <InventoryTab theme={theme} />}
@@ -263,7 +325,7 @@ export default function AdminPage() {
           {activeTab === 'customers' && <CustomersTab theme={theme} />}
           {activeTab === 'sales' && <SalesTab theme={theme} />}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
@@ -336,36 +398,38 @@ function InquiriesTab({ theme }: { theme: Theme }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Search & Filters */}
-      <div className={`p-6 border space-y-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900/30 border-zinc-800' : 'bg-white border-black/5'}`}>
-        <div className="relative">
-          <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-zinc-500' : 'text-black/30'}`} size={18} />
+      <div className={`p-8 rounded-3xl border backdrop-blur-xl transition-all duration-500 shadow-xl ${
+        theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/60 border-white/60 shadow-indigo-900/10'
+      }`}>
+        <div className="relative mb-8">
+          <Search className={`absolute left-6 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-white/30' : 'text-slate-400'}`} size={20} />
           <input 
             type="text" 
             placeholder="Search leads by name, email, phone or item..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full pl-12 pr-4 py-4 text-sm font-bold tracking-widest uppercase outline-none border-b transition-all ${
+            className={`w-full pl-16 pr-6 py-5 text-sm font-black tracking-widest uppercase outline-none rounded-2xl transition-all ${
               theme === 'dark' 
-                ? 'bg-transparent border-zinc-800 focus:border-white text-white' 
-                : 'bg-transparent border-black/5 focus:border-black text-black'
+                ? 'bg-black/20 border border-white/5 focus:border-white/20 text-white placeholder:text-white/20' 
+                : 'bg-indigo-50/50 border border-indigo-100 focus:border-indigo-300 text-slate-900 placeholder:text-slate-300'
             }`}
           />
         </div>
 
-        <div className="flex flex-wrap gap-8">
-          <div className="space-y-3">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">Status</span>
-            <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-10">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">Status:</span>
+            <div className="flex gap-2 p-1 rounded-xl bg-black/10">
               {['all', 'new', 'read'].map((f) => (
                 <button 
                   key={f}
                   onClick={() => setFilter(f as any)}
-                  className={`px-4 py-2 text-[9px] font-bold tracking-[0.2em] uppercase transition-all border ${
+                  className={`px-6 py-2.5 text-[9px] font-black tracking-[0.2em] uppercase transition-all rounded-lg ${
                     filter === f 
-                      ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') 
-                      : (theme === 'dark' ? 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600' : 'bg-white text-black border-black/5 hover:border-black')
+                      ? (theme === 'dark' ? 'bg-white text-indigo-950 shadow-lg' : 'bg-indigo-600 text-white shadow-lg') 
+                      : (theme === 'dark' ? 'text-white/40 hover:text-white' : 'text-slate-400 hover:text-slate-900')
                   }`}
                 >
                   {f}
@@ -374,17 +438,17 @@ function InquiriesTab({ theme }: { theme: Theme }) {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">Category</span>
-            <div className="flex gap-2">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">Category:</span>
+            <div className="flex gap-2 p-1 rounded-xl bg-black/10">
               {['all', 'car', 'property', 'general'].map((t) => (
                 <button 
                   key={t}
                   onClick={() => setTypeFilter(t as any)}
-                  className={`px-4 py-2 text-[9px] font-bold tracking-[0.2em] uppercase transition-all border ${
+                  className={`px-6 py-2.5 text-[9px] font-black tracking-[0.2em] uppercase transition-all rounded-lg ${
                     typeFilter === t 
-                      ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') 
-                      : (theme === 'dark' ? 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600' : 'bg-white text-black border-black/5 hover:border-black')
+                      ? (theme === 'dark' ? 'bg-white text-indigo-950 shadow-lg' : 'bg-indigo-600 text-white shadow-lg') 
+                      : (theme === 'dark' ? 'text-white/40 hover:text-white' : 'text-slate-400 hover:text-slate-900')
                   }`}
                 >
                   {t}
@@ -967,8 +1031,12 @@ function FormField({ label, value, onChange, theme, type = 'text', multiline = f
 
 function LoadingSpinner({ theme }: { theme: Theme }) {
   return (
-    <div className="flex justify-center items-center py-24">
-      <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${theme === 'dark' ? 'border-white' : 'border-black'}`}></div>
+    <div className="flex flex-col items-center justify-center py-32 space-y-6">
+      <div className="relative">
+        <div className={`w-16 h-16 rounded-full border-4 ${theme === 'dark' ? 'border-white/5' : 'border-indigo-100'}`} />
+        <div className={`absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-t-transparent animate-spin ${theme === 'dark' ? 'border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' : 'border-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.3)]'}`} />
+      </div>
+      <p className={`text-[10px] font-black uppercase tracking-[0.4em] animate-pulse ${theme === 'dark' ? 'text-white/40' : 'text-indigo-900/40'}`}>Synchronizing System...</p>
     </div>
   );
 }
@@ -1067,33 +1135,34 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
             <AreaChart data={analyticsData}>
               <defs>
                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={theme === 'dark' ? '#ffffff' : '#000000'} stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor={theme === 'dark' ? '#ffffff' : '#000000'} stopOpacity={0}/>
+                  <stop offset="5%" stopColor={theme === 'dark' ? '#10b981' : '#6366f1'} stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor={theme === 'dark' ? '#10b981' : '#6366f1'} stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
               <XAxis 
                 dataKey="date" 
-                stroke={theme === 'dark' ? '#71717a' : '#a3a3a3'} 
+                stroke={theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'} 
                 fontSize={10} 
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(val) => format(new Date(val), 'MMM d')}
               />
               <YAxis 
-                stroke={theme === 'dark' ? '#71717a' : '#a3a3a3'} 
+                stroke={theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'} 
                 fontSize={10} 
                 tickLine={false}
                 axisLine={false}
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff', 
+                  backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)', 
                   border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
                   borderRadius: '16px',
+                  backdropBlur: '12px',
                   padding: '12px',
                   fontSize: '10px',
-                  fontWeight: 'bold',
+                  fontWeight: '900',
                   textTransform: 'uppercase',
                   boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
                 }} 
@@ -1101,10 +1170,11 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
               <Area 
                 type="monotone" 
                 dataKey="count" 
-                stroke={theme === 'dark' ? '#ffffff' : '#000000'} 
-                strokeWidth={3}
+                stroke={theme === 'dark' ? '#10b981' : '#6366f1'} 
+                strokeWidth={4}
                 fillOpacity={1} 
                 fill="url(#colorCount)" 
+                animationDuration={2000}
               />
             </AreaChart>
           </ResponsiveContainer>

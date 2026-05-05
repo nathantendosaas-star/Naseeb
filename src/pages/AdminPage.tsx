@@ -197,77 +197,56 @@ export default function AdminPage() {
   }
 
   const themeClasses = theme === 'dark' 
-    ? 'bg-zinc-950 text-white selection:bg-white selection:text-black' 
-    : 'bg-[#F7F7F5] text-black selection:bg-black selection:text-white';
+    ? 'bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black text-white selection:bg-white selection:text-black' 
+    : 'bg-gradient-to-br from-[#F7F7F5] via-white to-[#EFEFE9] text-black selection:bg-black selection:text-white';
 
   return (
-    <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 transition-colors duration-300 ${themeClasses}`}>
+    <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 transition-all duration-700 ${themeClasses}`}>
       <Helmet>
         <title>Admin Dashboard | Masembe Group</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className={`flex flex-col md:flex-row justify-between items-end mb-12 border-b pb-8 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+        <div className={`flex flex-col md:flex-row justify-between items-end mb-12 border-b pb-8 transition-all duration-500 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
           <div>
-            <h1 className="text-4xl font-black uppercase tracking-tighter">CMS Dashboard</h1>
-            <div className="flex gap-4 mt-4">
-              <button 
-                onClick={() => setActiveTab('inquiries')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'inquiries' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <MessageSquare size={14} />
-                Inquiries
-              </button>
-              <button 
-                onClick={() => setActiveTab('homepage')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'homepage' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <LayoutDashboard size={14} />
-                Homepage
-              </button>
-              <button 
-                onClick={() => setActiveTab('inventory')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'inventory' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <Database size={14} />
-                Inventory
-              </button>
-              <button 
-                onClick={() => setActiveTab('analytics')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'analytics' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <TrendingUp size={14} />
-                Analytics
-              </button>
-              <button 
-                onClick={() => setActiveTab('customers')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'customers' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <Users size={14} />
-                CRM
-              </button>
-              <button 
-                onClick={() => setActiveTab('sales')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'sales' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <DollarSign size={14} />
-                POS / Sales
-              </button>
+            <h1 className={`text-4xl font-black uppercase tracking-tighter ${theme === 'dark' ? 'bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/30' : 'text-black'}`}>CMS Dashboard</h1>
+            <div className={`flex flex-wrap gap-2 mt-6 p-1 rounded-xl transition-colors duration-300 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-md' : 'bg-black/5'}`}>
+              {[
+                { id: 'inquiries', icon: <MessageSquare size={14} />, label: 'Inquiries' },
+                { id: 'homepage', icon: <LayoutDashboard size={14} />, label: 'Homepage' },
+                { id: 'inventory', icon: <Database size={14} />, label: 'Inventory' },
+                { id: 'analytics', icon: <TrendingUp size={14} />, label: 'Analytics' },
+                { id: 'customers', icon: <Users size={14} />, label: 'CRM' },
+                { id: 'sales', icon: <DollarSign size={14} />, label: 'POS / Sales' }
+              ].map((tab) => (
+                <button 
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as Tab)}
+                  className={`flex items-center gap-2 px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.2em] transition-all rounded-lg ${
+                    activeTab === tab.id 
+                      ? (theme === 'dark' ? 'bg-white text-black shadow-lg shadow-white/10' : 'bg-black text-white shadow-lg shadow-black/10') 
+                      : (theme === 'dark' ? 'text-zinc-500 hover:text-white hover:bg-white/5' : 'text-black/40 hover:text-black hover:bg-black/5')
+                  }`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </div>
           
           <div className="flex items-center gap-6 mt-6 md:mt-0">
             <button 
               onClick={toggleTheme}
-              className={`p-2 rounded-lg border transition-colors ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-900 text-zinc-400' : 'border-black/5 hover:bg-black/5 text-black/40'}`}
+              className={`p-2.5 rounded-xl border transition-all ${theme === 'dark' ? 'border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white' : 'border-black/5 bg-black/5 hover:bg-black/10 text-black'}`}
               title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
             >
               {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
             </button>
             <button 
               onClick={handleLogout}
-              className={`flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] uppercase transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}
+              className={`flex items-center gap-2 text-[9px] font-bold tracking-[0.3em] uppercase transition-all px-4 py-2.5 rounded-xl border ${theme === 'dark' ? 'border-red-500/20 text-red-400 hover:bg-red-500/10' : 'border-red-200 text-red-600 hover:bg-red-50'}`}
             >
               <LogOut size={14} />
               Secure Exit
@@ -423,84 +402,86 @@ function InquiriesTab({ theme }: { theme: Theme }) {
           {filteredInquiries.map((inquiry: any) => (
             <div 
               key={inquiry.id} 
-              className={`p-8 rounded-none border transition-all duration-300 ${
+              className={`p-10 rounded-3xl border transition-all duration-500 shadow-xl ${
                 theme === 'dark' 
-                  ? `bg-zinc-900/50 border-zinc-800 ${inquiry.status === 'new' ? 'border-l-4 border-l-white bg-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.03)]' : 'opacity-70'}` 
-                  : `bg-white border-black/5 ${inquiry.status === 'new' ? 'border-l-4 border-l-black shadow-sm' : 'opacity-80'}`
+                  ? `bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40 hover:bg-white/10 ${inquiry.status === 'new' ? 'border-l-4 border-l-white bg-white/[0.08]' : 'opacity-70'}` 
+                  : `bg-white border-black/5 shadow-gray-200/50 hover:shadow-gray-200 ${inquiry.status === 'new' ? 'border-l-4 border-l-black bg-white shadow-lg' : 'opacity-80'}`
               }`}
             >
-              <div className="flex flex-col lg:flex-row justify-between gap-8">
+              <div className="flex flex-col lg:flex-row justify-between gap-10">
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-4 mb-6">
+                  <div className="flex flex-wrap items-center gap-4 mb-8">
                     {inquiry.itemType === 'car' ? (
-                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2 transition-colors`}><Car size={14} /></span>
+                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2.5 rounded-xl shadow-lg transition-all`}><Car size={16} /></span>
                     ) : inquiry.itemType === 'property' ? (
-                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2 transition-colors`}><Home size={14} /></span>
+                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2.5 rounded-xl shadow-lg transition-all`}><Home size={16} /></span>
                     ) : (
-                      <span className={`${theme === 'dark' ? 'bg-zinc-800 text-white' : 'bg-gray-100 text-black'} p-2 transition-colors`}><MessageSquare size={14} /></span>
+                      <span className={`${theme === 'dark' ? 'bg-white/10 text-white' : 'bg-gray-100 text-black'} p-2.5 rounded-xl transition-all`}><MessageSquare size={16} /></span>
                     )}
-                    <span className={`font-bold uppercase tracking-[0.2em] text-[10px] ${theme === 'dark' ? 'text-zinc-400' : 'text-black/60'}`}>{inquiry.itemName}</span>
+                    <span className={`font-black uppercase tracking-[0.3em] text-[10px] ${theme === 'dark' ? 'text-zinc-400' : 'text-black/60'}`}>{inquiry.itemName}</span>
                     {inquiry.status === 'new' && (
-                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.2em] transition-colors shadow-sm`}>New</span>
+                      <span className={`${theme === 'dark' ? 'bg-white text-black shadow-lg shadow-white/20' : 'bg-black text-white shadow-lg shadow-black/10'} text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] transition-all`}>New</span>
                     )}
                     {inquiry.preferredContact && (
-                      <span className={`text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.2em] border ${
-                        inquiry.preferredContact === 'whatsapp' ? 'text-green-500 border-green-500/30' : 
-                        inquiry.preferredContact === 'phone' ? 'text-blue-500 border-blue-500/30' : 'text-zinc-500 border-zinc-500/30'
+                      <span className={`text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] border transition-all ${
+                        inquiry.preferredContact === 'whatsapp' ? 'text-green-500 border-green-500/30 bg-green-500/5' : 
+                        inquiry.preferredContact === 'phone' ? 'text-blue-500 border-blue-500/30 bg-blue-500/5' : 'text-zinc-500 border-zinc-500/30 bg-zinc-500/5'
                       }`}>
-                        Prefer: {inquiry.preferredContact}
+                        {inquiry.preferredContact}
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-2">{inquiry.firstName} {inquiry.lastName}</h3>
-                  <div className={`flex flex-wrap items-center gap-x-8 gap-y-4 text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'text-zinc-400' : 'text-black/50'}`}>
+                  <h3 className="text-4xl font-black uppercase tracking-tight mb-3">{inquiry.firstName} {inquiry.lastName}</h3>
+                  <div className={`flex flex-wrap items-center gap-x-10 gap-y-4 text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/50'}`}>
                     <a href={`mailto:${inquiry.email}`} className={`flex items-center gap-2 transition-colors ${theme === 'dark' ? 'hover:text-white' : 'hover:text-black'}`}>
                       {inquiry.email}
                     </a>
                     {inquiry.phone && (
                       <a href={`tel:${inquiry.phone}`} className={`flex items-center gap-2 text-lg font-mono tracking-tighter transition-colors ${theme === 'dark' ? 'text-white hover:text-white' : 'text-black hover:text-black'}`}>
-                        <Phone size={14} />
+                        <Phone size={14} className="opacity-40" />
                         {inquiry.phone}
                       </a>
                     )}
-                    <span className="opacity-40">{format(new Date(inquiry.createdAt), 'MMM d, yyyy // HH:mm')}</span>
+                    <span className="opacity-30">{format(new Date(inquiry.createdAt), 'MMM d, yyyy // HH:mm')}</span>
                   </div>
                   
-                  <div className={`mt-6 p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-950/50 border-zinc-800' : 'bg-[#F7F7F5] border-black/5'}`}>
-                    <p className={`text-base md:text-lg leading-relaxed font-medium whitespace-pre-wrap transition-colors duration-300 ${theme === 'dark' ? 'text-zinc-200' : 'text-black/90'}`}>{inquiry.message}</p>
+                  <div className={`mt-8 p-10 rounded-2xl border transition-all duration-500 ${theme === 'dark' ? 'bg-black/40 border-white/5' : 'bg-black/5 border-black/5'}`}>
+                    <p className={`text-base md:text-xl leading-relaxed font-medium whitespace-pre-wrap transition-all ${theme === 'dark' ? 'text-zinc-300' : 'text-black/80'}`}>{inquiry.message}</p>
                   </div>
                 </div>
                 
-                <div className={`flex flex-row lg:flex-col justify-end gap-3 lg:pl-8 lg:border-l transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+                <div className={`flex flex-row lg:flex-col justify-end gap-3 lg:pl-10 lg:border-l transition-all duration-500 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
                   {inquiry.phone && (
                     <>
                       <a 
                         href={`https://wa.me/${inquiry.phone.replace(/\D/g, '')}?text=Hello ${inquiry.firstName}, this is from Masembe Group regarding your inquiry for ${inquiry.itemName}.`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] bg-green-600 text-white hover:bg-green-700 transition-all shadow-lg shadow-green-600/10"
+                        className="flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] bg-green-600 text-white hover:bg-green-700 transition-all rounded-xl shadow-xl shadow-green-600/20"
                       >
                         <MessageCircle size={14} />
                         WhatsApp
                       </a>
                       <a 
                         href={`tel:${inquiry.phone}`}
-                        className="flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] border border-blue-500/30 text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
+                        className={`flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] border transition-all rounded-xl ${
+                          theme === 'dark' ? 'border-white/10 text-white hover:bg-white/5' : 'border-black/10 text-black hover:bg-black/5'
+                        }`}
                       >
                         <Phone size={14} />
-                        Call Now
+                        Call
                       </a>
                     </>
                   )}
-                  <div className="h-px w-full bg-zinc-800 my-2 hidden lg:block" />
+                  <div className={`h-px w-full my-4 hidden lg:block ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'}`} />
                   <button 
                     onClick={() => markAsRead(inquiry.id, inquiry.status)}
                     disabled={inquiry.status === 'read'}
-                    className={`flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${
+                    className={`flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${
                       inquiry.status === 'read' 
-                        ? (theme === 'dark' ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-gray-100 text-black/20 cursor-not-allowed') 
-                        : (theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800')
+                        ? (theme === 'dark' ? 'bg-white/5 text-zinc-600 cursor-not-allowed' : 'bg-black/5 text-black/20 cursor-not-allowed') 
+                        : (theme === 'dark' ? 'bg-white text-black shadow-xl shadow-white/10 hover:bg-zinc-200' : 'bg-black text-white shadow-xl shadow-black/10 hover:bg-gray-800')
                     }`}
                   >
                     {inquiry.status === 'read' ? <CheckCircle size={14} /> : <Circle size={14} />}
@@ -508,10 +489,10 @@ function InquiriesTab({ theme }: { theme: Theme }) {
                   </button>
                   <button 
                     onClick={() => deleteInquiry(inquiry.id)}
-                    className={`flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] border transition-all ${
+                    className={`flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] border transition-all rounded-xl ${
                       theme === 'dark'
-                        ? 'text-red-400 border-red-900/50 hover:bg-red-950/30'
-                        : 'text-red-600 border-red-100 hover:bg-red-50'
+                        ? 'text-red-400 border-red-500/20 hover:bg-red-500/10'
+                        : 'text-red-600 border-red-200 hover:bg-red-50'
                     }`}
                   >
                     <Trash2 size={14} />
@@ -585,10 +566,10 @@ function HomepageTab({ theme }: { theme: Theme }) {
   if (!formData) return <LoadingSpinner theme={theme} />;
 
   return (
-    <div className="max-w-4xl space-y-12">
-      <div className={`grid gap-8 p-10 border shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-4 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>Hero Configuration</h2>
-        <div className="grid gap-6">
+    <div className="max-w-4xl space-y-12 pb-24">
+      <div className={`grid gap-8 p-12 rounded-3xl border shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-6 transition-all duration-500 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5'}`}>Hero Configuration</h2>
+        <div className="grid gap-8">
           <FormField 
             theme={theme}
             label="Hero Title" 
@@ -605,9 +586,9 @@ function HomepageTab({ theme }: { theme: Theme }) {
         </div>
       </div>
 
-      <div className={`grid gap-8 p-10 border shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-4 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>Media Assets</h2>
-        <div className="grid gap-6">
+      <div className={`grid gap-8 p-12 rounded-3xl border shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-6 transition-all duration-500 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5'}`}>Media Assets</h2>
+        <div className="grid gap-8">
           <FormField 
             theme={theme}
             label="Real Estate Video URL" 
@@ -637,12 +618,12 @@ function HomepageTab({ theme }: { theme: Theme }) {
         onChange={(idx, field, val) => updateSection('auto', idx, field, val)}
       />
 
-      <div className="sticky bottom-8 flex justify-end">
+      <div className="sticky bottom-10 flex justify-end">
         <button 
           onClick={handleSave}
           disabled={isSaving}
-          className={`px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] shadow-2xl transition-all flex items-center gap-4 disabled:opacity-50 ${
-            theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'
+          className={`px-12 py-5 text-[10px] font-black uppercase tracking-[0.4em] rounded-2xl shadow-2xl transition-all flex items-center gap-4 disabled:opacity-50 ${
+            theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200 shadow-white/10' : 'bg-black text-white hover:bg-gray-800 shadow-black/20'
           }`}
         >
           {isSaving ? 'Processing...' : (
@@ -664,12 +645,12 @@ function SectionEditor({ title, sections, onChange, theme }: {
   theme: Theme
 }) {
   return (
-    <div className={`grid gap-8 p-10 border shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-      <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-4 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>{title}</h2>
+    <div className={`grid gap-8 p-12 rounded-3xl border shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+      <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-6 transition-all duration-500 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5'}`}>{title}</h2>
       <div className="space-y-10">
         {sections.map((section, idx) => (
-          <div key={idx} className={`grid gap-6 p-6 relative transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-950/50' : 'bg-[#F7F7F5]'}`}>
-            <span className={`absolute -top-3 -left-3 w-8 h-8 flex items-center justify-center text-[10px] font-bold transition-colors ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>0{idx + 1}</span>
+          <div key={idx} className={`grid gap-8 p-8 relative rounded-2xl transition-all duration-500 border ${theme === 'dark' ? 'bg-black/20 border-white/5' : 'bg-black/5 border-black/5'}`}>
+            <span className={`absolute -top-3 -left-3 w-10 h-10 flex items-center justify-center text-xs font-black rounded-xl shadow-lg transition-all ${theme === 'dark' ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'}`}>0{idx + 1}</span>
             <FormField 
               theme={theme}
               label="Section Title" 
@@ -749,40 +730,45 @@ function InventoryTab({ theme }: { theme: Theme }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {(type === 'cars' ? cars : properties).map((item: any, index: number) => (
-          <div key={item.id} className={`group border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800 hover:shadow-white/5' : 'bg-white border-black/5'}`}>
-            <div className="aspect-[16/10] overflow-hidden bg-gray-100">
+          <div 
+            key={item.id} 
+            className={`group rounded-3xl border overflow-hidden transition-all duration-500 shadow-xl ${
+              theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40 hover:bg-white/10' : 'bg-white border-black/5 shadow-gray-200/50'
+            }`}
+          >
+            <div className="aspect-[16/10] overflow-hidden bg-black/20">
               <OptimizedImage 
                 src={item.image} 
                 alt={item.model || item.name} 
-                className="w-full h-full grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                 priority={index < 3}
               />
             </div>
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-4">
+            <div className="p-10">
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-xl font-black uppercase tracking-tighter leading-none">{item.model || item.name}</h3>
-                  <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-2 transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{item.make || item.location}</p>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">{item.model || item.name}</h3>
+                  <p className={`text-[10px] font-black uppercase tracking-[0.3em] mt-3 transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{item.make || item.location}</p>
                 </div>
-                <span className={`text-[10px] font-black tracking-widest ${theme === 'dark' ? 'text-zinc-400' : 'text-black'}`}>{item.price}</span>
+                <span className={`text-[11px] font-black tracking-[0.2em] px-4 py-1.5 rounded-full ${theme === 'dark' ? 'bg-white text-black shadow-lg shadow-white/10' : 'bg-black text-white shadow-lg shadow-black/10'}`}>{item.price}</span>
               </div>
               
-              <div className={`flex gap-3 pt-6 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+              <div className={`flex gap-3 pt-8 border-t transition-all duration-500 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
                 <button 
                   onClick={() => setEditingItem(item)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 border text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
                     theme === 'dark' 
-                      ? 'border-zinc-800 text-zinc-400 hover:bg-white hover:text-black hover:border-white' 
-                      : 'border-black/5 text-black hover:bg-black hover:text-white'
+                      ? 'border-white/10 text-white hover:bg-white hover:text-black hover:border-white shadow-lg shadow-white/5' 
+                      : 'border-black/10 text-black hover:bg-black hover:text-white shadow-lg shadow-black/5'
                   }`}
                 >
                   <Edit2 size={12} />
-                  Edit
+                  Modify
                 </button>
                 <button 
                   onClick={() => handleDelete(item.id)}
-                  className={`p-3 border transition-colors ${
-                    theme === 'dark' ? 'border-zinc-800 text-red-400 hover:bg-red-950/30' : 'border-black/5 text-red-600 hover:bg-red-50'
+                  className={`p-4 rounded-xl border transition-all ${
+                    theme === 'dark' ? 'border-red-500/20 text-red-400 hover:bg-red-500/10' : 'border-red-100 text-red-600 hover:bg-red-50'
                   }`}
                 >
                   <Trash2 size={14} />
@@ -859,13 +845,13 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-      <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto p-12 relative shadow-2xl transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-white text-black'}`}>
-        <button onClick={onClose} className={`absolute top-8 right-8 transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
+      <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto p-12 relative rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-zinc-900/90 border-white/10 text-white shadow-black/60' : 'bg-white/95 border-black/5 text-black shadow-gray-400/20'}`}>
+        <button onClick={onClose} className={`absolute top-10 right-10 transition-colors p-2 rounded-full hover:bg-white/5 ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
           <X size={24} />
         </button>
         
-        <h2 className={`text-3xl font-black uppercase tracking-tighter mb-12 border-b pb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+        <h2 className={`text-4xl font-black uppercase tracking-tighter mb-12 border-b pb-8 transition-colors duration-300 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5 text-black'}`}>
           {item ? 'Modify Asset' : 'New Asset Entry'}
         </h2>
 
@@ -1060,34 +1046,32 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
     <div className="space-y-12">
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Total Page Views</span>
-          <h3 className="text-5xl font-black tracking-tighter">{totalViews}</h3>
-        </div>
-        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Active Sessions</span>
-          <h3 className="text-5xl font-black tracking-tighter">{analyticsData.length > 0 ? analyticsData[analyticsData.length - 1].count : 0}</h3>
-          <p className="text-[10px] font-bold uppercase tracking-widest mt-2 opacity-40">Today</p>
-        </div>
-        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Conversion Rate</span>
-          <h3 className="text-5xl font-black tracking-tighter">--</h3>
-        </div>
+        {[
+          { label: 'Total Page Views', value: totalViews, sub: 'All-time' },
+          { label: 'Active Sessions', value: analyticsData.length > 0 ? analyticsData[analyticsData.length - 1].count : 0, sub: 'Today' },
+          { label: 'Conversion Rate', value: '--', sub: 'Target: 3.5%' }
+        ].map((stat) => (
+          <div key={stat.label} className={`p-10 rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-6">{stat.label}</span>
+            <h3 className="text-6xl font-black tracking-tighter">{stat.value}</h3>
+            <p className="text-[10px] font-bold uppercase tracking-widest mt-4 opacity-40">{stat.sub}</p>
+          </div>
+        ))}
       </div>
 
       {/* Traffic Chart */}
-      <div className={`p-10 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+      <div className={`p-12 rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
         <h2 className="text-xl font-black uppercase tracking-tighter mb-12">Traffic Overview</h2>
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={analyticsData}>
               <defs>
                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={theme === 'dark' ? '#ffffff' : '#000000'} stopOpacity={0.1}/>
+                  <stop offset="5%" stopColor={theme === 'dark' ? '#ffffff' : '#000000'} stopOpacity={0.2}/>
                   <stop offset="95%" stopColor={theme === 'dark' ? '#ffffff' : '#000000'} stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#27272a' : '#e5e5e5'} vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
               <XAxis 
                 dataKey="date" 
                 stroke={theme === 'dark' ? '#71717a' : '#a3a3a3'} 
@@ -1105,17 +1089,20 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff', 
-                  border: theme === 'dark' ? '1px solid #27272a' : '1px solid #e5e5e5',
+                  border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+                  borderRadius: '16px',
+                  padding: '12px',
                   fontSize: '10px',
                   fontWeight: 'bold',
-                  textTransform: 'uppercase'
+                  textTransform: 'uppercase',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
                 }} 
               />
               <Area 
                 type="monotone" 
                 dataKey="count" 
                 stroke={theme === 'dark' ? '#ffffff' : '#000000'} 
-                strokeWidth={2}
+                strokeWidth={3}
                 fillOpacity={1} 
                 fill="url(#colorCount)" 
               />
@@ -1123,18 +1110,30 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
           </ResponsiveContainer>
         </div>
       </div>
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
       {/* Popular Pages */}
-      <div className={`p-10 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+      <div className={`p-12 rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
         <h2 className="text-xl font-black uppercase tracking-tighter mb-8">Popular Destinations</h2>
-        <div className="space-y-4">
+        <div className="space-y-2">
           {topPages.map((page, idx) => (
-            <div key={page.path} className="flex items-center justify-between py-4 border-b last:border-0 border-black/5 dark:border-zinc-800">
+            <div key={page.path} className={`flex items-center justify-between p-6 rounded-2xl border transition-all duration-300 ${theme === 'dark' ? 'border-white/5 hover:bg-white/5' : 'border-black/5 hover:bg-black/5'}`}>
               <div className="flex items-center gap-6">
-                <span className="text-[10px] font-black opacity-20">0{idx + 1}</span>
+                <span className={`text-[10px] font-black opacity-20 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>0{idx + 1}</span>
                 <span className="text-sm font-bold tracking-widest uppercase">{page.path}</span>
               </div>
-              <span className="text-sm font-mono font-bold">{page.count} views</span>
+              <div className="flex items-center gap-4">
+                <div className={`h-1 w-24 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'}`}>
+                  <div 
+                    className={`h-full rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-black'}`} 
+                    style={{ width: `${(page.count / (topPages[0]?.count || 1)) * 100}%` }}
+                  />
+                </div>
+                <span className="text-sm font-mono font-bold">{page.count} views</span>
+              </div>
             </div>
           ))}
           {topPages.length === 0 && (
@@ -1174,15 +1173,15 @@ function CustomersTab({ theme }: { theme: Theme }) {
 
   return (
     <div className="space-y-8">
-      <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+      <div className={`p-10 rounded-3xl border transition-all duration-500 shadow-xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div>
-            <h2 className="text-xl font-black uppercase tracking-tighter mb-4">Client Relations Management</h2>
+            <h2 className="text-2xl font-black uppercase tracking-tighter mb-4">Client Relations Management</h2>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Manage your high-net-worth client database.</p>
           </div>
           <button 
             onClick={() => setIsAdding(true)}
-            className={`px-8 py-4 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
+            className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-xl ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
           >
             New Client Profile
           </button>
@@ -1190,17 +1189,17 @@ function CustomersTab({ theme }: { theme: Theme }) {
       </div>
 
       {/* Search */}
-      <div className={`p-6 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900/30 border-zinc-800' : 'bg-white border-black/5'}`}>
+      <div className={`p-8 rounded-3xl border transition-all duration-500 shadow-xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
         <div className="relative">
-          <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-zinc-500' : 'text-black/30'}`} size={18} />
+          <Search className={`absolute left-6 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-zinc-500' : 'text-black/30'}`} size={20} />
           <input 
             type="text" 
             placeholder="Search clients by name, email or phone..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full pl-12 pr-4 py-4 text-sm font-bold tracking-widest uppercase outline-none border-b transition-all ${
+            className={`w-full pl-16 pr-6 py-5 text-sm font-bold tracking-widest uppercase outline-none border-b transition-all ${
               theme === 'dark' 
-                ? 'bg-transparent border-zinc-800 focus:border-white text-white' 
+                ? 'bg-transparent border-white/10 focus:border-white text-white' 
                 : 'bg-transparent border-black/5 focus:border-black text-black'
             }`}
           />
@@ -1209,14 +1208,14 @@ function CustomersTab({ theme }: { theme: Theme }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredCustomers.map((customer: any) => (
-          <div key={customer.id} className={`p-8 border transition-all duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-            <div className="flex justify-between items-start mb-6">
-              <div className={`w-12 h-12 flex items-center justify-center text-xl font-black transition-colors ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>
+          <div key={customer.id} className={`p-10 rounded-3xl border transition-all duration-500 shadow-xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40 hover:bg-white/10' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+            <div className="flex justify-between items-start mb-8">
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black transition-all shadow-lg ${theme === 'dark' ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'}`}>
                 {customer.name?.charAt(0)}
               </div>
-              <div className="flex gap-2">
-                <button onClick={() => setEditingCustomer(customer)} className={`p-2 transition-colors ${theme === 'dark' ? 'text-zinc-500 hover:text-white' : 'text-black/30 hover:text-black'}`}><Edit2 size={14} /></button>
-                <button onClick={() => handleDelete(customer.id)} className={`p-2 transition-colors ${theme === 'dark' ? 'text-red-900 hover:text-red-500' : 'text-red-200 hover:text-red-600'}`}><Trash2 size={14} /></button>
+              <div className="flex gap-3">
+                <button onClick={() => setEditingCustomer(customer)} className={`p-3 rounded-xl transition-all ${theme === 'dark' ? 'bg-white/5 text-zinc-500 hover:text-white' : 'bg-black/5 text-black/30 hover:text-black'}`}><Edit2 size={16} /></button>
+                <button onClick={() => handleDelete(customer.id)} className={`p-3 rounded-xl transition-all ${theme === 'dark' ? 'bg-red-500/10 text-red-900 hover:text-red-500' : 'bg-red-50 text-red-200 hover:text-red-600'}`}><Trash2 size={16} /></button>
               </div>
             </div>
             

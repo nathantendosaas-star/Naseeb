@@ -8,10 +8,11 @@ import { submitInquiry } from '../../hooks/useRealtimeDB';
 import OptimizedImage from '../../components/OptimizedImage';
 import SEO from '../../components/SEO';
 import MediaGallery from '../../components/MediaGallery';
+import { toast } from 'react-hot-toast';
 
 export default function CarDetailPage() {
   const { id } = useParams();
-  const { data: firestoreCar, loading } = useFirestoreDoc<Car>('cars', id || '');
+  const { data: firestoreCar, isLoading: loading } = useFirestoreDoc<Car>('cars', id || '');
 
   // Show a minimal skeleton while Firestore resolves
   if (loading) {
@@ -75,8 +76,8 @@ export default function CarDetailPage() {
 
       form.reset();
     } catch (error) {
-      console.error("Error submitting inquiry: ", error);
-      alert(error instanceof Error ? error.message : "There was an error submitting your inquiry. Please try again.");
+      console.error("Error submitting inquiry:", error);
+      toast.error(error instanceof Error ? error.message : "There was an error submitting your inquiry. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

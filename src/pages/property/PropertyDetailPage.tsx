@@ -7,10 +7,11 @@ import { submitInquiry } from '@/hooks/useRealtimeDB';
 import { useFirestoreDoc } from '@/hooks/useFirestore';
 import SEO from '@/components/SEO';
 import MediaGallery from '@/components/MediaGallery';
+import { toast } from 'react-hot-toast';
 
 export default function PropertyDetailPage() {
   const { id } = useParams();
-  const { data: firestoreProperty, loading } = useFirestoreDoc<Property>('properties', id || '');
+  const { data: firestoreProperty, isLoading: loading } = useFirestoreDoc<Property>('properties', id || '');
 
   if (loading) {
     return (
@@ -73,8 +74,8 @@ export default function PropertyDetailPage() {
 
       form.reset();
     } catch (error) {
-      console.error("Error submitting inquiry: ", error);
-      alert(error instanceof Error ? error.message : "There was an error submitting your inquiry. Please try again.");
+      console.error("Error submitting inquiry:", error);
+      toast.error(error instanceof Error ? error.message : "There was an error submitting your inquiry. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

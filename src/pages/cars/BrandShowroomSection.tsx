@@ -13,7 +13,7 @@ function normalizeMake(make: unknown) {
 }
 
 export default function BrandShowroomSection() {
-  const { data: firestoreCars, loading } = useFirestoreCollection<Car>('cars');
+  const { data: firestoreCars = [], isLoading: loading } = useFirestoreCollection<Car>('cars');
   const [activeBrand, setActiveBrand] = useState<BrandFilter>('All');
 
   const cars = useMemo(() => {

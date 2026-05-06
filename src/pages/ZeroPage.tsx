@@ -8,6 +8,7 @@ import WatermarkLayer from '../components/WatermarkLayer';
 import SEO from '../components/SEO';
 import { useFirestoreDoc } from '../hooks/useFirestore';
 import { submitInquiry } from '../hooks/useRealtimeDB';
+import { toast } from 'react-hot-toast';
 
 const ProgressDot = ({ progress, start, end, color }: { progress: any, start: number, end: number, color: string }) => {
   const height = useTransform(progress, [start, end], ["0%", "100%"]);
@@ -121,13 +122,13 @@ export default function ZeroPage() {
     }
 
     if (!inquiryForm.name || !inquiryForm.email || !inquiryForm.phone || !inquiryForm.message) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
     // Phone validation
     if (!/^[+\d\s\-().]{7,20}$/.test(inquiryForm.phone.trim())) {
-      alert("Please enter a valid phone number.");
+      toast.error("Please enter a valid phone number.");
       return;
     }
 
@@ -167,7 +168,7 @@ export default function ZeroPage() {
       } else {
         errorMessage += error.message || "Please try again.";
       }
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

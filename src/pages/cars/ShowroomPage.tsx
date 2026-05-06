@@ -14,7 +14,7 @@ const parsePrice = (priceStr: string) => {
 };
 
 export default function ShowroomPage() {
-  const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
+  const { data: firestoreCars = [] } = useFirestoreCollection<Car>('cars');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState<number>(1000000);

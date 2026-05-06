@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { 
   ref, 
-  onValue, 
+  get,
   push, 
   set, 
   update, 
@@ -13,49 +13,28 @@ import { rtdb } from '../lib/firebase';
 import { isAllowed } from '../lib/rateLimiter';
 
 /**
- * Hook to subscribe to a Realtime Database path
+ * Hook to subscribe to a Realtime Database path using React Query
  * @param path The database path (e.g. 'inquiries')
  * @param limitCount Maximum number of items to fetch
  */
 export function useRealtimeDB<T>(path: string, limitCount: number = 50) {
-  const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    const dbRef = ref(rtdb, path);
-    // Fetch last N items. RTDB keys (from push()) are chronological.
-    const q = query(dbRef, limitToLast(limitCount));
-
-    const unsubscribe = onValue(q, (snapshot) => {
-      try {
-        const items: T[] = [];
-        snapshot.forEach((childSnapshot) => {
-          items.push({
-            id: childSnapshot.key,
-            ...childSnapshot.val()
-          } as T);
-        });
-        // RTDB limitToLast returns items in ascending order of push keys.
-        // We reverse them to show newest first.
-        setData(items.reverse());
-        setLoading(false);
-        setError(null);
-      } catch (err) {
-        console.error(`Error processing RTDB data from ${path}:`, err);
-        setError(err as Error);
-        setLoading(false);
-      }
-    }, (err) => {
-      console.error(`Error fetching RTDB data from ${path}:`, err);
-      setError(err);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [path, limitCount]);
-
-  return { data, loading, error };
+  return useQuery({
+    queryKey: [path, limitCount],
+    queryFn: async () => {
+      const dbRef = ref(rtdb, path);
+      const q = query(dbRef, limitToLast(limitCount));
+      const snapshot = await get(q);
+      
+      const items: T[] = [];
+      snapshot.forEach((childSnapshot) => {
+        items.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        } as T);
+      });
+      return items.reverse();
+    },
+  });
 }
 
 /**

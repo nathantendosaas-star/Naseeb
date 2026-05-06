@@ -3,6 +3,7 @@ import { cars as staticCars } from '../../data/cars';
 import type { Car } from '../../data/cars';
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { useFirestoreCollection } from '../../hooks/useFirestore';
+import { useDebounce } from '../../hooks/useDebounce';
 import Modal from '../../components/Modal';
 import CarModalContent from '../../components/CarModalContent';
 import SEO from '../../components/SEO';
@@ -15,8 +16,9 @@ const parsePrice = (priceStr: string) => {
 };
 
 export default function InventoryPage() {
-  const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
+  const { data: firestoreCars = [] } = useFirestoreCollection<Car>('cars');
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState<number>(1000000);
   const [maxHp, setMaxHp] = useState<number>(1000);
@@ -60,15 +62,17 @@ export default function InventoryPage() {
 
   const yTitle = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
-  const filteredCars = cars.filter(car => {
-    const matchesSearch = car.make.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         car.model.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(car.make);
-    const matchesPrice = parsePrice(car.price) <= maxPrice;
-    const matchesHp = (car.hp || 0) <= maxHp;
-    
-    return matchesSearch && matchesBrand && matchesPrice && matchesHp;
-  });
+  const filteredCars = useMemo(() => {
+    return cars.filter(car => {
+      const matchesSearch = car.make.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+                           car.model.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
+      const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(car.make);
+      const matchesPrice = parsePrice(car.price) <= maxPrice;
+      const matchesHp = (car.hp || 0) <= maxHp;
+      
+      return matchesSearch && matchesBrand && matchesPrice && matchesHp;
+    });
+  }, [cars, debouncedSearchQuery, selectedBrands, maxPrice, maxHp]);
 
   const handleCarClick = (car: Car) => {
     setSelectedCar(car);

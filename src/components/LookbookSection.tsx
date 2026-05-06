@@ -14,7 +14,7 @@ const parsePrice = (priceStr: string) => {
 };
 
 export default function LookbookSection() {
-  const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
+  const { data: firestoreCars = [] } = useFirestoreCollection<Car>('cars');
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);

@@ -5,6 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
 import SEO from '../components/SEO';
+import { toast } from 'react-hot-toast';
 
 const gridIcon = L.divIcon({
   className: 'custom-icon',
@@ -128,7 +129,7 @@ export default function ContactPage() {
       } else {
         errorMessage += error.message || "Please try again.";
       }
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

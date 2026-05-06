@@ -46,6 +46,8 @@ import {
 } from 'recharts';
 import { useFirestoreCollection, useFirestoreDoc } from '@/hooks/useFirestore';
 import { useRealtimeDB, updateInquiryStatus, deleteInquiryFromRTDB } from '@/hooks/useRealtimeDB';
+import { useDebounce } from '@/hooks/useDebounce';
+import toast from 'react-hot-toast';
 import { ref, get } from 'firebase/database';
 import { rtdb } from '@/lib/firebase';
 import type { Car as CarType } from '@/data/cars';
@@ -335,9 +337,10 @@ export default function AdminPage() {
 function InquiriesTab({ theme }: { theme: Theme }) {
   const [filter, setFilter] = useState<'all' | 'new' | 'read'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [typeFilter, setTypeFilter] = useState<'all' | 'car' | 'property' | 'general'>('all');
   
-  const { data: inquiries, loading, error } = useRealtimeDB<Inquiry>('inquiries', 100);
+  const { data: inquiries = [], isLoading: loading, error } = useRealtimeDB<Inquiry>('inquiries', 100);
 
   const filteredInquiries = inquiries.filter(i => {
     // Status filter
@@ -351,8 +354,8 @@ function InquiriesTab({ theme }: { theme: Theme }) {
     if (typeFilter !== 'all' && i.itemType !== typeFilter) return false;
 
     // Search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
       const matchesName = `${i.firstName} ${i.lastName}`.toLowerCase().includes(searchLower);
       const matchesEmail = i.email.toLowerCase().includes(searchLower);
       const matchesPhone = i.phone?.toLowerCase().includes(searchLower);
@@ -590,7 +593,7 @@ const DEFAULT_CONTENT: HomepageContent = {
 };
 
 function HomepageTab({ theme }: { theme: Theme }) {
-  const { data: content, loading } = useFirestoreDoc<HomepageContent>('content', 'homepage');
+  const { data: content, isLoading: loading } = useFirestoreDoc<HomepageContent>('content', 'homepage');
   const [formData, setFormData] = useState<HomepageContent | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -607,10 +610,10 @@ function HomepageTab({ theme }: { theme: Theme }) {
     setIsSaving(true);
     try {
       await setDoc(doc(db, 'content', 'homepage'), formData);
-      alert('Homepage updated successfully.');
+      toast.success('Homepage updated successfully.');
     } catch (error) {
       console.error("Error updating homepage:", error);
-      alert('Failed to update homepage.');
+      toast.error('Failed to update homepage.');
     } finally {
       setIsSaving(false);
     }
@@ -740,8 +743,8 @@ function InventoryTab({ theme }: { theme: Theme }) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingItem, setEditingItem] = useState<CarType | PropertyType | null>(null);
 
-  const { data: cars, loading: carsLoading } = useFirestoreCollection<CarType>('cars');
-  const { data: properties, loading: propsLoading } = useFirestoreCollection<PropertyType>('properties');
+  const { data: cars = [], isLoading: carsLoading } = useFirestoreCollection<CarType>('cars');
+  const { data: properties = [], isLoading: propsLoading } = useFirestoreCollection<PropertyType>('properties');
 
   const handleDelete = async (id: string) => {
     if (window.confirm(`Permanently remove this item from ${type}?`)) {
@@ -900,9 +903,10 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
         await setDoc(doc(db, type, id), { ...finalData, id });
       }
       onClose();
+      toast.success("Asset saved successfully.");
     } catch (error) {
       console.error("Save error:", error);
-      alert("Error saving asset.");
+      toast.error("Error saving asset.");
     } finally {
       setIsSaving(false);
     }
@@ -1159,7 +1163,7 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
                   backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)', 
                   border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
                   borderRadius: '16px',
-                  backdropBlur: '12px',
+                  backdropFilter: 'blur(12px)',
                   padding: '12px',
                   fontSize: '10px',
                   fontWeight: '900',
@@ -1214,15 +1218,16 @@ function AnalyticsTab({ theme }: { theme: Theme }) {
 // --- CRM / Customers Tab ---
 
 function CustomersTab({ theme }: { theme: Theme }) {
-  const { data: customers, loading } = useFirestoreCollection<any>('customers');
+  const { data: customers = [], isLoading: loading } = useFirestoreCollection<any>('customers');
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [isAdding, setIsAdding] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<any>(null);
 
   const filteredCustomers = customers.filter(c => 
-    c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.phone?.includes(searchTerm)
+    c.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+    c.email?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+    c.phone?.includes(debouncedSearchTerm)
   );
 
   const handleDelete = async (id: string) => {
@@ -1342,7 +1347,7 @@ function CustomerModal({ customer, onClose, theme }: { customer?: any, onClose: 
       onClose();
     } catch (error) {
       console.error("Save error:", error);
-      alert("Error saving client profile.");
+      toast.error("Error saving client profile.");
     } finally {
       setIsSaving(false);
     }
@@ -1383,7 +1388,7 @@ function CustomerModal({ customer, onClose, theme }: { customer?: any, onClose: 
 // --- POS / Sales Tab ---
 
 function SalesTab({ theme }: { theme: Theme }) {
-  const { data: sales, loading: salesLoading } = useFirestoreCollection<any>('sales');
+  const { data: sales = [], isLoading: salesLoading } = useFirestoreCollection<any>('sales');
   const [isAdding, setIsAdding] = useState(false);
 
   const totalRevenue = sales.reduce((sum, sale) => {
@@ -1471,9 +1476,9 @@ function SalesTab({ theme }: { theme: Theme }) {
 }
 
 function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
-  const { data: customers } = useFirestoreCollection<any>('customers');
-  const { data: cars } = useFirestoreCollection<any>('cars');
-  const { data: properties } = useFirestoreCollection<any>('properties');
+  const { data: customers = [] } = useFirestoreCollection<any>('customers');
+  const { data: cars = [] } = useFirestoreCollection<any>('cars');
+  const { data: properties = [] } = useFirestoreCollection<any>('properties');
   
   const [formData, setFormData] = useState({
     customerId: '',
@@ -1488,7 +1493,7 @@ function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.customerId || !formData.itemId) {
-      alert("Please select both a client and an asset.");
+      toast.error("Please select both a client and an asset.");
       return;
     }
 
@@ -1527,7 +1532,7 @@ function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
       onClose();
     } catch (error) {
       console.error("Sale recording error:", error);
-      alert("Error recording transaction.");
+      toast.error("Error recording transaction.");
     } finally {
       setIsSaving(false);
     }

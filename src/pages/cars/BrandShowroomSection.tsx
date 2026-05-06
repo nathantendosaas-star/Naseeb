@@ -18,14 +18,14 @@ export default function BrandShowroomSection() {
 
   const cars = useMemo(() => {
     const carMap = new Map<string, Car>();
-    staticCars.forEach((car) => carMap.set(car.id, car));
-    firestoreCars.forEach((car) => carMap.set(car.id, car));
+    staticCars.forEach((car: Car) => carMap.set(car.id, car));
+    firestoreCars.forEach((car: Car) => carMap.set(car.id, car));
     return Array.from(carMap.values());
   }, [firestoreCars]);
 
   const brands = useMemo(() => {
     const makeSet = new Set<string>();
-    cars.forEach((car) => makeSet.add(normalizeMake(car.make)));
+    cars.forEach((car: Car) => makeSet.add(normalizeMake(car.make)));
     return Array.from(makeSet).sort((a, b) => a.localeCompare(b));
   }, [cars]);
 

@@ -23,13 +23,13 @@ export default function ShowroomPage() {
   // Merge static and firestore cars
   const allCars = useMemo(() => {
     const carMap = new Map<string, Car>();
-    staticCars.forEach(car => carMap.set(car.id, car));
-    firestoreCars.forEach(car => carMap.set(car.id, car));
+    staticCars.forEach((car: Car) => carMap.set(car.id, car));
+    firestoreCars.forEach((car: Car) => carMap.set(car.id, car));
     return Array.from(carMap.values());
   }, [firestoreCars]);
 
   const availableBrands = useMemo(() => {
-    const uniqueBrands = Array.from(new Set(allCars.map(car => car.make)));
+    const uniqueBrands = Array.from(new Set(allCars.map((car: Car) => car.make)));
     return uniqueBrands.sort();
   }, [allCars]);
 

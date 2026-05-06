@@ -260,7 +260,7 @@ export default function ZeroPage() {
             transition={{ delay: 0.2 }}
             className="text-6xl md:text-9xl lg:text-[12rem] font-black tracking-tighter uppercase leading-[0.8] text-white"
           >
-            {heroTitle.split('\n').map((line, i) => (
+            {heroTitle.split('\n').map((line: string, i: number) => (
               <React.Fragment key={i}>
                 {line}
                 {i < heroTitle.split('\n').length - 1 && <br />}
@@ -286,7 +286,7 @@ export default function ZeroPage() {
           <div className="w-full md:w-[60%] h-full flex flex-col items-center justify-center px-8 md:px-24 z-10 bg-[#F7F7F5] relative">
             <WatermarkLayer text="ESTATE" theme="re" />
             <div className="max-w-md w-full relative h-[400px] z-20">
-              {DEFAULT_RE_SECTIONS.map((section, idx) => (
+              {DEFAULT_RE_SECTIONS.map((section: any, idx: number) => (
                 <ContentSection
                   key={`re-${idx}`}
                   progress={smoothProgress}
@@ -304,7 +304,7 @@ export default function ZeroPage() {
             
             {/* Scroll Progress Tracker */}
             <div className="absolute left-12 bottom-24 hidden md:flex flex-col gap-4">
-              {DEFAULT_RE_SECTIONS.map((_, i) => (
+              {DEFAULT_RE_SECTIONS.map((_: any, i: number) => (
                 <ProgressDot 
                   key={`dot-re-${i}`} 
                   progress={smoothProgress} 
@@ -345,7 +345,7 @@ export default function ZeroPage() {
           <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-center px-8 md:px-24 z-10 bg-white relative">
             <WatermarkLayer text="MOTORS" theme="auto" />
             <div className="max-w-md w-full relative h-[400px] z-20">
-              {autoSections.map((section, idx) => (
+              {autoSections.map((section: any, idx: number) => (
                 <ContentSection
                   key={`auto-${idx}`}
                   progress={smoothProgress}
@@ -363,7 +363,7 @@ export default function ZeroPage() {
 
             {/* Scroll Progress Tracker */}
             <div className="absolute right-12 bottom-24 hidden md:flex flex-col gap-4">
-              {autoSections.map((_, i) => (
+              {autoSections.map((_: any, i: number) => (
                 <ProgressDot 
                   key={`dot-auto-${i}`} 
                   progress={smoothProgress} 

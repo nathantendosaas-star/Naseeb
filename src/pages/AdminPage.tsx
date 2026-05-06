@@ -342,7 +342,7 @@ function InquiriesTab({ theme }: { theme: Theme }) {
   
   const { data: inquiries = [], isLoading: loading, error } = useRealtimeDB<Inquiry>('inquiries', 100);
 
-  const filteredInquiries = inquiries.filter(i => {
+  const filteredInquiries = inquiries.filter((i: Inquiry) => {
     // Status filter
     if (filter === 'all') {
       if (i.status === 'archived') return false;
@@ -1224,7 +1224,7 @@ function CustomersTab({ theme }: { theme: Theme }) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<any>(null);
 
-  const filteredCustomers = customers.filter(c => 
+  const filteredCustomers = customers.filter((c: any) => 
     c.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
     c.email?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
     c.phone?.includes(debouncedSearchTerm)
@@ -1391,7 +1391,7 @@ function SalesTab({ theme }: { theme: Theme }) {
   const { data: sales = [], isLoading: salesLoading } = useFirestoreCollection<any>('sales');
   const [isAdding, setIsAdding] = useState(false);
 
-  const totalRevenue = sales.reduce((sum, sale) => {
+  const totalRevenue = sales.reduce((sum: number, sale: any) => {
     const priceStr = sale.salePrice || '0';
     const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
     return sum + price;
@@ -1449,7 +1449,7 @@ function SalesTab({ theme }: { theme: Theme }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5 dark:divide-zinc-800">
-              {sales.sort((a, b) => b.createdAt?.localeCompare(a.createdAt)).map((sale: any) => (
+              {sales.sort((a: any, b: any) => b.createdAt?.localeCompare(a.createdAt)).map((sale: any) => (
                 <tr key={sale.id} className={`text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'hover:bg-zinc-800/50' : 'hover:bg-gray-50'}`}>
                   <td className="px-8 py-6 opacity-60">{format(new Date(sale.createdAt), 'MMM d, yyyy')}</td>
                   <td className="px-8 py-6">{sale.itemName}</td>
@@ -1499,9 +1499,9 @@ function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
 
     setIsSaving(true);
     try {
-      const customer = customers.find(c => c.id === formData.customerId);
+      const customer = customers.find((c: any) => c.id === formData.customerId);
       const items = formData.itemType === 'cars' ? cars : properties;
-      const item = items.find(i => i.id === formData.itemId);
+      const item = items.find((i: any) => i.id === formData.itemId);
 
       const saleId = Date.now().toString();
       const saleData = {
@@ -1538,7 +1538,7 @@ function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
     }
   };
 
-  const availableItems = (formData.itemType === 'cars' ? cars : properties).filter(i => i.status !== 'Sold');
+  const availableItems = (formData.itemType === 'cars' ? cars : properties).filter((i: any) => i.status !== 'Sold');
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
@@ -1561,7 +1561,7 @@ function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
                 className={`w-full border p-5 text-sm font-bold uppercase tracking-widest outline-none transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}
               >
                 <option value="">Choose Client...</option>
-                {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {customers.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
 
@@ -1593,7 +1593,7 @@ function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
                 className={`w-full border p-5 text-sm font-bold uppercase tracking-widest outline-none transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}
               >
                 <option value="">Choose Asset...</option>
-                {availableItems.map(i => <option key={i.id} value={i.id}>{i.model || i.name}</option>)}
+                {availableItems.map((i: any) => <option key={i.id} value={i.id}>{i.model || i.name}</option>)}
               </select>
             </div>
 

@@ -29,8 +29,8 @@ export default function InventoryPage() {
   // Merge static and firestore cars, ensuring unique IDs (Firestore takes precedence)
   const cars = useMemo(() => {
     const carMap = new Map<string, Car>();
-    staticCars.forEach(car => carMap.set(car.id, car));
-    firestoreCars.forEach(car => carMap.set(car.id, car));
+    staticCars.forEach((car: Car) => carMap.set(car.id, car));
+    firestoreCars.forEach((car: Car) => carMap.set(car.id, car));
     return Array.from(carMap.values());
   }, [firestoreCars]);
 

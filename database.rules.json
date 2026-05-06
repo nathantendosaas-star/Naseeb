@@ -1,16 +1,16 @@
 {
   "rules": {
     "inquiries": {
-      ".read": "auth != null",
-      ".write": true,
+      ".read": "auth != null && (auth.token.email == 'nathan@masembe.com' || auth.token.email == 'nathantendo.saas@gmail.com')",
       "$inquiryId": {
-        ".validate": "newData.hasChildren(['firstName', 'lastName', 'email', 'phone', 'message', 'createdAt', 'status']) && newData.child('email').isString() && newData.child('email').val().length > 5 && newData.child('firstName').isString() && newData.child('firstName').val().length > 0 && newData.child('phone').isString() && newData.child('phone').val().length >= 7 && newData.child('message').isString() && newData.child('message').val().length >= 5"
+        ".write": "!data.exists() || (auth != null && (auth.token.email == 'nathan@masembe.com' || auth.token.email == 'nathantendo.saas@gmail.com'))",
+        ".validate": "newData.hasChildren(['firstName', 'lastName', 'email', 'phone', 'message', 'createdAt', 'status'])"
       }
     },
     "analytics": {
-      ".read": "auth != null",
+      ".read": "auth != null && (auth.token.email == 'nathan@masembe.com' || auth.token.email == 'nathantendo.saas@gmail.com')",
       "visits": {
-        ".write": true,
+        ".write": "true",
         "$date": {
           "$visitId": {
             ".validate": "newData.hasChildren(['path', 'timestamp', 'userAgent', 'referrer'])"

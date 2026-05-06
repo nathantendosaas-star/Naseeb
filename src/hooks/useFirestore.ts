@@ -12,6 +12,7 @@ import type {
   QueryConstraint
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import toast from 'react-hot-toast';
 
 export function useFirestoreCollection<T = DocumentData>(
   collectionName: string,
@@ -21,13 +22,20 @@ export function useFirestoreCollection<T = DocumentData>(
   return useQuery({
     queryKey: [collectionName, queryConstraints, maxResults],
     queryFn: async () => {
-      const q = query(
-        collection(db, collectionName),
-        ...queryConstraints,
-        firestoreLimit(maxResults)
-      );
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+      try {
+        const q = query(
+          collection(db, collectionName),
+          ...queryConstraints,
+          firestoreLimit(maxResults)
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+      } catch (error: any) {
+        if (error.code === 'permission-denied') {
+          toast.error(`Permission Denied: You cannot access ${collectionName}`);
+        }
+        throw error;
+      }
     },
   });
 }
@@ -40,12 +48,19 @@ export function useFirestoreDoc<T = DocumentData>(
     queryKey: [collectionName, docId],
     queryFn: async () => {
       if (!docId) return null;
-      const docRef = doc(db, collectionName, docId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as T;
+      try {
+        const docRef = doc(db, collectionName, docId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          return { id: docSnap.id, ...docSnap.data() } as T;
+        }
+        return null;
+      } catch (error: any) {
+        if (error.code === 'permission-denied') {
+          toast.error(`Permission Denied: You cannot access this ${collectionName} item`);
+        }
+        throw error;
       }
-      return null;
     },
     enabled: !!docId,
   });

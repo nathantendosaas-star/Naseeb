@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db, auth } from '@/lib/firebase';
 import { Helmet } from 'react-helmet-async';
 import { 
@@ -33,7 +33,10 @@ import {
   MessageCircle,
   TrendingUp,
   Users,
-  DollarSign
+  DollarSign,
+  Upload,
+  Image as ImageIcon,
+  Loader2
 } from 'lucide-react';
 import { 
   XAxis, 
@@ -862,26 +865,96 @@ function InventoryTab({ theme }: { theme: Theme }) {
 }
 
 function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, item?: CarType | PropertyType | null, onClose: () => void, theme: Theme }) {
-  const [formData, setFormData] = useState<any>(item || {
-    id: '',
-    make: '',
-    model: '',
-    year: 2024,
-    hp: 0,
-    price: '',
-    status: 'Available',
-    watermarkText: '',
-    image: '',
-    gallery: [],
-    // Property specific
-    name: '',
-    location: '',
-    type: 'Villa',
-    bedrooms: 0,
-    area: '',
-    completionDate: ''
+  const [formData, setFormData] = useState<any>(() => {
+    const defaults = {
+      id: '',
+      make: '',
+      model: '',
+      year: 2024,
+      hp: 0,
+      price: '',
+      status: 'Available',
+      watermarkText: '',
+      image: '',
+      gallery: [],
+      // Extended Car specific
+      description: '',
+      specs: {
+        engine: '',
+        transmission: '',
+        drivetrain: '',
+        fuelType: ''
+      },
+      features: [],
+      videoUrl: '',
+      // Property specific
+      name: '',
+      location: '',
+      type: 'Villa',
+      bedrooms: 0,
+      area: '',
+      completionDate: ''
+    };
+    return item ? { ...defaults, ...item } : defaults;
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  const IMGBB_API_KEY = '7ca00406ae5a406360ed0ba2300af3ff';
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isGallery = false) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(isGallery ? 'gallery' : 'primary');
+    
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error('ImgBB upload failed');
+        }
+
+        const result = await response.json();
+        return result.data.url;
+      });
+
+      // Simple progress simulation
+      setUploadProgress(50);
+      const urls = await Promise.all(uploadPromises);
+      setUploadProgress(100);
+      
+      if (isGallery) {
+        setFormData((prev: any) => ({
+          ...prev,
+          gallery: [...(prev.gallery || []), ...urls]
+        }));
+      } else {
+        setFormData((prev: any) => ({
+          ...prev,
+          image: urls[0]
+        }));
+      }
+      toast.success(`${files.length} file(s) uploaded successfully!`);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Error uploading file to ImgBB.");
+    } finally {
+      setUploading(null);
+      setUploadProgress(0);
+      if (e.target) e.target.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -923,15 +996,49 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
           {item ? 'Modify Asset' : 'New Asset Entry'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+        <form onSubmit={handleSubmit} className="space-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
             {type === 'cars' ? (
               <>
-                <FormField theme={theme} label="Identifier (slug)" value={formData.id} onChange={(v) => setFormData({...formData, id: v})} placeholder="e.g. g63-amg" disabled={!!item} />
-                <FormField theme={theme} label="Manufacturer" value={formData.make} onChange={(v) => setFormData({...formData, make: v})} />
-                <FormField theme={theme} label="Model Designation" value={formData.model} onChange={(v) => setFormData({...formData, model: v})} />
-                <FormField theme={theme} label="Model Year" type="number" value={formData.year} onChange={(v) => setFormData({...formData, year: parseInt(v)})} />
-                <FormField theme={theme} label="Horsepower" type="number" value={formData.hp} onChange={(v) => setFormData({...formData, hp: parseInt(v)})} />
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                  <FormField theme={theme} label="Identifier (slug)" value={formData.id} onChange={(v) => setFormData({...formData, id: v})} placeholder="e.g. g63-amg" disabled={!!item} />
+                  <FormField theme={theme} label="Manufacturer" value={formData.make} onChange={(v) => setFormData({...formData, make: v})} />
+                  <FormField theme={theme} label="Model Designation" value={formData.model} onChange={(v) => setFormData({...formData, model: v})} />
+                  <FormField theme={theme} label="Model Year" type="number" value={formData.year} onChange={(v) => setFormData({...formData, year: parseInt(v)})} />
+                  <FormField theme={theme} label="Horsepower" type="number" value={formData.hp} onChange={(v) => setFormData({...formData, hp: parseInt(v)})} />
+                  <FormField theme={theme} label="Valuation" value={formData.price} onChange={(v) => setFormData({...formData, price: v})} placeholder="$ 000,000" />
+                </div>
+
+                <div className="md:col-span-2">
+                  <FormField 
+                    theme={theme} 
+                    label="Full Vehicle Description" 
+                    value={formData.description} 
+                    onChange={(v) => setFormData({...formData, description: v})} 
+                    multiline 
+                    placeholder="Provide a detailed overview of the vehicle's history, condition, and key highlights..."
+                  />
+                </div>
+
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 border-y py-10 my-4 border-white/10">
+                  <h3 className="md:col-span-2 text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Technical Specifications</h3>
+                  <FormField theme={theme} label="Engine" value={formData.specs?.engine} onChange={(v) => setFormData({...formData, specs: {...formData.specs, engine: v}})} placeholder="e.g. 4.0L V8 Biturbo" />
+                  <FormField theme={theme} label="Transmission" value={formData.specs?.transmission} onChange={(v) => setFormData({...formData, specs: {...formData.specs, transmission: v}})} placeholder="e.g. 9G-TRONIC" />
+                  <FormField theme={theme} label="Drivetrain" value={formData.specs?.drivetrain} onChange={(v) => setFormData({...formData, specs: {...formData.specs, drivetrain: v}})} placeholder="e.g. 4MATIC" />
+                  <FormField theme={theme} label="Fuel Type" value={formData.specs?.fuelType} onChange={(v) => setFormData({...formData, specs: {...formData.specs, fuelType: v}})} placeholder="e.g. Petrol" />
+                </div>
+
+                <div className="md:col-span-2">
+                  <FormField 
+                    theme={theme} 
+                    label="Key Features (Comma separated)" 
+                    value={formData.features ? formData.features.join(', ') : ''} 
+                    onChange={(v) => setFormData({...formData, features: v.split(',').map(s => s.trim()).filter(s => s !== '')})} 
+                    placeholder="Carbon Fiber Package, Night Edition, Burmester Audio..."
+                  />
+                </div>
+
+                <FormField theme={theme} label="Video Walkaround URL" value={formData.videoUrl} onChange={(v) => setFormData({...formData, videoUrl: v})} placeholder="YouTube or Vimeo link" />
               </>
             ) : (
               <>
@@ -941,28 +1048,39 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
                 <FormField theme={theme} label="Asset Type" value={formData.type} onChange={(v) => setFormData({...formData, type: v})} />
                 <FormField theme={theme} label="Bedrooms" type="number" value={formData.bedrooms} onChange={(v) => setFormData({...formData, bedrooms: parseInt(v)})} />
                 <FormField theme={theme} label="Square Footage" value={formData.area} onChange={(v) => setFormData({...formData, area: v})} />
+                <FormField theme={theme} label="Valuation" value={formData.price} onChange={(v) => setFormData({...formData, price: v})} placeholder="$ 000,000" />
               </>
             )}
             
-            <FormField theme={theme} label="Valuation" value={formData.price} onChange={(v) => setFormData({...formData, price: v})} placeholder="$ 000,000" />
             <FormField theme={theme} label="Asset Status" value={formData.status || formData.completionDate} onChange={(v) => setFormData({...formData, [type === 'cars' ? 'status' : 'completionDate']: v})} />
             <FormField theme={theme} label="Watermark Text" value={formData.watermarkText} onChange={(v) => setFormData({...formData, watermarkText: v})} />
-            <div className="md:col-span-2">
-              <FormField theme={theme} label="Primary Image URL" value={formData.image} onChange={(v) => setFormData({...formData, image: v})} />
-            </div>
-            <div className="md:col-span-2">
-              <FormField 
+            
+            <div className="md:col-span-2 space-y-10 pt-10 border-t border-white/10">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Visual Assets</h3>
+              <FileUploadField 
                 theme={theme} 
-                label="Gallery Image URLs (Comma separated)" 
-                value={formData.gallery ? formData.gallery.join(', ') : ''} 
-                onChange={(v) => setFormData({...formData, gallery: v.split(',').map(s => s.trim()).filter(s => s !== '')})} 
-                multiline
-                placeholder="https://image1.jpg, https://image2.jpg, ..."
+                label="Primary Hero Image" 
+                value={formData.image} 
+                uploading={uploading === 'primary'}
+                progress={uploadProgress}
+                onUpload={(e) => handleFileUpload(e, false)}
+                onRemove={() => setFormData({...formData, image: ''})}
+              />
+              
+              <FileUploadField 
+                theme={theme} 
+                label="Vehicle Gallery" 
+                value={formData.gallery || []} 
+                isGallery
+                uploading={uploading === 'gallery'}
+                progress={uploadProgress}
+                onUpload={(e) => handleFileUpload(e, true)}
+                onRemove={(url) => setFormData({...formData, gallery: formData.gallery.filter((u: string) => u !== url)})}
               />
             </div>
           </div>
 
-          <div className={`flex justify-end gap-6 pt-8 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+          <div className={`flex justify-end gap-6 pt-12 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
             <button 
               type="button"
               onClick={onClose}
@@ -989,6 +1107,103 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
 }
 
 // --- UI Components ---
+
+function FileUploadField({ 
+  label, 
+  onUpload, 
+  value, 
+  uploading, 
+  progress, 
+  theme, 
+  isGallery = false,
+  onRemove
+}: { 
+  label: string, 
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void, 
+  value: string | string[], 
+  uploading: boolean, 
+  progress: number, 
+  theme: Theme,
+  isGallery?: boolean,
+  onRemove?: (url: string) => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="grid gap-3">
+      <label className={`text-[10px] font-black uppercase tracking-[0.3em] transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{label}</label>
+      <div className={`border p-6 transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}>
+        <input 
+          type="file" 
+          ref={inputRef} 
+          onChange={onUpload} 
+          className="hidden" 
+          multiple={isGallery}
+          accept="image/*"
+        />
+        
+        <div className="flex flex-wrap gap-4 mb-4">
+          {isGallery ? (
+            (value as string[]).map((url, i) => (
+              <div key={i} className="relative group w-24 h-24 rounded-lg overflow-hidden border border-white/10">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+                <button 
+                  type="button"
+                  onClick={() => onRemove?.(url)}
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-red-500"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))
+          ) : (
+            value && (
+              <div className="relative group w-32 h-32 rounded-lg overflow-hidden border border-white/10">
+                <img src={value as string} alt="" className="w-full h-full object-cover" />
+                <button 
+                  type="button"
+                  onClick={() => onRemove?.(value as string)}
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-red-500"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+            )
+          )}
+          
+          <button 
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className={`w-24 h-24 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all ${
+              theme === 'dark' 
+                ? 'border-zinc-800 text-zinc-500 hover:border-white hover:text-white' 
+                : 'border-black/10 text-black/40 hover:border-black hover:text-black'
+            }`}
+          >
+            {uploading ? (
+              <Loader2 size={24} className="animate-spin" />
+            ) : (
+              <>
+                <Upload size={24} />
+                <span className="text-[8px] font-bold">UPLOAD</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {uploading && (
+          <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+            <div 
+              className="bg-white h-full transition-all duration-300" 
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface FormFieldProps {
   label: string;

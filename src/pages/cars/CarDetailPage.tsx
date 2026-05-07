@@ -157,11 +157,21 @@ export default function CarDetailPage() {
           {activeTab === 'overview' && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid md:grid-cols-2 gap-12">
               <div>
-                <h3 className="text-2xl font-bold mb-4">The Pinnacle of Luxury</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Experience the ultimate driving machine. The {car.make} {car.model} combines breathtaking performance with unparalleled comfort. 
-                  Available now at Grid Motors Kla.
+                <h3 className="text-2xl font-bold mb-4">{car.description ? 'About This Vehicle' : 'The Pinnacle of Luxury'}</h3>
+                <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                  {car.description || `Experience the ultimate driving machine. The ${car.make} ${car.model} combines breathtaking performance with unparalleled comfort. Available now at Grid Motors Kla.`}
                 </p>
+                
+                {car.features && car.features.length > 0 && (
+                  <div className="mt-8">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-auto-gray mb-4">Key Features</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {car.features.map((feature: string, i: number) => (
+                        <span key={i} className="px-3 py-1 bg-black/5 rounded-full text-[10px] font-bold uppercase tracking-wider">{feature}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
@@ -192,10 +202,11 @@ export default function CarDetailPage() {
               <h3 className="text-2xl font-black mb-8 uppercase tracking-widest text-white">Technical Specifications</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                 <SpecRow label="Engine" value={car.specs?.engine} />
+                <SpecRow label="Transmission" value={car.specs?.transmission} />
+                <SpecRow label="Drivetrain" value={car.specs?.drivetrain || car.specs?.driveType} />
+                <SpecRow label="Fuel Type" value={car.specs?.fuelType} />
                 <SpecRow label="0-100 km/h" value={car.specs?.acceleration} />
                 <SpecRow label="Top Speed" value={car.specs?.topSpeed} />
-                <SpecRow label="Drivetrain" value={car.specs?.driveType} />
-                <SpecRow label="Transmission" value={car.specs?.transmission} />
                 <SpecRow label="Torque" value={car.specs?.torque} />
                 <SpecRow label="Power" value={car.specs?.hp ? `${car.specs.hp} HP` : undefined} />
               </div>

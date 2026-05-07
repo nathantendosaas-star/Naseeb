@@ -104,7 +104,7 @@ export default function ZeroPage() {
   // Use Firestore content or defaults
 
   const autoSections = cmsContent?.autoSections || DEFAULT_AUTO_SECTIONS;
-  const heroTitle = cmsContent?.heroTitle || "Masembe\nCompanies";
+  const heroTitle = cmsContent?.heroTitle || "MASEMBE\nCOMPANIES";
   const heroSubtitle = cmsContent?.heroSubtitle || "The Collective Intelligence";
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
@@ -244,7 +244,7 @@ export default function ZeroPage() {
       </nav>
 
       {/* --- HERO CHAPTER --- */}
-      <section className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-black">
+      <section className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-white">
         <WatermarkLayer text="COLLECTIVE" theme="re" />
         <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="text-center px-6 relative z-20">
           <motion.span 
@@ -258,7 +258,7 @@ export default function ZeroPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-6xl md:text-9xl lg:text-[12rem] font-black tracking-tighter uppercase leading-[0.8] text-white"
+            className="text-6xl md:text-9xl lg:text-[12rem] font-black tracking-tighter uppercase leading-[0.8] text-black"
           >
             {heroTitle.split('\n').map((line: string, i: number) => (
               <React.Fragment key={i}>
@@ -273,7 +273,7 @@ export default function ZeroPage() {
             transition={{ delay: 1, duration: 1 }}
             className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
           >
-            <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-white/20">Scroll to Explore</span>
+            <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-black/20">Scroll to Explore</span>
             <div className="w-[1px] h-12 bg-gradient-to-b from-[#d4af37] to-transparent" />
           </motion.div>
         </motion.div>

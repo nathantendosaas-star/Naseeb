@@ -35,7 +35,6 @@ import {
   Users,
   DollarSign,
   Upload,
-  Image as ImageIcon,
   Loader2
 } from 'lucide-react';
 import { 
@@ -900,8 +899,6 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
   const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const IMGBB_API_KEY = '7ca00406ae5a406360ed0ba2300af3ff';
 

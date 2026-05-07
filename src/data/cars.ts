@@ -6,6 +6,8 @@ export interface CarSpecs {
   topSpeed?: string;
   transmission?: string;
   driveType?: string;
+  drivetrain?: string;
+  fuelType?: string;
 }
 
 export interface Car {
@@ -21,6 +23,8 @@ export interface Car {
   gallery: string[];
   specs?: CarSpecs;
   rotation?: number;
+  description?: string;
+  features?: string[];
 }
 
 export const cars: Car[] = [

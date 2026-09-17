@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { submitInquiry } from '@/hooks/useRealtimeDB';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import MediaGallery from './MediaGallery';
+import { toast } from 'react-hot-toast';
 
 interface CarModalContentProps {
   car: Car;
@@ -52,13 +53,13 @@ export default function CarModalContent({ car, onNext, onPrev }: CarModalContent
       form.reset();
     } catch (error: any) {
       console.error("Error submitting inquiry: ", error);
-      let errorMessage = "There was an error submitting your inquiry. ";
+      let errorMessage = "There was an error submitting your request. ";
       if (error.code === 'permission-denied') {
         errorMessage += "Access denied. Please ensure Firestore rules allow public submissions.";
       } else {
         errorMessage += error.message || "Please try again.";
       }
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

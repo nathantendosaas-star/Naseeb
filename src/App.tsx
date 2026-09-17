@@ -98,9 +98,14 @@ function PageTransition({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { useTracking } from './hooks/useTracking';
+
 function AppContent() {
   const location = useLocation();
   const lenisRef = useRef<Lenis | null>(null);
+  
+  // Initialize tracking
+  useTracking();
 
   const isAuto = location.pathname.startsWith('/cars');
   const isHome = location.pathname === '/';

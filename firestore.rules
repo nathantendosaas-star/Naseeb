@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+        (request.auth.token.email == 'nathan@masembe.com' || 
+         request.auth.token.email == 'nathantendo.saas@gmail.com');
+    }
+
+    // 'cars' & 'properties': Allow public READ. Allow write/delete ONLY for isAdmin()
+    match /cars/{carId} {
+      allow read: if true;
+      allow write, delete: if isAdmin();
+    }
+    
+    match /properties/{propertyId} {
+      allow read: if true;
+      allow write, delete: if isAdmin();
+    }
+
+    // 'content': Allow public READ. Allow write ONLY for isAdmin()
+    match /content/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 'inquiries': Allow public WRITE (create). Allow read/update/delete ONLY for isAdmin()
+    match /inquiries/{inquiryId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 'customers' & 'sales': Allow read/write ONLY for isAdmin(). No public access.
+    match /customers/{customerId} {
+      allow read, write: if isAdmin();
+    }
+    
+    match /sales/{saleId} {
+      allow read, write: if isAdmin();
+    }
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

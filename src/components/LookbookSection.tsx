@@ -14,7 +14,7 @@ const parsePrice = (priceStr: string) => {
 };
 
 export default function LookbookSection() {
-  const { data: firestoreCars } = useFirestoreCollection<Car>('cars');
+  const { data: firestoreCars = [] } = useFirestoreCollection<Car>('cars');
   const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -24,13 +24,13 @@ export default function LookbookSection() {
   // Merge static and firestore cars
   const allCars = useMemo(() => {
     const carMap = new Map<string, Car>();
-    staticCars.forEach(car => carMap.set(car.id, car));
-    firestoreCars.forEach(car => carMap.set(car.id, car));
+    staticCars.forEach((car: Car) => carMap.set(car.id, car));
+    firestoreCars.forEach((car: Car) => carMap.set(car.id, car));
     return Array.from(carMap.values());
   }, [firestoreCars]);
 
   const availableBrands = useMemo(() => {
-    const uniqueBrands = Array.from(new Set(allCars.map(car => car.make)));
+    const uniqueBrands = Array.from(new Set(allCars.map((car: Car) => car.make)));
     return uniqueBrands.sort();
   }, [allCars]);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db, auth } from '@/lib/firebase';
 import { Helmet } from 'react-helmet-async';
 import { 
@@ -30,10 +30,28 @@ import {
   Sun,
   Search,
   Phone,
-  MessageCircle
+  MessageCircle,
+  TrendingUp,
+  Users,
+  DollarSign,
+  Upload,
+  Loader2
 } from 'lucide-react';
+import { 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  AreaChart,
+  Area
+} from 'recharts';
 import { useFirestoreCollection, useFirestoreDoc } from '@/hooks/useFirestore';
 import { useRealtimeDB, updateInquiryStatus, deleteInquiryFromRTDB } from '@/hooks/useRealtimeDB';
+import { useDebounce } from '@/hooks/useDebounce';
+import toast from 'react-hot-toast';
+import { ref, get } from 'firebase/database';
+import { rtdb } from '@/lib/firebase';
 import type { Car as CarType } from '@/data/cars';
 import type { Property as PropertyType } from '@/data/properties';
 
@@ -60,15 +78,14 @@ interface HomepageSection {
 }
 
 interface HomepageContent {
-  heroTitle: string;
-  heroSubtitle: string;
+  heroTitle: string; heroSubtitle: string;
   reSections: HomepageSection[];
   autoSections: HomepageSection[];
   reVideoUrl: string;
   autoVideoUrl: string;
 }
 
-type Tab = 'inquiries' | 'homepage' | 'inventory';
+type Tab = 'inquiries' | 'homepage' | 'inventory' | 'analytics' | 'customers' | 'sales';
 type InventoryType = 'cars' | 'properties';
 type Theme = 'light' | 'dark';
 
@@ -153,28 +170,48 @@ export default function AdminPage() {
 
   if (!user) {
     return (
-      <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 flex justify-center items-center transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-950 text-white' : 'bg-gray-50 text-black'}`}>
-        <div className={`p-12 rounded-xl border text-center max-w-lg w-full shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'}`}>
-          <h1 className="text-3xl font-black uppercase mb-4 tracking-tighter">Admin Access</h1>
-          <p className={`mb-8 uppercase text-[10px] font-bold tracking-[0.2em] ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-500'}`}>Masembe Management System</p>
+      <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 flex justify-center items-center transition-all duration-700 ${
+        theme === 'dark' 
+          ? 'bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900 via-purple-950 to-slate-950 text-white' 
+          : 'bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-100 via-violet-50 to-fuchsia-100 text-slate-900'
+      }`}>
+        <div className={`p-12 rounded-3xl border text-center max-w-lg w-full shadow-2xl backdrop-blur-2xl transition-all duration-700 ${
+          theme === 'dark' 
+            ? 'bg-white/5 border-white/10 shadow-black/50' 
+            : 'bg-white/40 border-white/40 shadow-indigo-900/10'
+        }`}>
+          <h1 className="text-4xl font-black uppercase mb-4 tracking-tighter">Admin Access</h1>
+          <p className={`mb-10 uppercase text-[10px] font-bold tracking-[0.3em] ${theme === 'dark' ? 'text-indigo-300' : 'text-indigo-600/60'}`}>Masembe Management System</p>
           
           {authError && (
-            <div className={`mb-6 p-4 border rounded-lg flex items-start gap-3 text-left ${theme === 'dark' ? 'bg-red-950/30 border-red-900 text-red-200' : 'bg-red-50 border-red-200 text-red-800'}`}>
-              <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} />
-              <p className="text-sm">{authError}</p>
+            <div className={`mb-8 p-5 border rounded-2xl flex items-start gap-4 text-left ${
+              theme === 'dark' 
+                ? 'bg-red-500/10 border-red-500/20 text-red-300' 
+                : 'bg-red-50/50 border-red-200 text-red-600'
+            }`}>
+              <AlertCircle className="shrink-0 mt-0.5" size={20} />
+              <p className="text-sm font-medium">{authError}</p>
             </div>
           )}
 
           <button 
             onClick={handleLogin}
-            className={`w-full py-4 font-bold uppercase tracking-[0.3em] text-[10px] transition-colors rounded-none ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
+            className={`w-full py-5 font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-300 rounded-2xl shadow-xl hover:-translate-y-1 ${
+              theme === 'dark' 
+                ? 'bg-white text-indigo-950 hover:shadow-white/20 hover:bg-indigo-50' 
+                : 'bg-indigo-600 text-white hover:shadow-indigo-600/20 hover:bg-indigo-700'
+            }`}
           >
             Authenticate via Google
           </button>
 
           <button 
             onClick={toggleTheme}
-            className={`mt-8 p-3 rounded-full border transition-colors ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800' : 'border-gray-200 hover:bg-gray-100'}`}
+            className={`mt-10 p-4 rounded-full border transition-all duration-300 hover:scale-110 ${
+              theme === 'dark' 
+                ? 'border-white/10 hover:bg-white/10 text-white' 
+                : 'border-indigo-900/10 hover:bg-white/50 text-indigo-900'
+            }`}
           >
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
           </button>
@@ -184,70 +221,115 @@ export default function AdminPage() {
   }
 
   const themeClasses = theme === 'dark' 
-    ? 'bg-zinc-950 text-white selection:bg-white selection:text-black' 
-    : 'bg-[#F7F7F5] text-black selection:bg-black selection:text-white';
+    ? 'bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-indigo-900 via-purple-950 to-slate-950 text-white selection:bg-white selection:text-indigo-900' 
+    : 'bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-100 via-violet-50 to-fuchsia-100 text-slate-900 selection:bg-indigo-600 selection:text-white';
 
   return (
-    <div className={`min-h-screen pt-24 pb-12 px-6 md:px-12 transition-colors duration-300 ${themeClasses}`}>
+    <div className={`min-h-screen flex transition-all duration-700 ${themeClasses}`}>
       <Helmet>
         <title>Admin Dashboard | Masembe Group</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className={`flex flex-col md:flex-row justify-between items-end mb-12 border-b pb-8 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
-          <div>
-            <h1 className="text-4xl font-black uppercase tracking-tighter">CMS Dashboard</h1>
-            <div className="flex gap-4 mt-4">
-              <button 
-                onClick={() => setActiveTab('inquiries')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'inquiries' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <MessageSquare size={14} />
-                Inquiries
-              </button>
-              <button 
-                onClick={() => setActiveTab('homepage')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'homepage' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <LayoutDashboard size={14} />
-                Homepage
-              </button>
-              <button 
-                onClick={() => setActiveTab('inventory')}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${activeTab === 'inventory' ? (theme === 'dark' ? 'text-white' : 'text-black') : (theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/30 hover:text-black')}`}
-              >
-                <Database size={14} />
-                Inventory
-              </button>
+
+      {/* Sidebar Navigation */}
+      <aside className={`w-72 fixed inset-y-6 left-6 z-50 rounded-3xl border backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col ${
+        theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/60 border-white/60 shadow-indigo-900/10'
+      }`}>
+        <div className="p-8">
+          <div className="flex items-center gap-3 mb-10">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${theme === 'dark' ? 'bg-white text-indigo-900 shadow-white/10' : 'bg-indigo-600 text-white shadow-indigo-600/20'}`}>
+              <Database size={20} />
             </div>
+            <h1 className={`text-xl font-black uppercase tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>Masembe.</h1>
           </div>
-          
-          <div className="flex items-center gap-6 mt-6 md:mt-0">
-            <button 
-              onClick={toggleTheme}
-              className={`p-2 rounded-lg border transition-colors ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-900 text-zinc-400' : 'border-black/5 hover:bg-black/5 text-black/40'}`}
-              title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
-            >
-              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
-            </button>
-            <button 
-              onClick={handleLogout}
-              className={`flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] uppercase transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}
-            >
-              <LogOut size={14} />
-              Secure Exit
-            </button>
-          </div>
+
+          <nav className="space-y-2">
+            {[
+              { id: 'inquiries', icon: <MessageSquare size={18} />, label: 'Inquiries' },
+              { id: 'analytics', icon: <TrendingUp size={18} />, label: 'Analytics' },
+              { id: 'inventory', icon: <Database size={18} />, label: 'Inventory' },
+              { id: 'homepage', icon: <LayoutDashboard size={18} />, label: 'Content' },
+              { id: 'customers', icon: <Users size={18} />, label: 'CRM' },
+              { id: 'sales', icon: <DollarSign size={18} />, label: 'Revenue' }
+            ].map((tab) => (
+              <button 
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as Tab)}
+                className={`w-full flex items-center gap-4 px-5 py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all rounded-2xl ${
+                  activeTab === tab.id 
+                    ? (theme === 'dark' ? 'bg-white text-indigo-950 shadow-xl shadow-white/10' : 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20') 
+                    : (theme === 'dark' ? 'text-white/40 hover:text-white hover:bg-white/5' : 'text-slate-500 hover:text-indigo-600 hover:bg-indigo-50')
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
 
-        {/* Tab Content */}
-        <div className="mt-8">
+        <div className="mt-auto p-8 border-t border-white/5">
+          <div className="flex items-center gap-4 mb-6">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${theme === 'dark' ? 'bg-white/10 text-white' : 'bg-indigo-50 text-indigo-600'}`}>
+              {user.displayName?.charAt(0) || 'A'}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-[10px] font-black uppercase truncate">{user.displayName || 'Admin'}</p>
+              <p className="text-[9px] font-bold text-white/40 truncate opacity-60">Operations Manager</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className={`w-full flex items-center justify-center gap-3 px-6 py-4 text-[10px] font-black tracking-[0.3em] uppercase transition-all rounded-2xl border ${
+              theme === 'dark' ? 'border-red-500/20 text-red-400 hover:bg-red-500/10' : 'border-red-200 text-red-600 hover:bg-red-50'
+            }`}
+          >
+            <LogOut size={14} />
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 ml-80 mr-6 my-6 flex flex-col gap-6 h-[calc(100vh-3rem)]">
+        {/* Top Floating Bar */}
+        <header className={`p-6 rounded-3xl border backdrop-blur-2xl transition-all duration-500 shadow-2xl flex justify-between items-center ${
+          theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/60 border-white/60 shadow-indigo-900/10'
+        }`}>
+          <div className="flex items-center gap-4">
+            <h2 className="text-sm font-black uppercase tracking-widest opacity-40">Dashboard /</h2>
+            <span className="text-sm font-black uppercase tracking-widest">{activeTab}</span>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={toggleTheme}
+              className={`p-3 rounded-xl border transition-all duration-300 hover:scale-105 ${
+                theme === 'dark' ? 'border-white/10 bg-white/5 text-white hover:bg-white/10' : 'border-indigo-900/10 bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+              }`}
+            >
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+            <div className={`h-10 w-px ${theme === 'dark' ? 'bg-white/10' : 'bg-indigo-900/10'}`} />
+            <div className="text-right hidden md:block">
+              <p className="text-[10px] font-black uppercase">{format(new Date(), 'EEEE, MMMM do')}</p>
+              <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest">System Status: Optimal</p>
+            </div>
+          </div>
+        </header>
+
+        {/* Tab Content Panel */}
+        <div className={`flex-1 overflow-y-auto p-10 rounded-3xl border backdrop-blur-2xl transition-all duration-500 shadow-2xl custom-scrollbar ${
+          theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/40 border-white/40 shadow-indigo-900/10'
+        }`}>
           {activeTab === 'inquiries' && <InquiriesTab theme={theme} />}
           {activeTab === 'homepage' && <HomepageTab theme={theme} />}
           {activeTab === 'inventory' && <InventoryTab theme={theme} />}
+          {activeTab === 'analytics' && <AnalyticsTab theme={theme} />}
+          {activeTab === 'customers' && <CustomersTab theme={theme} />}
+          {activeTab === 'sales' && <SalesTab theme={theme} />}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
@@ -257,11 +339,12 @@ export default function AdminPage() {
 function InquiriesTab({ theme }: { theme: Theme }) {
   const [filter, setFilter] = useState<'all' | 'new' | 'read'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [typeFilter, setTypeFilter] = useState<'all' | 'car' | 'property' | 'general'>('all');
   
-  const { data: inquiries, loading, error } = useRealtimeDB<Inquiry>('inquiries', 100);
+  const { data: inquiries = [], isLoading: loading, error } = useRealtimeDB<Inquiry>('inquiries', 100);
 
-  const filteredInquiries = inquiries.filter(i => {
+  const filteredInquiries = inquiries.filter((i: Inquiry) => {
     // Status filter
     if (filter === 'all') {
       if (i.status === 'archived') return false;
@@ -273,8 +356,8 @@ function InquiriesTab({ theme }: { theme: Theme }) {
     if (typeFilter !== 'all' && i.itemType !== typeFilter) return false;
 
     // Search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
       const matchesName = `${i.firstName} ${i.lastName}`.toLowerCase().includes(searchLower);
       const matchesEmail = i.email.toLowerCase().includes(searchLower);
       const matchesPhone = i.phone?.toLowerCase().includes(searchLower);
@@ -320,36 +403,38 @@ function InquiriesTab({ theme }: { theme: Theme }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Search & Filters */}
-      <div className={`p-6 border space-y-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900/30 border-zinc-800' : 'bg-white border-black/5'}`}>
-        <div className="relative">
-          <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-zinc-500' : 'text-black/30'}`} size={18} />
+      <div className={`p-8 rounded-3xl border backdrop-blur-xl transition-all duration-500 shadow-xl ${
+        theme === 'dark' ? 'bg-white/5 border-white/10 shadow-black/40' : 'bg-white/60 border-white/60 shadow-indigo-900/10'
+      }`}>
+        <div className="relative mb-8">
+          <Search className={`absolute left-6 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-white/30' : 'text-slate-400'}`} size={20} />
           <input 
             type="text" 
             placeholder="Search leads by name, email, phone or item..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`w-full pl-12 pr-4 py-4 text-sm font-bold tracking-widest uppercase outline-none border-b transition-all ${
+            className={`w-full pl-16 pr-6 py-5 text-sm font-black tracking-widest uppercase outline-none rounded-2xl transition-all ${
               theme === 'dark' 
-                ? 'bg-transparent border-zinc-800 focus:border-white text-white' 
-                : 'bg-transparent border-black/5 focus:border-black text-black'
+                ? 'bg-black/20 border border-white/5 focus:border-white/20 text-white placeholder:text-white/20' 
+                : 'bg-indigo-50/50 border border-indigo-100 focus:border-indigo-300 text-slate-900 placeholder:text-slate-300'
             }`}
           />
         </div>
 
-        <div className="flex flex-wrap gap-8">
-          <div className="space-y-3">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">Status</span>
-            <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-10">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">Status:</span>
+            <div className="flex gap-2 p-1 rounded-xl bg-black/10">
               {['all', 'new', 'read'].map((f) => (
                 <button 
                   key={f}
                   onClick={() => setFilter(f as any)}
-                  className={`px-4 py-2 text-[9px] font-bold tracking-[0.2em] uppercase transition-all border ${
+                  className={`px-6 py-2.5 text-[9px] font-black tracking-[0.2em] uppercase transition-all rounded-lg ${
                     filter === f 
-                      ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') 
-                      : (theme === 'dark' ? 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600' : 'bg-white text-black border-black/5 hover:border-black')
+                      ? (theme === 'dark' ? 'bg-white text-indigo-950 shadow-lg' : 'bg-indigo-600 text-white shadow-lg') 
+                      : (theme === 'dark' ? 'text-white/40 hover:text-white' : 'text-slate-400 hover:text-slate-900')
                   }`}
                 >
                   {f}
@@ -358,17 +443,17 @@ function InquiriesTab({ theme }: { theme: Theme }) {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <span className="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40">Category</span>
-            <div className="flex gap-2">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">Category:</span>
+            <div className="flex gap-2 p-1 rounded-xl bg-black/10">
               {['all', 'car', 'property', 'general'].map((t) => (
                 <button 
                   key={t}
                   onClick={() => setTypeFilter(t as any)}
-                  className={`px-4 py-2 text-[9px] font-bold tracking-[0.2em] uppercase transition-all border ${
+                  className={`px-6 py-2.5 text-[9px] font-black tracking-[0.2em] uppercase transition-all rounded-lg ${
                     typeFilter === t 
-                      ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') 
-                      : (theme === 'dark' ? 'bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-600' : 'bg-white text-black border-black/5 hover:border-black')
+                      ? (theme === 'dark' ? 'bg-white text-indigo-950 shadow-lg' : 'bg-indigo-600 text-white shadow-lg') 
+                      : (theme === 'dark' ? 'text-white/40 hover:text-white' : 'text-slate-400 hover:text-slate-900')
                   }`}
                 >
                   {t}
@@ -386,84 +471,86 @@ function InquiriesTab({ theme }: { theme: Theme }) {
           {filteredInquiries.map((inquiry: any) => (
             <div 
               key={inquiry.id} 
-              className={`p-8 rounded-none border transition-all duration-300 ${
+              className={`p-10 rounded-3xl border transition-all duration-500 shadow-xl ${
                 theme === 'dark' 
-                  ? `bg-zinc-900/50 border-zinc-800 ${inquiry.status === 'new' ? 'border-l-4 border-l-white bg-zinc-900 shadow-[0_0_20px_rgba(255,255,255,0.03)]' : 'opacity-70'}` 
-                  : `bg-white border-black/5 ${inquiry.status === 'new' ? 'border-l-4 border-l-black shadow-sm' : 'opacity-80'}`
+                  ? `bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40 hover:bg-white/10 ${inquiry.status === 'new' ? 'border-l-4 border-l-white bg-white/[0.08]' : 'opacity-70'}` 
+                  : `bg-white border-black/5 shadow-gray-200/50 hover:shadow-gray-200 ${inquiry.status === 'new' ? 'border-l-4 border-l-black bg-white shadow-lg' : 'opacity-80'}`
               }`}
             >
-              <div className="flex flex-col lg:flex-row justify-between gap-8">
+              <div className="flex flex-col lg:flex-row justify-between gap-10">
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-4 mb-6">
+                  <div className="flex flex-wrap items-center gap-4 mb-8">
                     {inquiry.itemType === 'car' ? (
-                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2 transition-colors`}><Car size={14} /></span>
+                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2.5 rounded-xl shadow-lg transition-all`}><Car size={16} /></span>
                     ) : inquiry.itemType === 'property' ? (
-                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2 transition-colors`}><Home size={14} /></span>
+                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} p-2.5 rounded-xl shadow-lg transition-all`}><Home size={16} /></span>
                     ) : (
-                      <span className={`${theme === 'dark' ? 'bg-zinc-800 text-white' : 'bg-gray-100 text-black'} p-2 transition-colors`}><MessageSquare size={14} /></span>
+                      <span className={`${theme === 'dark' ? 'bg-white/10 text-white' : 'bg-gray-100 text-black'} p-2.5 rounded-xl transition-all`}><MessageSquare size={16} /></span>
                     )}
-                    <span className={`font-bold uppercase tracking-[0.2em] text-[10px] ${theme === 'dark' ? 'text-zinc-400' : 'text-black/60'}`}>{inquiry.itemName}</span>
+                    <span className={`font-black uppercase tracking-[0.3em] text-[10px] ${theme === 'dark' ? 'text-zinc-400' : 'text-black/60'}`}>{inquiry.itemName}</span>
                     {inquiry.status === 'new' && (
-                      <span className={`${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'} text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.2em] transition-colors shadow-sm`}>New</span>
+                      <span className={`${theme === 'dark' ? 'bg-white text-black shadow-lg shadow-white/20' : 'bg-black text-white shadow-lg shadow-black/10'} text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] transition-all`}>New</span>
                     )}
                     {inquiry.preferredContact && (
-                      <span className={`text-[8px] font-bold px-2 py-0.5 uppercase tracking-[0.2em] border ${
-                        inquiry.preferredContact === 'whatsapp' ? 'text-green-500 border-green-500/30' : 
-                        inquiry.preferredContact === 'phone' ? 'text-blue-500 border-blue-500/30' : 'text-zinc-500 border-zinc-500/30'
+                      <span className={`text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] border transition-all ${
+                        inquiry.preferredContact === 'whatsapp' ? 'text-green-500 border-green-500/30 bg-green-500/5' : 
+                        inquiry.preferredContact === 'phone' ? 'text-blue-500 border-blue-500/30 bg-blue-500/5' : 'text-zinc-500 border-zinc-500/30 bg-zinc-500/5'
                       }`}>
-                        Prefer: {inquiry.preferredContact}
+                        {inquiry.preferredContact}
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-3xl font-black uppercase tracking-tight mb-2">{inquiry.firstName} {inquiry.lastName}</h3>
-                  <div className={`flex flex-wrap items-center gap-x-8 gap-y-4 text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'text-zinc-400' : 'text-black/50'}`}>
+                  <h3 className="text-4xl font-black uppercase tracking-tight mb-3">{inquiry.firstName} {inquiry.lastName}</h3>
+                  <div className={`flex flex-wrap items-center gap-x-10 gap-y-4 text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/50'}`}>
                     <a href={`mailto:${inquiry.email}`} className={`flex items-center gap-2 transition-colors ${theme === 'dark' ? 'hover:text-white' : 'hover:text-black'}`}>
                       {inquiry.email}
                     </a>
                     {inquiry.phone && (
                       <a href={`tel:${inquiry.phone}`} className={`flex items-center gap-2 text-lg font-mono tracking-tighter transition-colors ${theme === 'dark' ? 'text-white hover:text-white' : 'text-black hover:text-black'}`}>
-                        <Phone size={14} />
+                        <Phone size={14} className="opacity-40" />
                         {inquiry.phone}
                       </a>
                     )}
-                    <span className="opacity-40">{format(new Date(inquiry.createdAt), 'MMM d, yyyy // HH:mm')}</span>
+                    <span className="opacity-30">{format(new Date(inquiry.createdAt), 'MMM d, yyyy // HH:mm')}</span>
                   </div>
                   
-                  <div className={`mt-6 p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-950/50 border-zinc-800' : 'bg-[#F7F7F5] border-black/5'}`}>
-                    <p className={`text-base md:text-lg leading-relaxed font-medium whitespace-pre-wrap transition-colors duration-300 ${theme === 'dark' ? 'text-zinc-200' : 'text-black/90'}`}>{inquiry.message}</p>
+                  <div className={`mt-8 p-10 rounded-2xl border transition-all duration-500 ${theme === 'dark' ? 'bg-black/40 border-white/5' : 'bg-black/5 border-black/5'}`}>
+                    <p className={`text-base md:text-xl leading-relaxed font-medium whitespace-pre-wrap transition-all ${theme === 'dark' ? 'text-zinc-300' : 'text-black/80'}`}>{inquiry.message}</p>
                   </div>
                 </div>
                 
-                <div className={`flex flex-row lg:flex-col justify-end gap-3 lg:pl-8 lg:border-l transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+                <div className={`flex flex-row lg:flex-col justify-end gap-3 lg:pl-10 lg:border-l transition-all duration-500 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
                   {inquiry.phone && (
                     <>
                       <a 
                         href={`https://wa.me/${inquiry.phone.replace(/\D/g, '')}?text=Hello ${inquiry.firstName}, this is from Masembe Group regarding your inquiry for ${inquiry.itemName}.`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] bg-green-600 text-white hover:bg-green-700 transition-all shadow-lg shadow-green-600/10"
+                        className="flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] bg-green-600 text-white hover:bg-green-700 transition-all rounded-xl shadow-xl shadow-green-600/20"
                       >
                         <MessageCircle size={14} />
                         WhatsApp
                       </a>
                       <a 
                         href={`tel:${inquiry.phone}`}
-                        className="flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] border border-blue-500/30 text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
+                        className={`flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] border transition-all rounded-xl ${
+                          theme === 'dark' ? 'border-white/10 text-white hover:bg-white/5' : 'border-black/10 text-black hover:bg-black/5'
+                        }`}
                       >
                         <Phone size={14} />
-                        Call Now
+                        Call
                       </a>
                     </>
                   )}
-                  <div className="h-px w-full bg-zinc-800 my-2 hidden lg:block" />
+                  <div className={`h-px w-full my-4 hidden lg:block ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'}`} />
                   <button 
                     onClick={() => markAsRead(inquiry.id, inquiry.status)}
                     disabled={inquiry.status === 'read'}
-                    className={`flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${
+                    className={`flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-xl ${
                       inquiry.status === 'read' 
-                        ? (theme === 'dark' ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-gray-100 text-black/20 cursor-not-allowed') 
-                        : (theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800')
+                        ? (theme === 'dark' ? 'bg-white/5 text-zinc-600 cursor-not-allowed' : 'bg-black/5 text-black/20 cursor-not-allowed') 
+                        : (theme === 'dark' ? 'bg-white text-black shadow-xl shadow-white/10 hover:bg-zinc-200' : 'bg-black text-white shadow-xl shadow-black/10 hover:bg-gray-800')
                     }`}
                   >
                     {inquiry.status === 'read' ? <CheckCircle size={14} /> : <Circle size={14} />}
@@ -471,10 +558,10 @@ function InquiriesTab({ theme }: { theme: Theme }) {
                   </button>
                   <button 
                     onClick={() => deleteInquiry(inquiry.id)}
-                    className={`flex items-center justify-center gap-3 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] border transition-all ${
+                    className={`flex items-center justify-center gap-3 px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] border transition-all rounded-xl ${
                       theme === 'dark'
-                        ? 'text-red-400 border-red-900/50 hover:bg-red-950/30'
-                        : 'text-red-600 border-red-100 hover:bg-red-50'
+                        ? 'text-red-400 border-red-500/20 hover:bg-red-500/10'
+                        : 'text-red-600 border-red-200 hover:bg-red-50'
                     }`}
                   >
                     <Trash2 size={14} />
@@ -508,7 +595,7 @@ const DEFAULT_CONTENT: HomepageContent = {
 };
 
 function HomepageTab({ theme }: { theme: Theme }) {
-  const { data: content, loading } = useFirestoreDoc<HomepageContent>('content', 'homepage');
+  const { data: content, isLoading: loading } = useFirestoreDoc<HomepageContent>('content', 'homepage');
   const [formData, setFormData] = useState<HomepageContent | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -525,10 +612,10 @@ function HomepageTab({ theme }: { theme: Theme }) {
     setIsSaving(true);
     try {
       await setDoc(doc(db, 'content', 'homepage'), formData);
-      alert('Homepage updated successfully.');
+      toast.success('Homepage updated successfully.');
     } catch (error) {
       console.error("Error updating homepage:", error);
-      alert('Failed to update homepage.');
+      toast.error('Failed to update homepage.');
     } finally {
       setIsSaving(false);
     }
@@ -548,10 +635,10 @@ function HomepageTab({ theme }: { theme: Theme }) {
   if (!formData) return <LoadingSpinner theme={theme} />;
 
   return (
-    <div className="max-w-4xl space-y-12">
-      <div className={`grid gap-8 p-10 border shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-4 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>Hero Configuration</h2>
-        <div className="grid gap-6">
+    <div className="max-w-4xl space-y-12 pb-24">
+      <div className={`grid gap-8 p-12 rounded-3xl border shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-6 transition-all duration-500 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5'}`}>Hero Configuration</h2>
+        <div className="grid gap-8">
           <FormField 
             theme={theme}
             label="Hero Title" 
@@ -568,9 +655,9 @@ function HomepageTab({ theme }: { theme: Theme }) {
         </div>
       </div>
 
-      <div className={`grid gap-8 p-10 border shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-4 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>Media Assets</h2>
-        <div className="grid gap-6">
+      <div className={`grid gap-8 p-12 rounded-3xl border shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-6 transition-all duration-500 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5'}`}>Media Assets</h2>
+        <div className="grid gap-8">
           <FormField 
             theme={theme}
             label="Real Estate Video URL" 
@@ -600,12 +687,12 @@ function HomepageTab({ theme }: { theme: Theme }) {
         onChange={(idx, field, val) => updateSection('auto', idx, field, val)}
       />
 
-      <div className="sticky bottom-8 flex justify-end">
+      <div className="sticky bottom-10 flex justify-end">
         <button 
           onClick={handleSave}
           disabled={isSaving}
-          className={`px-12 py-5 text-[10px] font-bold uppercase tracking-[0.4em] shadow-2xl transition-all flex items-center gap-4 disabled:opacity-50 ${
-            theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'
+          className={`px-12 py-5 text-[10px] font-black uppercase tracking-[0.4em] rounded-2xl shadow-2xl transition-all flex items-center gap-4 disabled:opacity-50 ${
+            theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200 shadow-white/10' : 'bg-black text-white hover:bg-gray-800 shadow-black/20'
           }`}
         >
           {isSaving ? 'Processing...' : (
@@ -627,12 +714,12 @@ function SectionEditor({ title, sections, onChange, theme }: {
   theme: Theme
 }) {
   return (
-    <div className={`grid gap-8 p-10 border shadow-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
-      <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-4 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>{title}</h2>
+    <div className={`grid gap-8 p-12 rounded-3xl border shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+      <h2 className={`text-2xl font-black uppercase tracking-tighter border-b pb-6 transition-all duration-500 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5'}`}>{title}</h2>
       <div className="space-y-10">
         {sections.map((section, idx) => (
-          <div key={idx} className={`grid gap-6 p-6 relative transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-950/50' : 'bg-[#F7F7F5]'}`}>
-            <span className={`absolute -top-3 -left-3 w-8 h-8 flex items-center justify-center text-[10px] font-bold transition-colors ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>0{idx + 1}</span>
+          <div key={idx} className={`grid gap-8 p-8 relative rounded-2xl transition-all duration-500 border ${theme === 'dark' ? 'bg-black/20 border-white/5' : 'bg-black/5 border-black/5'}`}>
+            <span className={`absolute -top-3 -left-3 w-10 h-10 flex items-center justify-center text-xs font-black rounded-xl shadow-lg transition-all ${theme === 'dark' ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'}`}>0{idx + 1}</span>
             <FormField 
               theme={theme}
               label="Section Title" 
@@ -658,8 +745,8 @@ function InventoryTab({ theme }: { theme: Theme }) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingItem, setEditingItem] = useState<CarType | PropertyType | null>(null);
 
-  const { data: cars, loading: carsLoading } = useFirestoreCollection<CarType>('cars');
-  const { data: properties, loading: propsLoading } = useFirestoreCollection<PropertyType>('properties');
+  const { data: cars = [], isLoading: carsLoading } = useFirestoreCollection<CarType>('cars');
+  const { data: properties = [], isLoading: propsLoading } = useFirestoreCollection<PropertyType>('properties');
 
   const handleDelete = async (id: string) => {
     if (window.confirm(`Permanently remove this item from ${type}?`)) {
@@ -712,40 +799,45 @@ function InventoryTab({ theme }: { theme: Theme }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {(type === 'cars' ? cars : properties).map((item: any, index: number) => (
-          <div key={item.id} className={`group border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800 hover:shadow-white/5' : 'bg-white border-black/5'}`}>
-            <div className="aspect-[16/10] overflow-hidden bg-gray-100">
+          <div 
+            key={item.id} 
+            className={`group rounded-3xl border overflow-hidden transition-all duration-500 shadow-xl ${
+              theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40 hover:bg-white/10' : 'bg-white border-black/5 shadow-gray-200/50'
+            }`}
+          >
+            <div className="aspect-[16/10] overflow-hidden bg-black/20">
               <OptimizedImage 
                 src={item.image} 
                 alt={item.model || item.name} 
-                className="w-full h-full grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                 priority={index < 3}
               />
             </div>
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-4">
+            <div className="p-10">
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-xl font-black uppercase tracking-tighter leading-none">{item.model || item.name}</h3>
-                  <p className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-2 transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{item.make || item.location}</p>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">{item.model || item.name}</h3>
+                  <p className={`text-[10px] font-black uppercase tracking-[0.3em] mt-3 transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{item.make || item.location}</p>
                 </div>
-                <span className={`text-[10px] font-black tracking-widest ${theme === 'dark' ? 'text-zinc-400' : 'text-black'}`}>{item.price}</span>
+                <span className={`text-[11px] font-black tracking-[0.2em] px-4 py-1.5 rounded-full ${theme === 'dark' ? 'bg-white text-black shadow-lg shadow-white/10' : 'bg-black text-white shadow-lg shadow-black/10'}`}>{item.price}</span>
               </div>
               
-              <div className={`flex gap-3 pt-6 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+              <div className={`flex gap-3 pt-8 border-t transition-all duration-500 ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
                 <button 
                   onClick={() => setEditingItem(item)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 border text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
                     theme === 'dark' 
-                      ? 'border-zinc-800 text-zinc-400 hover:bg-white hover:text-black hover:border-white' 
-                      : 'border-black/5 text-black hover:bg-black hover:text-white'
+                      ? 'border-white/10 text-white hover:bg-white hover:text-black hover:border-white shadow-lg shadow-white/5' 
+                      : 'border-black/10 text-black hover:bg-black hover:text-white shadow-lg shadow-black/5'
                   }`}
                 >
                   <Edit2 size={12} />
-                  Edit
+                  Modify
                 </button>
                 <button 
                   onClick={() => handleDelete(item.id)}
-                  className={`p-3 border transition-colors ${
-                    theme === 'dark' ? 'border-zinc-800 text-red-400 hover:bg-red-950/30' : 'border-black/5 text-red-600 hover:bg-red-50'
+                  className={`p-4 rounded-xl border transition-all ${
+                    theme === 'dark' ? 'border-red-500/20 text-red-400 hover:bg-red-500/10' : 'border-red-100 text-red-600 hover:bg-red-50'
                   }`}
                 >
                   <Trash2 size={14} />
@@ -772,26 +864,94 @@ function InventoryTab({ theme }: { theme: Theme }) {
 }
 
 function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, item?: CarType | PropertyType | null, onClose: () => void, theme: Theme }) {
-  const [formData, setFormData] = useState<any>(item || {
-    id: '',
-    make: '',
-    model: '',
-    year: 2024,
-    hp: 0,
-    price: '',
-    status: 'Available',
-    watermarkText: '',
-    image: '',
-    gallery: [],
-    // Property specific
-    name: '',
-    location: '',
-    type: 'Villa',
-    bedrooms: 0,
-    area: '',
-    completionDate: ''
+  const [formData, setFormData] = useState<any>(() => {
+    const defaults = {
+      id: '',
+      make: '',
+      model: '',
+      year: 2024,
+      hp: 0,
+      price: '',
+      status: 'Available',
+      watermarkText: '',
+      image: '',
+      gallery: [],
+      // Extended Car specific
+      description: '',
+      specs: {
+        engine: '',
+        transmission: '',
+        drivetrain: '',
+        fuelType: ''
+      },
+      features: [],
+      videoUrl: '',
+      // Property specific
+      name: '',
+      location: '',
+      type: 'Villa',
+      bedrooms: 0,
+      area: '',
+      completionDate: ''
+    };
+    return item ? { ...defaults, ...item } : defaults;
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const IMGBB_API_KEY = '7ca00406ae5a406360ed0ba2300af3ff';
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isGallery = false) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(isGallery ? 'gallery' : 'primary');
+    
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error('ImgBB upload failed');
+        }
+
+        const result = await response.json();
+        return result.data.url;
+      });
+
+      // Simple progress simulation
+      setUploadProgress(50);
+      const urls = await Promise.all(uploadPromises);
+      setUploadProgress(100);
+      
+      if (isGallery) {
+        setFormData((prev: any) => ({
+          ...prev,
+          gallery: [...(prev.gallery || []), ...urls]
+        }));
+      } else {
+        setFormData((prev: any) => ({
+          ...prev,
+          image: urls[0]
+        }));
+      }
+      toast.success(`${files.length} file(s) uploaded successfully!`);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Error uploading file to ImgBB.");
+    } finally {
+      setUploading(null);
+      setUploadProgress(0);
+      if (e.target) e.target.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -813,34 +973,69 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
         await setDoc(doc(db, type, id), { ...finalData, id });
       }
       onClose();
+      toast.success("Asset saved successfully.");
     } catch (error) {
       console.error("Save error:", error);
-      alert("Error saving asset.");
+      toast.error("Error saving asset.");
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-      <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto p-12 relative shadow-2xl transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-white text-black'}`}>
-        <button onClick={onClose} className={`absolute top-8 right-8 transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
+      <div className={`w-full max-w-4xl max-h-[90vh] overflow-y-auto p-12 relative rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-zinc-900/90 border-white/10 text-white shadow-black/60' : 'bg-white/95 border-black/5 text-black shadow-gray-400/20'}`}>
+        <button onClick={onClose} className={`absolute top-10 right-10 transition-colors p-2 rounded-full hover:bg-white/5 ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
           <X size={24} />
         </button>
         
-        <h2 className={`text-3xl font-black uppercase tracking-tighter mb-12 border-b pb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+        <h2 className={`text-4xl font-black uppercase tracking-tighter mb-12 border-b pb-8 transition-colors duration-300 ${theme === 'dark' ? 'border-white/10 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40' : 'border-black/5 text-black'}`}>
           {item ? 'Modify Asset' : 'New Asset Entry'}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+        <form onSubmit={handleSubmit} className="space-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
             {type === 'cars' ? (
               <>
-                <FormField theme={theme} label="Identifier (slug)" value={formData.id} onChange={(v) => setFormData({...formData, id: v})} placeholder="e.g. g63-amg" disabled={!!item} />
-                <FormField theme={theme} label="Manufacturer" value={formData.make} onChange={(v) => setFormData({...formData, make: v})} />
-                <FormField theme={theme} label="Model Designation" value={formData.model} onChange={(v) => setFormData({...formData, model: v})} />
-                <FormField theme={theme} label="Model Year" type="number" value={formData.year} onChange={(v) => setFormData({...formData, year: parseInt(v)})} />
-                <FormField theme={theme} label="Horsepower" type="number" value={formData.hp} onChange={(v) => setFormData({...formData, hp: parseInt(v)})} />
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                  <FormField theme={theme} label="Identifier (slug)" value={formData.id} onChange={(v) => setFormData({...formData, id: v})} placeholder="e.g. g63-amg" disabled={!!item} />
+                  <FormField theme={theme} label="Manufacturer" value={formData.make} onChange={(v) => setFormData({...formData, make: v})} />
+                  <FormField theme={theme} label="Model Designation" value={formData.model} onChange={(v) => setFormData({...formData, model: v})} />
+                  <FormField theme={theme} label="Model Year" type="number" value={formData.year} onChange={(v) => setFormData({...formData, year: parseInt(v)})} />
+                  <FormField theme={theme} label="Horsepower" type="number" value={formData.hp} onChange={(v) => setFormData({...formData, hp: parseInt(v)})} />
+                  <FormField theme={theme} label="Valuation" value={formData.price} onChange={(v) => setFormData({...formData, price: v})} placeholder="$ 000,000" />
+                </div>
+
+                <div className="md:col-span-2">
+                  <FormField 
+                    theme={theme} 
+                    label="Full Vehicle Description" 
+                    value={formData.description} 
+                    onChange={(v) => setFormData({...formData, description: v})} 
+                    multiline 
+                    placeholder="Provide a detailed overview of the vehicle's history, condition, and key highlights..."
+                  />
+                </div>
+
+                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 border-y py-10 my-4 border-white/10">
+                  <h3 className="md:col-span-2 text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Technical Specifications</h3>
+                  <FormField theme={theme} label="Engine" value={formData.specs?.engine} onChange={(v) => setFormData({...formData, specs: {...formData.specs, engine: v}})} placeholder="e.g. 4.0L V8 Biturbo" />
+                  <FormField theme={theme} label="Transmission" value={formData.specs?.transmission} onChange={(v) => setFormData({...formData, specs: {...formData.specs, transmission: v}})} placeholder="e.g. 9G-TRONIC" />
+                  <FormField theme={theme} label="Drivetrain" value={formData.specs?.drivetrain} onChange={(v) => setFormData({...formData, specs: {...formData.specs, drivetrain: v}})} placeholder="e.g. 4MATIC" />
+                  <FormField theme={theme} label="Fuel Type" value={formData.specs?.fuelType} onChange={(v) => setFormData({...formData, specs: {...formData.specs, fuelType: v}})} placeholder="e.g. Petrol" />
+                </div>
+
+                <div className="md:col-span-2">
+                  <FormField 
+                    theme={theme} 
+                    label="Key Features (Comma separated)" 
+                    value={formData.features ? formData.features.join(', ') : ''} 
+                    onChange={(v) => setFormData({...formData, features: v.split(',').map(s => s.trim()).filter(s => s !== '')})} 
+                    placeholder="Carbon Fiber Package, Night Edition, Burmester Audio..."
+                  />
+                </div>
+
+                <FormField theme={theme} label="Video Walkaround URL" value={formData.videoUrl} onChange={(v) => setFormData({...formData, videoUrl: v})} placeholder="YouTube or Vimeo link" />
               </>
             ) : (
               <>
@@ -850,28 +1045,39 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
                 <FormField theme={theme} label="Asset Type" value={formData.type} onChange={(v) => setFormData({...formData, type: v})} />
                 <FormField theme={theme} label="Bedrooms" type="number" value={formData.bedrooms} onChange={(v) => setFormData({...formData, bedrooms: parseInt(v)})} />
                 <FormField theme={theme} label="Square Footage" value={formData.area} onChange={(v) => setFormData({...formData, area: v})} />
+                <FormField theme={theme} label="Valuation" value={formData.price} onChange={(v) => setFormData({...formData, price: v})} placeholder="$ 000,000" />
               </>
             )}
             
-            <FormField theme={theme} label="Valuation" value={formData.price} onChange={(v) => setFormData({...formData, price: v})} placeholder="$ 000,000" />
             <FormField theme={theme} label="Asset Status" value={formData.status || formData.completionDate} onChange={(v) => setFormData({...formData, [type === 'cars' ? 'status' : 'completionDate']: v})} />
             <FormField theme={theme} label="Watermark Text" value={formData.watermarkText} onChange={(v) => setFormData({...formData, watermarkText: v})} />
-            <div className="md:col-span-2">
-              <FormField theme={theme} label="Primary Image URL" value={formData.image} onChange={(v) => setFormData({...formData, image: v})} />
-            </div>
-            <div className="md:col-span-2">
-              <FormField 
+            
+            <div className="md:col-span-2 space-y-10 pt-10 border-t border-white/10">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Visual Assets</h3>
+              <FileUploadField 
                 theme={theme} 
-                label="Gallery Image URLs (Comma separated)" 
-                value={formData.gallery ? formData.gallery.join(', ') : ''} 
-                onChange={(v) => setFormData({...formData, gallery: v.split(',').map(s => s.trim()).filter(s => s !== '')})} 
-                multiline
-                placeholder="https://image1.jpg, https://image2.jpg, ..."
+                label="Primary Hero Image" 
+                value={formData.image} 
+                uploading={uploading === 'primary'}
+                progress={uploadProgress}
+                onUpload={(e) => handleFileUpload(e, false)}
+                onRemove={() => setFormData({...formData, image: ''})}
+              />
+              
+              <FileUploadField 
+                theme={theme} 
+                label="Vehicle Gallery" 
+                value={formData.gallery || []} 
+                isGallery
+                uploading={uploading === 'gallery'}
+                progress={uploadProgress}
+                onUpload={(e) => handleFileUpload(e, true)}
+                onRemove={(url) => setFormData({...formData, gallery: formData.gallery.filter((u: string) => u !== url)})}
               />
             </div>
           </div>
 
-          <div className={`flex justify-end gap-6 pt-8 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+          <div className={`flex justify-end gap-6 pt-12 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
             <button 
               type="button"
               onClick={onClose}
@@ -898,6 +1104,103 @@ function InventoryModal({ type, item, onClose, theme }: { type: InventoryType, i
 }
 
 // --- UI Components ---
+
+function FileUploadField({ 
+  label, 
+  onUpload, 
+  value, 
+  uploading, 
+  progress, 
+  theme, 
+  isGallery = false,
+  onRemove
+}: { 
+  label: string, 
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void, 
+  value: string | string[], 
+  uploading: boolean, 
+  progress: number, 
+  theme: Theme,
+  isGallery?: boolean,
+  onRemove?: (url: string) => void
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="grid gap-3">
+      <label className={`text-[10px] font-black uppercase tracking-[0.3em] transition-colors ${theme === 'dark' ? 'text-zinc-500' : 'text-black/40'}`}>{label}</label>
+      <div className={`border p-6 transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}>
+        <input 
+          type="file" 
+          ref={inputRef} 
+          onChange={onUpload} 
+          className="hidden" 
+          multiple={isGallery}
+          accept="image/*"
+        />
+        
+        <div className="flex flex-wrap gap-4 mb-4">
+          {isGallery ? (
+            (value as string[]).map((url, i) => (
+              <div key={i} className="relative group w-24 h-24 rounded-lg overflow-hidden border border-white/10">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+                <button 
+                  type="button"
+                  onClick={() => onRemove?.(url)}
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-red-500"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))
+          ) : (
+            value && (
+              <div className="relative group w-32 h-32 rounded-lg overflow-hidden border border-white/10">
+                <img src={value as string} alt="" className="w-full h-full object-cover" />
+                <button 
+                  type="button"
+                  onClick={() => onRemove?.(value as string)}
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-red-500"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+            )
+          )}
+          
+          <button 
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
+            className={`w-24 h-24 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all ${
+              theme === 'dark' 
+                ? 'border-zinc-800 text-zinc-500 hover:border-white hover:text-white' 
+                : 'border-black/10 text-black/40 hover:border-black hover:text-black'
+            }`}
+          >
+            {uploading ? (
+              <Loader2 size={24} className="animate-spin" />
+            ) : (
+              <>
+                <Upload size={24} />
+                <span className="text-[8px] font-bold">UPLOAD</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {uploading && (
+          <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+            <div 
+              className="bg-white h-full transition-all duration-300" 
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface FormFieldProps {
   label: string;
@@ -944,8 +1247,12 @@ function FormField({ label, value, onChange, theme, type = 'text', multiline = f
 
 function LoadingSpinner({ theme }: { theme: Theme }) {
   return (
-    <div className="flex justify-center items-center py-24">
-      <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${theme === 'dark' ? 'border-white' : 'border-black'}`}></div>
+    <div className="flex flex-col items-center justify-center py-32 space-y-6">
+      <div className="relative">
+        <div className={`w-16 h-16 rounded-full border-4 ${theme === 'dark' ? 'border-white/5' : 'border-indigo-100'}`} />
+        <div className={`absolute top-0 left-0 w-16 h-16 rounded-full border-4 border-t-transparent animate-spin ${theme === 'dark' ? 'border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' : 'border-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.3)]'}`} />
+      </div>
+      <p className={`text-[10px] font-black uppercase tracking-[0.4em] animate-pulse ${theme === 'dark' ? 'text-white/40' : 'text-indigo-900/40'}`}>Synchronizing System...</p>
     </div>
   );
 }
@@ -954,6 +1261,567 @@ function EmptyState({ message, theme }: { message: string, theme: Theme }) {
   return (
     <div className={`p-16 text-center border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
       <p className={`text-[10px] font-bold uppercase tracking-[0.4em] transition-colors ${theme === 'dark' ? 'text-zinc-600' : 'text-black/30'}`}>{message}</p>
+    </div>
+  );
+}
+
+// --- Analytics Tab ---
+
+function AnalyticsTab({ theme }: { theme: Theme }) {
+  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+  const [totalViews, setTotalViews] = useState(0);
+  const [topPages, setTopPages] = useState<{path: string, count: number}[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const analyticsRef = ref(rtdb, 'analytics/visits');
+        const snapshot = await get(analyticsRef);
+        
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const dailyCounts: { [key: string]: number } = {};
+          const pageCounts: { [key: string]: number } = {};
+          let total = 0;
+
+          // Process data
+          Object.entries(data).forEach(([date, visits]: [string, any]) => {
+            if (!visits || typeof visits !== 'object') return;
+            
+            const visitArray = Object.values(visits);
+            dailyCounts[date] = (dailyCounts[date] || 0) + visitArray.length;
+            total += visitArray.length;
+
+            visitArray.forEach((visit: any) => {
+              if (visit && visit.path) {
+                pageCounts[visit.path] = (pageCounts[visit.path] || 0) + 1;
+              }
+            });
+          });
+
+          // Format for Recharts
+          const chartData = Object.entries(dailyCounts)
+            .map(([date, count]) => ({ date, count }))
+            .sort((a, b) => a.date.localeCompare(b.date));
+
+          const sortedPages = Object.entries(pageCounts)
+            .map(([path, count]) => ({ path, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+
+          setAnalyticsData(chartData);
+          setTotalViews(total);
+          setTopPages(sortedPages);
+        }
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  if (loading) return <LoadingSpinner theme={theme} />;
+
+  return (
+    <div className="space-y-12">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { label: 'Total Page Views', value: totalViews, sub: 'All-time' },
+          { label: 'Active Sessions', value: analyticsData.length > 0 ? analyticsData[analyticsData.length - 1].count : 0, sub: 'Today' },
+          { label: 'Conversion Rate', value: '--', sub: 'Target: 3.5%' }
+        ].map((stat) => (
+          <div key={stat.label} className={`p-10 rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-6">{stat.label}</span>
+            <h3 className="text-6xl font-black tracking-tighter">{stat.value}</h3>
+            <p className="text-[10px] font-bold uppercase tracking-widest mt-4 opacity-40">{stat.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Traffic Chart */}
+      <div className={`p-12 rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <h2 className="text-xl font-black uppercase tracking-tighter mb-12">Traffic Overview</h2>
+        <div className="h-[400px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={analyticsData}>
+              <defs>
+                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={theme === 'dark' ? '#10b981' : '#6366f1'} stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor={theme === 'dark' ? '#10b981' : '#6366f1'} stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+              <XAxis 
+                dataKey="date" 
+                stroke={theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'} 
+                fontSize={10} 
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(val) => format(new Date(val), 'MMM d')}
+              />
+              <YAxis 
+                stroke={theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'} 
+                fontSize={10} 
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)', 
+                  border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+                  borderRadius: '16px',
+                  backdropFilter: 'blur(12px)',
+                  padding: '12px',
+                  fontSize: '10px',
+                  fontWeight: '900',
+                  textTransform: 'uppercase',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+                }} 
+              />
+              <Area 
+                type="monotone" 
+                dataKey="count" 
+                stroke={theme === 'dark' ? '#10b981' : '#6366f1'} 
+                strokeWidth={4}
+                fillOpacity={1} 
+                fill="url(#colorCount)" 
+                animationDuration={2000}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Popular Pages */}
+      <div className={`p-12 rounded-3xl border transition-all duration-500 shadow-2xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <h2 className="text-xl font-black uppercase tracking-tighter mb-8">Popular Destinations</h2>
+        <div className="space-y-2">
+          {topPages.map((page, idx) => (
+            <div key={page.path} className={`flex items-center justify-between p-6 rounded-2xl border transition-all duration-300 ${theme === 'dark' ? 'border-white/5 hover:bg-white/5' : 'border-black/5 hover:bg-black/5'}`}>
+              <div className="flex items-center gap-6">
+                <span className={`text-[10px] font-black opacity-20 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>0{idx + 1}</span>
+                <span className="text-sm font-bold tracking-widest uppercase">{page.path}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className={`h-1 w-24 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-white/5' : 'bg-black/5'}`}>
+                  <div 
+                    className={`h-full rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-black'}`} 
+                    style={{ width: `${(page.count / (topPages[0]?.count || 1)) * 100}%` }}
+                  />
+                </div>
+                <span className="text-sm font-mono font-bold">{page.count} views</span>
+              </div>
+            </div>
+          ))}
+          {topPages.length === 0 && (
+            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 text-center py-12">Waiting for more visitor data...</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- CRM / Customers Tab ---
+
+function CustomersTab({ theme }: { theme: Theme }) {
+  const { data: customers = [], isLoading: loading } = useFirestoreCollection<any>('customers');
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<any>(null);
+
+  const filteredCustomers = customers.filter((c: any) => 
+    c.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+    c.email?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+    c.phone?.includes(debouncedSearchTerm)
+  );
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Remove this customer from the database?')) {
+      try {
+        await deleteDoc(doc(db, 'customers', id));
+      } catch (error) {
+        console.error("Delete error:", error);
+      }
+    }
+  };
+
+  if (loading) return <LoadingSpinner theme={theme} />;
+
+  return (
+    <div className="space-y-8">
+      <div className={`p-10 rounded-3xl border transition-all duration-500 shadow-xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <h2 className="text-2xl font-black uppercase tracking-tighter mb-4">Client Relations Management</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Manage your high-net-worth client database.</p>
+          </div>
+          <button 
+            onClick={() => setIsAdding(true)}
+            className={`px-10 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all rounded-xl ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
+          >
+            New Client Profile
+          </button>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className={`p-8 rounded-3xl border transition-all duration-500 shadow-xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+        <div className="relative">
+          <Search className={`absolute left-6 top-1/2 -translate-y-1/2 ${theme === 'dark' ? 'text-zinc-500' : 'text-black/30'}`} size={20} />
+          <input 
+            type="text" 
+            placeholder="Search clients by name, email or phone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={`w-full pl-16 pr-6 py-5 text-sm font-bold tracking-widest uppercase outline-none border-b transition-all ${
+              theme === 'dark' 
+                ? 'bg-transparent border-white/10 focus:border-white text-white' 
+                : 'bg-transparent border-black/5 focus:border-black text-black'
+            }`}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredCustomers.map((customer: any) => (
+          <div key={customer.id} className={`p-10 rounded-3xl border transition-all duration-500 shadow-xl ${theme === 'dark' ? 'bg-white/5 backdrop-blur-xl border-white/10 shadow-black/40 hover:bg-white/10' : 'bg-white border-black/5 shadow-gray-200/50'}`}>
+            <div className="flex justify-between items-start mb-8">
+              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black transition-all shadow-lg ${theme === 'dark' ? 'bg-white text-black shadow-white/10' : 'bg-black text-white shadow-black/10'}`}>
+                {customer.name?.charAt(0)}
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => setEditingCustomer(customer)} className={`p-3 rounded-xl transition-all ${theme === 'dark' ? 'bg-white/5 text-zinc-500 hover:text-white' : 'bg-black/5 text-black/30 hover:text-black'}`}><Edit2 size={16} /></button>
+                <button onClick={() => handleDelete(customer.id)} className={`p-3 rounded-xl transition-all ${theme === 'dark' ? 'bg-red-500/10 text-red-900 hover:text-red-500' : 'bg-red-50 text-red-200 hover:text-red-600'}`}><Trash2 size={16} /></button>
+              </div>
+            </div>
+            
+            <h3 className="text-xl font-black uppercase tracking-tighter mb-2">{customer.name}</h3>
+            <div className={`space-y-1 text-[10px] font-bold uppercase tracking-widest opacity-60 mb-6 ${theme === 'dark' ? 'text-zinc-400' : 'text-black'}`}>
+              <p>{customer.email}</p>
+              <p>{customer.phone}</p>
+            </div>
+
+            <div className={`pt-6 border-t ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-40 block mb-2">Lifetime Value</span>
+              <p className="text-lg font-mono font-bold">{customer.ltv || '$ 0.00'}</p>
+            </div>
+          </div>
+        ))}
+        {filteredCustomers.length === 0 && !loading && (
+          <div className="md:col-span-3">
+            <EmptyState theme={theme} message="No client profiles found." />
+          </div>
+        )}
+      </div>
+
+      {(isAdding || editingCustomer) && (
+        <CustomerModal 
+          theme={theme}
+          customer={editingCustomer} 
+          onClose={() => {
+            setIsAdding(false);
+            setEditingCustomer(null);
+          }} 
+        />
+      )}
+    </div>
+  );
+}
+
+function CustomerModal({ customer, onClose, theme }: { customer?: any, onClose: () => void, theme: Theme }) {
+  const [formData, setFormData] = useState(customer || {
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    notes: '',
+    ltv: '$ 0.00'
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      if (customer) {
+        await updateDoc(doc(db, 'customers', customer.id), formData);
+      } else {
+        const id = Date.now().toString();
+        await setDoc(doc(db, 'customers', id), { ...formData, id });
+      }
+      onClose();
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error("Error saving client profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+      <div className={`w-full max-w-2xl p-12 relative shadow-2xl transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-white text-black'}`}>
+        <button onClick={onClose} className={`absolute top-8 right-8 transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
+          <X size={24} />
+        </button>
+        
+        <h2 className={`text-3xl font-black uppercase tracking-tighter mb-12 border-b pb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+          {customer ? 'Update Client' : 'New Client Profile'}
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <FormField theme={theme} label="Full Name" value={formData.name} onChange={(v) => setFormData({...formData, name: v})} />
+            <FormField theme={theme} label="Email Address" type="email" value={formData.email} onChange={(v) => setFormData({...formData, email: v})} />
+            <FormField theme={theme} label="Phone Number" value={formData.phone} onChange={(v) => setFormData({...formData, phone: v})} />
+            <FormField theme={theme} label="Initial LTV" value={formData.ltv} onChange={(v) => setFormData({...formData, ltv: v})} />
+            <div className="md:col-span-2">
+              <FormField theme={theme} label="Client Notes" value={formData.notes} onChange={(v) => setFormData({...formData, notes: v})} multiline />
+            </div>
+          </div>
+
+          <div className={`flex justify-end gap-6 pt-8 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+            <button type="button" onClick={onClose} className={`px-10 py-4 text-[10px] font-bold uppercase tracking-widest border transition-all ${theme === 'dark' ? 'border-zinc-800 text-zinc-400' : 'border-black/5 text-black hover:bg-gray-50'}`}>Cancel</button>
+            <button type="submit" disabled={isSaving} className={`px-12 py-4 text-[10px] font-bold uppercase tracking-[0.4em] transition-all disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>{isSaving ? 'Processing...' : 'Save Profile'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// --- POS / Sales Tab ---
+
+function SalesTab({ theme }: { theme: Theme }) {
+  const { data: sales = [], isLoading: salesLoading } = useFirestoreCollection<any>('sales');
+  const [isAdding, setIsAdding] = useState(false);
+
+  const totalRevenue = sales.reduce((sum: number, sale: any) => {
+    const priceStr = sale.salePrice || '0';
+    const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+    return sum + price;
+  }, 0);
+
+  if (salesLoading) return <LoadingSpinner theme={theme} />;
+
+  return (
+    <div className="space-y-8">
+      <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <h2 className="text-xl font-black uppercase tracking-tighter mb-4">Transaction Intelligence</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Monitor and log asset acquisitions.</p>
+          </div>
+          <button 
+            onClick={() => setIsAdding(true)}
+            className={`px-8 py-4 text-[10px] font-bold uppercase tracking-[0.3em] transition-all ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-black text-white hover:bg-gray-800'}`}
+          >
+            Record Transaction
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Total Revenue</span>
+          <h3 className="text-4xl font-black tracking-tighter">$ {totalRevenue.toLocaleString()}</h3>
+        </div>
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Transactions</span>
+          <h3 className="text-4xl font-black tracking-tighter">{sales.length}</h3>
+        </div>
+        <div className={`p-8 border transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 block mb-4">Average Sale</span>
+          <h3 className="text-4xl font-black tracking-tighter">
+            $ {sales.length > 0 ? (totalRevenue / sales.length).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '0'}
+          </h3>
+        </div>
+      </div>
+
+      {/* Recent Sales Table */}
+      <div className={`border overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-black/5'}`}>
+        <div className="p-8 border-b border-black/5 dark:border-zinc-800">
+          <h3 className="text-sm font-black uppercase tracking-widest">Recent Acquisitions</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className={`text-[10px] font-black uppercase tracking-[0.2em] opacity-40 border-b ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+                <th className="px-8 py-6">Date</th>
+                <th className="px-8 py-6">Asset</th>
+                <th className="px-8 py-6">Client</th>
+                <th className="px-8 py-6 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/5 dark:divide-zinc-800">
+              {sales.sort((a: any, b: any) => b.createdAt?.localeCompare(a.createdAt)).map((sale: any) => (
+                <tr key={sale.id} className={`text-xs font-bold uppercase tracking-widest transition-colors ${theme === 'dark' ? 'hover:bg-zinc-800/50' : 'hover:bg-gray-50'}`}>
+                  <td className="px-8 py-6 opacity-60">{format(new Date(sale.createdAt), 'MMM d, yyyy')}</td>
+                  <td className="px-8 py-6">{sale.itemName}</td>
+                  <td className="px-8 py-6">{sale.customerName}</td>
+                  <td className="px-8 py-6 text-right font-mono">{sale.salePrice}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {sales.length === 0 && (
+            <div className="p-12 text-center opacity-40 text-[10px] font-bold uppercase tracking-[0.3em]">No transaction history available.</div>
+          )}
+        </div>
+      </div>
+
+      {isAdding && (
+        <SaleModal 
+          theme={theme}
+          onClose={() => setIsAdding(false)} 
+        />
+      )}
+    </div>
+  );
+}
+
+function SaleModal({ onClose, theme }: { onClose: () => void, theme: Theme }) {
+  const { data: customers = [] } = useFirestoreCollection<any>('customers');
+  const { data: cars = [] } = useFirestoreCollection<any>('cars');
+  const { data: properties = [] } = useFirestoreCollection<any>('properties');
+  
+  const [formData, setFormData] = useState({
+    customerId: '',
+    itemId: '',
+    itemType: 'cars' as 'cars' | 'properties',
+    salePrice: '',
+    notes: '',
+    status: 'Sold'
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.customerId || !formData.itemId) {
+      toast.error("Please select both a client and an asset.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const customer = customers.find((c: any) => c.id === formData.customerId);
+      const items = formData.itemType === 'cars' ? cars : properties;
+      const item = items.find((i: any) => i.id === formData.itemId);
+
+      const saleId = Date.now().toString();
+      const saleData = {
+        ...formData,
+        id: saleId,
+        customerName: customer?.name || 'Unknown Client',
+        itemName: item?.model || item?.name || 'Unknown Asset',
+        createdAt: new Date().toISOString()
+      };
+
+      // 1. Create Sale Document
+      await setDoc(doc(db, 'sales', saleId), saleData);
+
+      // 2. Update Asset Status
+      await updateDoc(doc(db, formData.itemType, formData.itemId), {
+        status: 'Sold'
+      });
+
+      // 3. Update Customer LTV
+      const currentLtv = parseFloat((customer?.ltv || '0').replace(/[^0-9.]/g, '')) || 0;
+      const saleAmt = parseFloat(formData.salePrice.replace(/[^0-9.]/g, '')) || 0;
+      const newLtv = currentLtv + saleAmt;
+      
+      await updateDoc(doc(db, 'customers', formData.customerId), {
+        ltv: `$ ${newLtv.toLocaleString()}`
+      });
+
+      onClose();
+    } catch (error) {
+      console.error("Sale recording error:", error);
+      toast.error("Error recording transaction.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const availableItems = (formData.itemType === 'cars' ? cars : properties).filter((i: any) => i.status !== 'Sold');
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+      <div className={`w-full max-w-2xl p-12 relative shadow-2xl transition-colors duration-300 ${theme === 'dark' ? 'bg-zinc-900 text-white' : 'bg-white text-black'}`}>
+        <button onClick={onClose} className={`absolute top-8 right-8 transition-colors ${theme === 'dark' ? 'text-zinc-600 hover:text-white' : 'text-black/40 hover:text-black'}`}>
+          <X size={24} />
+        </button>
+        
+        <h2 className={`text-3xl font-black uppercase tracking-tighter mb-12 border-b pb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+          Record Transaction
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid gap-3">
+              <label className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40`}>Select Client</label>
+              <select 
+                value={formData.customerId} 
+                onChange={(e) => setFormData({...formData, customerId: e.target.value})}
+                className={`w-full border p-5 text-sm font-bold uppercase tracking-widest outline-none transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}
+              >
+                <option value="">Choose Client...</option>
+                {customers.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+
+            <div className="grid gap-3">
+              <label className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40`}>Asset Category</label>
+              <div className="flex gap-2">
+                <button 
+                  type="button"
+                  onClick={() => setFormData({...formData, itemType: 'cars', itemId: ''})}
+                  className={`flex-1 py-4 text-[9px] font-bold uppercase tracking-widest border transition-all ${formData.itemType === 'cars' ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') : (theme === 'dark' ? 'border-zinc-800 text-zinc-500' : 'border-black/5 text-black')}`}
+                >
+                  Showroom
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setFormData({...formData, itemType: 'properties', itemId: ''})}
+                  className={`flex-1 py-4 text-[9px] font-bold uppercase tracking-widest border transition-all ${formData.itemType === 'properties' ? (theme === 'dark' ? 'bg-white text-black border-white' : 'bg-black text-white border-black') : (theme === 'dark' ? 'border-zinc-800 text-zinc-500' : 'border-black/5 text-black')}`}
+                >
+                  Portfolio
+                </button>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              <label className={`text-[10px] font-black uppercase tracking-[0.3em] opacity-40`}>Select Asset</label>
+              <select 
+                value={formData.itemId} 
+                onChange={(e) => setFormData({...formData, itemId: e.target.value})}
+                className={`w-full border p-5 text-sm font-bold uppercase tracking-widest outline-none transition-all ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-black/10'}`}
+              >
+                <option value="">Choose Asset...</option>
+                {availableItems.map((i: any) => <option key={i.id} value={i.id}>{i.model || i.name}</option>)}
+              </select>
+            </div>
+
+            <FormField theme={theme} label="Final Sale Price" value={formData.salePrice} onChange={(v) => setFormData({...formData, salePrice: v})} placeholder="$ 000,000" />
+            
+            <div className="md:col-span-2">
+              <FormField theme={theme} label="Transaction Notes" value={formData.notes} onChange={(v) => setFormData({...formData, notes: v})} multiline />
+            </div>
+          </div>
+
+          <div className={`flex justify-end gap-6 pt-8 border-t transition-colors duration-300 ${theme === 'dark' ? 'border-zinc-800' : 'border-black/5'}`}>
+            <button type="button" onClick={onClose} className={`px-10 py-4 text-[10px] font-bold uppercase tracking-widest border transition-all ${theme === 'dark' ? 'border-zinc-800 text-zinc-400' : 'border-black/5 text-black hover:bg-gray-50'}`}>Cancel</button>
+            <button type="submit" disabled={isSaving} className={`px-12 py-4 text-[10px] font-bold uppercase tracking-[0.4em] transition-all disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>{isSaving ? 'Synchronizing...' : 'Log Transaction'}</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import WatermarkLayer from '../components/WatermarkLayer';
 import SEO from '../components/SEO';
 import { useFirestoreDoc } from '../hooks/useFirestore';
 import { submitInquiry } from '../hooks/useRealtimeDB';
+import { toast } from 'react-hot-toast';
 
 const ProgressDot = ({ progress, start, end, color }: { progress: any, start: number, end: number, color: string }) => {
   const height = useTransform(progress, [start, end], ["0%", "100%"]);
@@ -103,7 +104,7 @@ export default function ZeroPage() {
   // Use Firestore content or defaults
 
   const autoSections = cmsContent?.autoSections || DEFAULT_AUTO_SECTIONS;
-  const heroTitle = cmsContent?.heroTitle || "Masembe\nCompanies";
+  const heroTitle = cmsContent?.heroTitle || "MASEMBE\nCOMPANIES";
   const heroSubtitle = cmsContent?.heroSubtitle || "The Collective Intelligence";
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
@@ -121,13 +122,13 @@ export default function ZeroPage() {
     }
 
     if (!inquiryForm.name || !inquiryForm.email || !inquiryForm.phone || !inquiryForm.message) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
     // Phone validation
     if (!/^[+\d\s\-().]{7,20}$/.test(inquiryForm.phone.trim())) {
-      alert("Please enter a valid phone number.");
+      toast.error("Please enter a valid phone number.");
       return;
     }
 
@@ -167,7 +168,7 @@ export default function ZeroPage() {
       } else {
         errorMessage += error.message || "Please try again.";
       }
-      alert(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -243,7 +244,7 @@ export default function ZeroPage() {
       </nav>
 
       {/* --- HERO CHAPTER --- */}
-      <section className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-black">
+      <section className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-white">
         <WatermarkLayer text="COLLECTIVE" theme="re" />
         <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="text-center px-6 relative z-20">
           <motion.span 
@@ -257,9 +258,9 @@ export default function ZeroPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-6xl md:text-9xl lg:text-[12rem] font-black tracking-tighter uppercase leading-[0.8] text-white"
+            className="text-6xl md:text-9xl lg:text-[12rem] font-black tracking-tighter uppercase leading-[0.8] text-black"
           >
-            {heroTitle.split('\n').map((line, i) => (
+            {heroTitle.split('\n').map((line: string, i: number) => (
               <React.Fragment key={i}>
                 {line}
                 {i < heroTitle.split('\n').length - 1 && <br />}
@@ -272,7 +273,7 @@ export default function ZeroPage() {
             transition={{ delay: 1, duration: 1 }}
             className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
           >
-            <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-white/20">Scroll to Explore</span>
+            <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-black/20">Scroll to Explore</span>
             <div className="w-[1px] h-12 bg-gradient-to-b from-[#d4af37] to-transparent" />
           </motion.div>
         </motion.div>
@@ -285,7 +286,7 @@ export default function ZeroPage() {
           <div className="w-full md:w-[60%] h-full flex flex-col items-center justify-center px-8 md:px-24 z-10 bg-[#F7F7F5] relative">
             <WatermarkLayer text="ESTATE" theme="re" />
             <div className="max-w-md w-full relative h-[400px] z-20">
-              {DEFAULT_RE_SECTIONS.map((section, idx) => (
+              {DEFAULT_RE_SECTIONS.map((section: any, idx: number) => (
                 <ContentSection
                   key={`re-${idx}`}
                   progress={smoothProgress}
@@ -303,7 +304,7 @@ export default function ZeroPage() {
             
             {/* Scroll Progress Tracker */}
             <div className="absolute left-12 bottom-24 hidden md:flex flex-col gap-4">
-              {DEFAULT_RE_SECTIONS.map((_, i) => (
+              {DEFAULT_RE_SECTIONS.map((_: any, i: number) => (
                 <ProgressDot 
                   key={`dot-re-${i}`} 
                   progress={smoothProgress} 
@@ -344,7 +345,7 @@ export default function ZeroPage() {
           <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-center px-8 md:px-24 z-10 bg-white relative">
             <WatermarkLayer text="MOTORS" theme="auto" />
             <div className="max-w-md w-full relative h-[400px] z-20">
-              {autoSections.map((section, idx) => (
+              {autoSections.map((section: any, idx: number) => (
                 <ContentSection
                   key={`auto-${idx}`}
                   progress={smoothProgress}
@@ -362,7 +363,7 @@ export default function ZeroPage() {
 
             {/* Scroll Progress Tracker */}
             <div className="absolute right-12 bottom-24 hidden md:flex flex-col gap-4">
-              {autoSections.map((_, i) => (
+              {autoSections.map((_: any, i: number) => (
                 <ProgressDot 
                   key={`dot-auto-${i}`} 
                   progress={smoothProgress} 

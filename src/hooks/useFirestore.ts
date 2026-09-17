@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   collection,
-  onSnapshot,
   query,
   doc,
+  getDocs,
+  getDoc,
   limit as firestoreLimit
 } from 'firebase/firestore';
 import type {
@@ -11,88 +12,56 @@ import type {
   QueryConstraint
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import toast from 'react-hot-toast';
 
 export function useFirestoreCollection<T = DocumentData>(
   collectionName: string,
   queryConstraints: QueryConstraint[] = [],
-  maxResults: number = 100  // Default cap — override per use case
+  maxResults: number = 100
 ) {
-  const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    try {
-      const q = query(
-        collection(db, collectionName),
-        ...queryConstraints,
-        firestoreLimit(maxResults)
-      );
-
-      const unsubscribe = onSnapshot(q,
-        (snapshot) => {
-          const items: T[] = [];
-          snapshot.forEach((doc) => {
-            items.push({ id: doc.id, ...doc.data() } as T);
-          });
-          setData(items);
-          setLoading(false);
-          setError(null);
-        },
-        (err) => {
-          console.error(`Error fetching collection ${collectionName}:`, err);
-          setError(err as Error);
-          setLoading(false);
+  return useQuery({
+    queryKey: [collectionName, queryConstraints, maxResults],
+    queryFn: async () => {
+      try {
+        const q = query(
+          collection(db, collectionName),
+          ...queryConstraints,
+          firestoreLimit(maxResults)
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T));
+      } catch (error: any) {
+        if (error.code === 'permission-denied') {
+          toast.error(`Permission Denied: You cannot access ${collectionName}`);
         }
-      );
-
-      return () => unsubscribe();
-    } catch (err) {
-      console.error(`Error setting up query for ${collectionName}:`, err);
-      setTimeout(() => {
-        setError(err as Error);
-        setLoading(false);
-      }, 0);
-    }
-  }, [collectionName, maxResults]);
-
-  return { data, loading, error };
+        throw error;
+      }
+    },
+  });
 }
 
-// useFirestoreDoc remains unchanged
 export function useFirestoreDoc<T = DocumentData>(
   collectionName: string,
   docId: string
 ) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    if (!docId) {
-      setTimeout(() => setLoading(false), 0);
-      return;
-    }
-
-    const unsubscribe = onSnapshot(doc(db, collectionName, docId),
-      (docSnap) => {
+  return useQuery({
+    queryKey: [collectionName, docId],
+    queryFn: async () => {
+      if (!docId) return null;
+      try {
+        const docRef = doc(db, collectionName, docId);
+        const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setData({ id: docSnap.id, ...docSnap.data() } as T);
-        } else {
-          setData(null);
+          return { id: docSnap.id, ...docSnap.data() } as T;
         }
-        setLoading(false);
-        setError(null);
-      },
-      (err) => {
-        console.error(`Error fetching document ${collectionName}/${docId}:`, err);
-        setError(err as Error);
-        setLoading(false);
+        return null;
+      } catch (error: any) {
+        if (error.code === 'permission-denied') {
+          toast.error(`Permission Denied: You cannot access this ${collectionName} item`);
+        }
+        throw error;
       }
-    );
-
-    return () => unsubscribe();
-  }, [collectionName, docId]);
-
-  return { data, loading, error };
+    },
+    enabled: !!docId,
+  });
 }

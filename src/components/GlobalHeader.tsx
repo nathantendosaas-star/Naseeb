@@ -52,7 +52,7 @@ export default function GlobalHeader() {
       )}>
         <div className={cn(
           "flex items-center z-50 p-2 md:p-3 rounded-2xl transition-all duration-300",
-          isDark ? "bg-white/10 backdrop-blur-md border border-white/20 shadow-xl" : ""
+          isDark ? "bg-[#0E0E10] border border-white/10 shadow-lg" : ""
         )}>
           <Link to="/" className="text-2xl md:text-3xl font-black tracking-tighter hover:scale-110 transition-transform mr-4 md:mr-8 border-r border-current pr-4 md:pr-6">
             M

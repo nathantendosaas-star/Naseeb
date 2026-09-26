@@ -50,7 +50,7 @@ export default function FloatingControls({
         <motion.div
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="pointer-events-auto flex items-center gap-4 bg-white/20 backdrop-blur-2xl border border-white/30 rounded-full p-2 pl-6 shadow-2xl"
+          className="pointer-events-auto flex items-center gap-4 bg-[#18181B] border border-zinc-700 rounded-full p-2 pl-6 shadow-2xl"
         >
           <div className="flex-grow flex items-center gap-3">
             <Search size={18} className="text-white/60" />
@@ -87,7 +87,7 @@ export default function FloatingControls({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsDrawerOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110]"
+              className="fixed inset-0 bg-black/70 z-[110]"
             />
 
             {/* Drawer Content */}
@@ -96,7 +96,7 @@ export default function FloatingControls({
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 h-full w-80 bg-white/20 backdrop-blur-3xl border-r border-white/20 z-[120] p-8 flex flex-col text-white"
+              className="fixed top-0 left-0 h-full w-80 bg-[#121214] border-r border-zinc-800 z-[120] p-8 flex flex-col text-white shadow-2xl"
             >
               <div className="flex justify-between items-center mb-12">
                 <h3 className="text-xl font-black uppercase tracking-tighter">Refine Results</h3>

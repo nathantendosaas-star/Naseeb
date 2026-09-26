@@ -30,8 +30,8 @@ export default function IdentitySwitcher({ isDark }: { isDark?: boolean }) {
       <div className={cn(
         "flex items-center rounded-full p-1.5 border relative z-50 transition-all duration-300",
         isDark 
-          ? "bg-white/10 backdrop-blur-md border-white/20 shadow-xl" 
-          : "bg-black/5 backdrop-blur-sm border-black/5"
+          ? "bg-[#18181B] border-zinc-800 shadow-md"
+          : "bg-[#F4F4F5] border-zinc-200"
       )}>
         <div className="relative flex">
           <button

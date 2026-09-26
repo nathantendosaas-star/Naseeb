@@ -67,7 +67,7 @@ export default function LookbookItem({ car, isReversed, onClick }: LookbookItemP
         )}>
           {/* Car Image Container */}
           <div className="w-full md:w-3/5">
-            <div className="relative aspect-[16/9] overflow-hidden rounded-2xl shadow-2xl bg-white/50 backdrop-blur-sm border border-black/5">
+            <div className="relative aspect-[16/9] overflow-hidden rounded-2xl shadow-2xl bg-[#F7F7F5] border border-black/5">
               <OptimizedImage 
                 src={car.image} 
                 alt={`${car.make} ${car.model}`}

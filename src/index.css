@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Instrument+Serif:ital@0;1&family=Montserrat:ital,wght@0,300..900;1,300..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 @import "swiper/css";
 @import "swiper/css/effect-fade";
@@ -17,7 +17,8 @@
   --color-re-muted: #8a8275;
   
   --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Cormorant Garamond", serif;
+  --font-serif: "Instrument Serif", "Cormorant Garamond", "Playfair Display", serif;
+  --font-display: "Instrument Serif", "Playfair Display", "Cormorant Garamond", serif;
   --font-mono: "Space Mono", ui-monospace, SFMono-Regular, monospace;
 }
 

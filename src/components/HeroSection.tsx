@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { getCdnVideoUrl } from '../lib/cdnVideo';
 
 interface HeroSectionProps {
@@ -75,12 +76,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ title, subtitle, videoSrc, po
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <button className="bg-[#2563eb] hover:bg-blue-600 text-white font-medium px-8 py-3.5 rounded-full text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105">
-            Book A Call
-          </button>
-          <button className="bg-[#222226]/90 hover:bg-[#2d2d33] border border-white/10 text-white font-medium px-8 py-3.5 rounded-full text-sm transition-all hover:scale-105">
-            View Pricing
-          </button>
+          <Link to="/property" className="bg-[#2563eb] hover:bg-blue-600 text-white font-medium px-8 py-3.5 rounded-full text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105">
+            Property
+          </Link>
+          <Link to="/cars" className="bg-[#222226]/90 hover:bg-[#2d2d33] border border-white/10 text-white font-medium px-8 py-3.5 rounded-full text-sm transition-all hover:scale-105">
+            Motors
+          </Link>
         </div>
       </motion.div>
     </section>

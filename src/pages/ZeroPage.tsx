@@ -234,31 +234,70 @@ export default function ZeroPage() {
         canonical="/"
       />
       <div ref={containerRef} className="relative w-full bg-[#F7F7F5] text-black min-h-[800vh] font-sans selection:bg-black selection:text-white">
-        {/* ... navbar ... */}
-        <nav className="fixed top-0 left-0 w-full z-[100] flex items-center justify-between p-6 md:px-12 mix-blend-difference">
-        <Link to="/" className="text-xl font-black tracking-tighter text-white">MASEMBE</Link>
-        <div className="flex items-center gap-12 text-[10px] font-bold tracking-[0.3em] uppercase text-white">
-          <Link to="/about" className="hover:opacity-60 transition-opacity">About</Link>
-          <Link to="/contact" className="hover:opacity-60 transition-opacity">Contact</Link>
-        </div>
-      </nav>
+        {/* Floating rounded header pills matching image.png */}
+        <header className="fixed top-6 left-0 w-full z-[100] px-4 md:px-12 flex items-center justify-between pointer-events-none">
+          <div className="pointer-events-auto bg-[#121216]/80 border border-white/10 rounded-full px-5 py-2.5 backdrop-blur-xl shadow-2xl flex items-center gap-6 text-xs md:text-sm text-white/90">
+            <Link to="/" className="flex items-center gap-2 font-bold tracking-tight hover:opacity-80 transition-opacity">
+              <span className="w-5 h-5 rounded-md bg-white text-black flex items-center justify-center text-[11px] font-black">
+                ❖
+              </span>
+            </Link>
+            <nav className="flex items-center gap-4 md:gap-6 font-medium text-white/80">
+              <Link to="/" className="text-white hover:text-white transition-colors">Home</Link>
+              <Link to="/property" className="hover:text-white transition-colors">Projects</Link>
+              <Link to="/cars" className="hover:text-white transition-colors">Motors</Link>
+              <Link to="/about" className="hover:text-white transition-colors">About</Link>
+              <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+            </nav>
+          </div>
+
+          <div className="pointer-events-auto hidden sm:flex items-center gap-3 bg-[#121216]/80 border border-white/10 rounded-full px-4 py-2.5 backdrop-blur-xl shadow-2xl text-white/80">
+            <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X (Twitter)" className="hover:text-white transition-colors p-1">
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-white transition-colors p-1">
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="hover:text-white transition-colors p-1">
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+          </div>
+        </header>
 
       {/* --- HERO CHAPTER --- */}
-      <section className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-white">
-        <WatermarkLayer text="COLLECTIVE" theme="re" />
-        <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="text-center px-6 relative z-20">
-          <motion.span 
-            initial={{ opacity: 0, y: 20 }}
+      <section className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden z-10 bg-[#070709] text-white">
+        {/* Ambient Radial Lighting Effects matching image.png */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[550px] bg-gradient-to-tr from-blue-900/20 via-slate-800/15 to-transparent rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-[500px] h-[500px] bg-blue-950/30 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute top-10 -right-20 w-[450px] h-[450px] bg-slate-700/10 rounded-full blur-[130px] pointer-events-none" />
+
+        <motion.div style={{ opacity: heroOpacity, scale: heroScale }} className="text-center px-6 relative z-20 max-w-5xl mx-auto flex flex-col items-center justify-center pt-10">
+          {/* Top Pill Tag Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="block text-[10px] md:text-xs font-black tracking-[0.8em] uppercase text-[#d4af37] mb-12 italic"
+            transition={{ duration: 0.6 }}
+            className="mb-8"
           >
-            {heroSubtitle}
-          </motion.span>
+            <div className="bg-[#121216]/90 border border-white/15 px-4 py-1.5 rounded-full text-xs text-white/90 backdrop-blur-md shadow-2xl inline-flex items-center gap-3 hover:border-white/30 transition-all cursor-pointer">
+              <span className="bg-[#2563eb] text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                New
+              </span>
+              <span className="text-white/90 font-medium tracking-wide">
+                {heroSubtitle}
+              </span>
+              <span className="text-white/60 text-xs flex items-center gap-1 pl-1 border-l border-white/10">
+                Explore ↗
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Main Display Serif Title */}
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-6xl md:text-9xl lg:text-[12rem] font-black tracking-tighter uppercase leading-[0.8] text-black"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-[7.2rem] font-serif font-normal tracking-tight leading-[1.02] text-[#f8f8f8] mb-6 max-w-5xl"
           >
             {heroTitle.split('\n').map((line: string, i: number) => (
               <React.Fragment key={i}>
@@ -267,14 +306,47 @@ export default function ZeroPage() {
               </React.Fragment>
             ))}
           </motion.h1>
+
+          {/* Subtitle / Paragraph */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-gray-400 text-sm md:text-base max-w-xl mx-auto font-sans leading-relaxed font-light tracking-wide mb-10 text-center"
+          >
+            We turn ideas into unforgettable visuals that captivate and convert. Your brand's next chapter starts here.
+          </motion.p>
+
+          {/* Action Pill Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="flex flex-wrap items-center justify-center gap-4"
+          >
+            <button
+              onClick={() => setShowInquiry(true)}
+              className="bg-[#2563eb] hover:bg-blue-600 text-white font-medium px-8 py-3.5 rounded-full text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              Book A Call
+            </button>
+            <Link
+              to="/property"
+              className="bg-[#222226]/90 hover:bg-[#2d2d33] border border-white/10 text-white font-medium px-8 py-3.5 rounded-full text-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              View Pricing
+            </Link>
+          </motion.div>
+
+          {/* Scroll Down Hint */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 1 }}
-            className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
+            className="mt-14 flex flex-col items-center gap-2"
           >
-            <span className="text-[8px] font-bold tracking-[0.4em] uppercase text-black/20">Scroll to Explore</span>
-            <div className="w-[1px] h-12 bg-gradient-to-b from-[#d4af37] to-transparent" />
+            <span className="text-[9px] font-medium tracking-[0.3em] uppercase text-white/30">Scroll to Explore</span>
+            <div className="w-[1px] h-8 bg-gradient-to-b from-white/30 to-transparent" />
           </motion.div>
         </motion.div>
       </section>

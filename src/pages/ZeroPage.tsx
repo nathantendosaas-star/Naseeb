@@ -324,17 +324,17 @@ export default function ZeroPage() {
             transition={{ delay: 0.6, duration: 0.8 }}
             className="flex flex-wrap items-center justify-center gap-4"
           >
-            <button
-              onClick={() => setShowInquiry(true)}
-              className="bg-[#2563eb] hover:bg-blue-600 text-white font-medium px-8 py-3.5 rounded-full text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              Book A Call
-            </button>
             <Link
               to="/property"
+              className="bg-[#2563eb] hover:bg-blue-600 text-white font-medium px-8 py-3.5 rounded-full text-sm shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              Property
+            </Link>
+            <Link
+              to="/cars"
               className="bg-[#222226]/90 hover:bg-[#2d2d33] border border-white/10 text-white font-medium px-8 py-3.5 rounded-full text-sm transition-all hover:scale-105 active:scale-95 cursor-pointer"
             >
-              View Pricing
+              Motors
             </Link>
           </motion.div>
 
